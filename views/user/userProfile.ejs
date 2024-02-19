@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>getantiques</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="Free HTML Templates" name="keywords" />
+    <meta content="Free HTML Templates" name="description" />
+
+    <!-- Favicon -->
+    <link href="../user/img/favicon.ico" rel="icon" />
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Libraries Stylesheet -->
+    <link
+      href=".../user/lib/owlcarousel/assets/owl.carousel.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="../user/css/style.css" rel="stylesheet" />
+
+    <style>
+      .container {
+        display: flex;
+        justify-content: flex-start;
+        flex-wrap: wrap;
+      }
+
+      .card {
+        width: calc(33.33% - 20px);
+        margin: 10px;
+        padding: 20px;
+        background-color: #f9f9f9;
+        border-radius: 8px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .card a {
+        text-decoration: none;
+        color: black;
+      }
+
+      .card a h2 {
+        color: red;
+      }
+
+      @media (max-width: 768px) {
+        .card {
+          width: calc(50% - 20px);
+        }
+      }
+
+      @media (max-width: 480px) {
+        .card {
+          width: calc(100% - 20px);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <!-- Page Header Start -->
+    <div class="container-fluid bg-secondary mb-5">
+      <div
+        class="d-flex flex-column align-items-center justify-content-center"
+        style="min-height: 180px"
+      >
+        <h1 class="font-weight-semi-bold text-capitalize mb-3">Profile</h1>
+        <div class="d-inline-flex">
+          <p class="m-0"><a href="/">Home</a></p>
+          <p class="m-0 px-2">-</p>
+          <p class="m-0"><a href="/account">Account</a></p>
+          <p class="m-0 px-2">-</p>
+          <p class="m-0">Profile</p>
+        </div>
+      </div>
+    </div>
+    <!-- Page Header End -->
+
+    <!-- Container Cards Start -->
+    <div class="w-25" style="margin-left: 40%">
+      <span id="submit-error"></span><br />
+      <p>
+        <%# if(error){ %>
+        <!-- <p id="alreadyUser" style="color: red;"><%#=error%></p>  -->
+        <%#} %>
+      </p>
+      <form action="/" method="post">
+        <!-- Username input -->
+        <div class="form-outline mb-4">
+          <label class="form-label" for="form2Example1"
+            >Username<sup style="color: red">*</sup></label
+          >
+          <input
+            type="text"
+            value="<%=user.username%>"
+            class="form-control"
+            name="username"
+            placeholder="Enter your username"
+            onkeyup="validateUserName()"
+            disabled
+          />
+          <span id="name-error"></span>
+        </div>
+
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+          <label class="form-label" for="form2Example1"
+            >Email address<sup style="color: red">*</sup></label
+          >
+          <input
+            type="email"
+            value="<%=user.email%>"
+            class="form-control"
+            name="email"
+            placeholder="Enter your email"
+            onkeyup="validateEmail()"
+            disabled
+          />
+          <span id="email-error"></span>
+        </div>
+
+        <!-- Mobile input -->
+        <div class="form-outline mb-4">
+          <label class="form-label" for="form2Example1"
+            >Mobile<sup style="color: red">*</sup></label
+          >&nbsp;
+          <button onclick="toggleMobile()">Edit</button>
+          <!-- <button>Edit</button> -->
+
+          <input
+            type="text"
+            value="<%=user.mobile%>"
+            class="form-control"
+            name="mobile"
+            placeholder="Enter your number"
+            maxlength="10"
+            onkeyup="validateMobile()"
+            id="mobile"
+            disabled
+          />
+          <span id="phone-error"></span>
+        </div>
+        <label class="form-label" for="form2Example1"
+          >Gender<sup style="color: red">*</sup></label
+        >
+        &nbsp; &nbsp;
+        <input type="radio" name="gender" value="male" disabled /> Male
+        <input type="radio" name="gender" value="female" disabled /> Female
+        <!-- Submit button -->
+        <br /><br />
+        <button
+          onclick="return validateForm()"
+          type="submit"
+          class="btn btn-primary btn-block mb-4"
+        >
+          Update
+        </button>
+        <!-- <span id="submit-error"></span> -->
+        <!-- Register buttons -->
+        <div class="text-center">
+          <p><a href="/account">Back</a></p>
+        </div>
+      </form>
+
+      <!-- <a href="#" class="btn btn-primary back-to-top">
+        <i class="fa fa-angle-double-up"></i>
+      </a> -->
+    </div>
+    <!-- Container Cards End -->
+    <!-- <div class="container">
+      <div class="card">
+        <a href="#">
+          <img src="../user/img/purchase.png" alt="Card Image" />
+          <h2>Orders</h2>
+          <p>All about your orders</p>
+        </a>
+      </div>
+    </div> -->
+
+    <!-- Footer Start -->
+    <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
+      <div class="col-md-6 px-xl-0">
+        <p class="mb-md-0 text-center text-md-left text-dark">
+          &copy;
+          <a class="text-dark font-weight-semi-bold" href="#">getantiques</a>.
+          All Rights Reserved. Designed by
+          <a
+            class="text-dark font-weight-semi-bold"
+            href="https://htmlcodex.com"
+            >HTML Codex</a
+          >
+          <br />
+          Distributed By
+          <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+        </p>
+      </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top"
+      ><i class="fa fa-angle-double-up"></i
+    ></a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="../user/lib/easing/easing.min.js"></script>
+    <script src="../user/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="../user/mail/jqBootstrapValidation.min.js"></script>
+    <script src="../user/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="../user/js/main.js"></script>
+    <script>
+      function toggleMobile() {
+        var textBox = document.getElementById("mobile");
+        textBox.disabled = !textBox.disabled;
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,233 @@
+<%- include ('partialsAdminHead') %>
+<nav>
+  <ul class="menu-aside">
+    <li class="menu-item">
+      <a class="menu-link" href="/admin/dashboard">
+        <i class="icon material-icons md-home"></i>
+        <span class="text">Dashboard</span>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a class="menu-link" href="/admin/category">
+        <i class="icon material-icons md-shopping_bag"></i>
+        <span class="text">Categories</span>
+      </a>
+    </li>
+    <li class="menu-item ">
+      <a class="menu-link" href="/admin/user">
+        <i class="icon material-icons md-store"></i>
+        <span class="text">Users</span>
+      </a>
+    </li>
+    <li class="menu-item ">
+      <a class="menu-link" href="/admin/product">
+        <i class="icon material-icons md-add_box"></i>
+        <span class="text">Products</span>
+      </a>
+    </li>
+    <li class="menu-item active">
+      <a class="menu-link" href="/admin/order">
+        <i class="icon material-icons md-store"></i>
+        <span class="text">Orders</span>
+      </a>
+    </li>
+     <!-- WILL ADD IT IN COMING WEEK  -->
+    <!--
+    <li class="menu-item">
+      <a class="menu-link" href="page-transactions-1.html">
+        <i class="icon material-icons md-monetization_on"></i>
+        <span class="text">Coupons</span>
+      </a>
+    </li> -->
+  <br />
+  <br />
+</nav>
+</aside>
+    <main class="main-wrap">
+      <header class="main-header navbar">
+        <div class="col-search">
+          <!-- <form class="searchform">
+            <div class="input-group">
+              <input
+                list="search_terms"
+                type="text"
+                class="form-control"
+                placeholder="Search term"
+              />
+              <button class="btn btn-light bg" type="button">
+
+                <i class="material-icons md-search"></i>
+              </button>
+            
+            </div>
+            <datalist id="search_terms">
+              
+            </datalist>
+          </form> -->
+        </div>
+        <div class="col-nav" onload="timeCount();">
+          <p id="p1">
+            
+          </p>
+      
+  </div>
+        <div class="col-nav">
+          
+          <p>
+            
+            Welcome back, <%=name %> </p>
+      
+  </div>
+
+
+        <div class="col-nav">
+              <li class="dropdown nav-item">
+                <button class="btn btn-link" type="submit"> <a href="/admin/signout" ><i class="material-icons md-exit_to_app"></i>Logout</a></button>
+            
+              </li>
+          </ul>
+      </div>
+
+      </header>
+      <section class="content-main">
+        <div class="content-header">
+          <div>
+            <h2 class="content-title card-title">Order Details</h2>
+            <p>Fetch order information here.</p>
+          </div>
+          <!-- <div>
+            
+            <a href="/admin/addProduct" class="btn btn-primary btn-sm rounded">Add Product</a>
+          </div> -->
+        </div>
+        <header class="card card-body mb-4">
+          <div class="row gx-3">
+            <div class="col-lg-4 col-md-6 me-auto">
+              <form action="/admin/searchProduct" method="post">
+        <%# if(value){%>
+              <input type="text" placeholder="Search orders" class="form-control-lg" id="searchProduct" name="searchProduct" value="" />
+              <%#}%><br>
+              <button type="submit" class="btn btn-success mt-3 ml-2">Search</button>
+                </form>
+            </div>
+          </div>
+        </header>
+        <!-- card-header end// -->
+        <div class="card">
+        <div class="card-body">
+          <div class="row">
+            
+            <div class="container mt-6">
+              <div class="row">
+                <table class="table table-striped" width="50%>">
+                  <tr>
+                    <th style="color:tomato;font-size:small; text-align: center; ">Username</th>
+                    <th style="color:tomato;font-size:small; text-align: center; ">Date</th>
+                    <th style="color:tomato;font-size:small; text-align: center; ">Order ID</th>
+                    <th style="color:tomato;font-size:small; text-align: center; ">Total Price</th>
+                    <th style="color:tomato;font-size:small; text-align: center; ">Status</th>
+                    <!-- <th style="color:tomato;font-size:small; text-align: center; width: 250px;">Description</th>
+                   <th style="color:tomato;font-size:small; text-align: center; ">Edit</th>
+                    <th style="color:tomato;font-size:small; text-align: center; ">Hide</th> -->
+                  </tr>
+                   <%# for(let p of product) { %>
+                  <tr>
+                    <td style="text-align: center;"><img src="<%#=p.image[0]%>" style="padding:15%;" height="100px" width="100px" >  </td>
+                    <td style="text-align: center;"><%#=p.name %></td>
+                    <td style="text-align: center;"><%#=p.category %> </td>
+                    <td style="text-align: center;"><%#=p.rate %></td> 
+                    <td style="text-align: center;"><%#=p.stock %></td>
+                    <!-- <td style="text-align:center;" class="description" title="<%#=p.description %>"><%#=p.description %></td> 
+                    <td style="text-align: center;">
+                      <form action="/admin/productEdit/<%#=p.name%>" method="post">
+                        <input type="hidden" value="<%#=p.name%>" name="oldName">
+                        <input type="hidden" value="<%#=p.category %>" name="oldCategory">
+                         <input type="hidden" value="<#%=p.rate %>" name="oldRate">
+                        <input type="hidden" value="<%#=p.stock %>" name="oldStock"> 
+                        <input  style="overflow: hidden;" type="hidden" value="<%#=p.description %>" name="oldDesc"> 
+                        <button class="btn btn-success" type="submit">Edit</button>
+                        
+                      </form>
+                    </td>
+                    <td style="text-align: center;">
+                    <%# if(!p.hide){ %>
+                    <button
+                    style="background-color:coral;"
+                      type="button"
+                      id="<%#=p._id %>"
+                      onclick="toggleFunction('<%#=p._id %>')"
+                    >
+                    Hide
+                  </button>
+                  <%# }else{ %>
+                  <button
+                    style="background-color:green;"
+                      type="button"
+                      id="<%#=p._id %>"
+                      onclick="toggleFunction('<%#=p._id %>')"
+                    >
+                    Show
+                  </button>
+                  <%#} %>
+                    </td>  -->
+                  </tr>
+                  <%# } %>
+                  
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+        <!-- row.// -->
+        <div class="pagination-area mt-15 mb-50">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+              <li class="page-item active">
+                <a class="page-link" href="#">01</a>
+              </li>
+              <!-- <li class="page-item"><a class="page-link" href="#">02</a></li>
+              <li class="page-item"><a class="page-link" href="#">03</a></li>
+              <li class="page-item">
+                <a class="page-link dot" href="#">...</a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">16</a></li> -->
+              <li class="page-item">
+                <a class="page-link" href="#"
+                  ><i class="material-icons md-chevron_right"></i
+                ></a>
+              </li>
+            </ul>
+          </nav>
+        </div>
+      </section>
+      <!-- content-main end// -->
+    <%- include ('partialsAdminFooter') %>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script>
+      // Function to be executed when the toggle button is clicked
+
+      function toggleFunction(a) {
+        console.log(a);
+        console.log(a,'last');
+        $.ajax({
+          url:"/admin/productHide",
+          data:{
+            id:a,
+          },
+          method:"post",
+          dataType:'json',
+          success:function(res){
+            if(res){
+              window.location.reload();
+              console.log(res)
+            }else{
+              console.log('error')
+            }
+          }
+        })
+      }
+    </script>
+  </body>
+</html>

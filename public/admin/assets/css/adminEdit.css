@@ -1,0 +1,158 @@
+/* Reset some default styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  /* Body styles */
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f5f5;
+  }
+  
+  /* Navigation styles */
+  nav {
+    background-color: #333;
+  }
+  
+  ul.menu-aside {
+    list-style-type: none;
+    padding: 10px;
+  }
+  
+  .menu-item {
+    margin-bottom: 10px;
+  }
+  
+  .menu-link {
+    text-decoration: none;
+    color: #fff;
+    display: flex;
+    align-items: center;
+  }
+  
+  .menu-link:hover {
+    background-color: #555;
+  }
+  
+  .icon {
+    margin-right: 10px;
+  }
+  
+  /* Main content styles */
+  .main-wrap {
+    margin-left: 200px; /* Adjust the value based on your design */
+    padding: 20px;
+  }
+  
+  .main-header {
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+  }
+  
+  .col-search,
+  .col-nav {
+    margin-right: 20px;
+  }
+  
+  .col-nav p {
+    margin: 0;
+  }
+  
+  /* Content header styles */
+  .content-header {
+    margin-bottom: 20px;
+  }
+  
+  .content-title {
+    color: #333;
+  }
+  
+  /* Card styles */
+  .card {
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  /* Table styles */
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+  }
+  
+  th, td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  th {
+    background-color: #f2f2f2;
+  }
+  
+  /* Button styles */
+  .btn {
+    display: inline-block;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .btn-success {
+    background-color: #28a745;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+  }
+  
+  /* Pagination styles (uncomment if needed) */
+  /*
+  .pagination-area {
+    text-align: center;
+  }
+  
+  .pagination {
+    display: flex;
+    justify-content: start;
+    list-style-type: none;
+  }
+  
+  .page-item {
+    margin-right: 5px;
+  }
+  
+  .page-link {
+    text-decoration: none;
+    color: #333;
+    padding: 8px;
+    border: 1px solid #ddd;
+  }
+  
+  .page-link:hover {
+    background-color: #f2f2f2;
+  }
+  
+  .dot {
+    padding: 8px 0;
+  }
+  */
+  
+  /* Footer styles */
+  footer {
+    background-color: #333;
+    color: #fff;
+    padding: 10px 0;
+    text-align: center;
+  }
+  

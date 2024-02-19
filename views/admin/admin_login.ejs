@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="../admin/assets/imgs/theme/logo.png"
+    />
+    <!-- Template CSS -->
+    <link
+      href="../admin/assets/css/main.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+  </head>
+
+  <body>
+    <main>
+      
+      <section class="content-main mt-30 mb-30">
+        
+        <div class="card mx-auto card-login">
+          
+          <div class="card-body">
+            <p>
+              
+            </p>
+            <h4 class="card-title mb-4">Please Sign in, Admin !!</h4>
+            <form action="/admin/dashboard" method="post">
+              <div class="mb-3">
+                
+                <label style="color:cadetblue;">Username<sup style="color: red;">*</sup></label>
+                <input
+                  class="form-control"
+                  placeholder="Enter your username"
+                  type="text"
+                  name="name"
+                  required
+                /> 
+              </div> 
+              <!-- form-group// -->
+              <div class="mb-3">
+                <label style="color: cadetblue;">Password<sup style="color: red;">*</sup></label>
+                <div class="eye"><input
+                  class="form-control"
+                  placeholder="Enter your password"
+                  type="password"
+                  name="pass" 
+                  id="pass"
+                  required
+                />
+                <img src="../admin/assets/imgs/theme/eye-close.png" id="eyeIcon">
+                </div>
+              </div>
+              
+              <div class="mb-4">
+                <button type="submit" class="btn btn-secondary w-100">Login</button>
+              </div>
+            </form>
+            
+            </p>
+          </div>
+          <div>
+            <% if (error) { %>
+                <div id="errMsg">
+                    <div class="alert alert-danger" role="alert">
+                        <%=error %>
+                    </div>
+                </div>
+            <% } %>
+          </div>
+        </div>
+      </section>
+      <footer class="main-footer text-center">
+        <p class="font-xs">
+          <script>
+            document.write(new Date().getFullYear());
+
+          </script>
+          ©, getantiques.
+        </p>
+        <p class="font-xs mb-30">All rights reserved</p>
+      </footer>
+    </main>
+    <script src="../admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
+    <script src="../admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
+    <script src="../admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
+    <!-- Main Script -->
+    <script src="../admin/assets/js/main.js" type="text/javascript"></script>
+    <link rel="stylesheet" href="../admin/assets/css/style.css"> 
+
+</body>
+</html>

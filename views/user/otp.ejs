@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>getantiques</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="Free HTML Templates" name="keywords" />
+    <meta content="Free HTML Templates" name="description" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/" />
+    <link href="/" rel="icon" />
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Libraries Stylesheet -->
+    <link
+      href="../user/lib/owlcarousel/assets/owl.carousel.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="../user/css/style.css" rel="stylesheet" />
+    <style></style>
+  </head>
+
+  <body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+      <div class="row align-items-center py-3 px-xl-5">
+        <div class="col-lg-3 d-none d-lg-block">
+          <a href="/" class="text-decoration-none">
+            <img src="../user/img/logo.png" width="100" />
+          </a>
+        </div>
+      </div>
+    </div>
+    <h5 style="padding-left: 40%">Please check for the email OTP received</h5>
+    <div class="w-25" style="margin-left: 40%">
+      <p></p>
+      <form action="/verifyOTP" method="post">
+        <!-- OTP input -->
+        <div class="form-outline mb-4">
+          <label class="form-label" for="form2Example1"
+            >OTP verification<sup style="color: red">*</sup></label
+          >
+          <input
+            type="text"
+            id="otp"
+            class="form-control"
+            name="otp"
+            placeholder="Enter 5 digit OTP"
+            maxlength="5"
+            onkeyup="validateOTP()"
+          />
+          <span id="otp-error"></span>
+        </div>
+        <div>
+          Didn't receive code?
+          <button
+            type="button"
+            id="resendButton"
+            onclick="sendOTP(); location.href='/resendOTP'"
+          >
+            Click to Resend
+          </button>
+          <span id="timer" style="padding-left: 10px"></span>
+        </div>
+
+        <span id="submitOTP-error"></span>
+        <br />
+        <br />
+        <%if(message){%>
+        <p id="invalidotp" style="color: red; text-align: center">
+          <%=message %>
+        </p>
+        <%}%>
+
+        <br />
+
+        <!-- Submit button -->
+        <button
+          onclick="return validateOTPForm()"
+          type="submit"
+          class="btn btn-primary btn-block mb-4"
+        >
+          Sign up
+        </button>
+        <br />
+      </form>
+    </div>
+    <!-- Footer Start -->
+    <br /><br /><br /><br />
+    <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
+      <div class="row border-top border-light mx-xl-5 py-4">
+        <div class="col-md-6 px-xl-0">
+          <p class="mb-md-0 text-center text-md-left text-dark">
+            &copy;
+            <a class="text-dark font-weight-semi-bold" href="#">getantiques</a>.
+            All Rights Reserved. Designed by
+            <a
+              class="text-dark font-weight-semi-bold"
+              href="https://htmlcodex.com"
+              >HTML Codex</a
+            ><br />
+            Distributed By
+            <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+          </p>
+        </div>
+        <div class="col-md-6 px-xl-0 text-center text-md-right">
+          <img class="img-fluid" src="../user/img/payments.png" alt="" />
+        </div>
+      </div>
+    </div>
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top">
+      <i class="fa fa-angle-double-up"></i>
+    </a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="../user/lib/easing/easing.min.js"></script>
+    <script src="../user/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="../user/mail/jqBootstrapValidation.min.js"></script>
+    <script src="../user/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <!-- <script src="../user/js/main.js"></script> -->
+    <script>
+      var timerInterval;
+      var resendButton = document.getElementById("resendButton");
+      var timerDisplay = document.getElementById("timer");
+
+      // Function to start the countdown timer
+      function startTimer(duration) {
+        var timer = duration;
+        timerInterval = setInterval(function () {
+          var minutes = parseInt(timer / 60, 10);
+          var seconds = parseInt(timer % 60, 10);
+
+          minutes = minutes < 10 ? "0" + minutes : minutes;
+          seconds = seconds < 10 ? "0" + seconds : seconds;
+
+          timerDisplay.textContent = minutes + ":" + seconds;
+
+          if (--timer < 0) {
+            clearInterval(timerInterval);
+            timerDisplay.textContent = "00:00";
+            // Enable the resend button after 30 seconds
+            resendButton.disabled = false;
+          }
+        }, 1000);
+      }
+
+      // Function to send OTP
+      function sendOTP() {
+        console.log("OTP Sent");
+        resendButton.disabled = true; // Disable the resend button when OTP is sent
+
+        var duration = 30; // Duration in seconds
+        startTimer(duration);
+      }
+
+      // Call sendOTP when the page loads to start the timer
+      window.onload = sendOTP;
+
+      /*    OTP VALIDATION     */
+      var otpError = document.getElementById("otp-error");
+      var invalidOTP = document.getElementById("invalidotp");
+      invalidOTP.style.display = "block";
+      setTimeout(() => {
+        invalidOTP.style.display = "none";
+      }, 2000);
+
+      function validateOTP() {
+        var otpname = document.getElementById("otp").value;
+        if (otpname.length == 0) {
+          otpError.style.color = "red";
+          otpError.innerHTML = "Please enter OTP";
+          return false;
+        } else if (!otpname.match(/^[0-9]{4,}$/)) {
+          otpError.style.color = "red";
+          otpError.innerHTML = "Only numbers allowed";
+          return false;
+        } else if (otpname.length != 5) {
+          otpError.style.color = "red";
+          otpError.innerHTML = "Enter the 5 digit OTP sent to you";
+          return false;
+        }
+
+        otpError.innerHTML = "valid";
+        if ((otpError.innerHTML = "valid")) {
+          otpError.style.color = "green";
+        } else {
+          otpError.style.color = "red";
+        }
+        return true;
+      }
+
+      function validateOTPForm() {
+        if (!validateOTP()) {
+          submitOTPError.style.display = "block";
+          submitOTPError.innerHTML = "OTP required";
+          setTimeout(() => {
+            submitOTPError.style.display = "none";
+          }, 2000);
+          return false;
+        }
+      }
+    </script>
+  </body>
+</html>

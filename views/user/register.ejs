@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>getantiques</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <meta content="Free HTML Templates" name="keywords" />
+    <meta content="Free HTML Templates" name="description" />
+
+    <!-- Favicon -->
+    <link rel="icon" href="/" />
+    <link href="/" rel="icon" />
+
+    <!-- Google Web Fonts -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Font Awesome -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Libraries Stylesheet -->
+    <link
+      href="../user/lib/owlcarousel/assets/owl.carousel.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="../user/css/style.css" rel="stylesheet" />
+    <style>
+    
+    </style>
+  </head>
+
+  <body>
+    <!-- Topbar Start -->
+    <div class="container-fluid">
+      <div class="row align-items-center py-3 px-xl-5">
+        <div class="col-lg-3 d-none d-lg-block">
+          <a href="/" class="text-decoration-none">
+            <img src="../user/img/logo.png" width="100" />
+          </a>
+        </div>
+        
+      </div>
+    </div>
+    <div class="w-25" style="margin-left: 40%">
+      <h4>Be our Member, Register here</h4><br>
+      <span id="submit-error"></span><br><p>
+               <% if(error){ %>
+            <p id="alreadyUser" style="color: red;"><%=error%></p> 
+              <%} %>
+      </p>
+      <form action="/otp" method="post">
+        <!-- Username input -->
+        <div class="form-outline mb-4">
+        <label class="form-label" for="form2Example1">Username<sup style="color: red;">*</sup></label>
+          <input
+            type="text"
+            id="username"
+            class="form-control"
+            name="username" placeholder="Enter your username" onkeyup="validateUserName()"/>
+          <span id="name-error"></span>
+        </div>
+
+        <!-- Email input -->
+        <div class="form-outline mb-4">
+        <label class="form-label" for="form2Example1">Email address<sup style="color: red;">*</sup></label>
+          <input
+            type="email"
+            id="email"
+            class="form-control"
+            name="email" placeholder="Enter your email" onkeyup="validateEmail()"/>
+          <span id="email-error"></span>
+        </div>
+
+        <!-- Mobile input -->
+        <div class="form-outline mb-4">
+        <label class="form-label" for="form2Example1">Mobile<sup style="color: red;">*</sup></label>
+          <input
+            type="text"
+            id="mobile"
+            class="form-control"
+            name="mobile" placeholder="Enter your number" maxlength="10" onkeyup="validateMobile()"/>
+          <span id="phone-error"></span>
+        </div>
+
+        <!-- Password input -->
+        <div class="form-outline mb-4">
+        <label class="form-label" for="form2Example2">Password<sup style="color: red;">*</sup></label>
+          <div class="eye"><input
+            type="password"
+            id="form2Example2"
+            class="form-control"
+            name="password" placeholder="Enter your password" minlength="4" maxlength="14" onkeyup="validatePassword()"/>
+          <img src="../admin/assets/imgs/theme/eye-close.png" id="eyeIcon">
+          
+          </div>
+          <span id="pass-error"></span>
+        </div>
+
+        <!-- Submit button -->
+        <button onclick="return validateForm()" type="submit" class="btn btn-primary btn-block mb-4">
+          Continue
+        </button>
+        <!-- <span id="submit-error"></span> -->
+        <!-- Register buttons -->
+        <div class="text-center">
+          <p>Already a member? <a href="/login">Login</a></p>
+        </div>
+      </form>
+
+      <!-- <a href="#" class="btn btn-primary back-to-top">
+        <i class="fa fa-angle-double-up"></i>
+      </a> -->
+    </div>
+    <!-- Footer Start -->
+    <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
+      <div class="row border-top border-light mx-xl-5 py-4">
+        <div class="col-md-6 px-xl-0">
+          <p class="mb-md-0 text-center text-md-left text-dark">
+            &copy;
+            <a class="text-dark font-weight-semi-bold" href="#">getantiques</a>.
+            All Rights Reserved. Designed by
+            <a
+              class="text-dark font-weight-semi-bold"
+              href="https://htmlcodex.com"
+              >HTML Codex</a
+            ><br />
+            Distributed By
+            <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
+          </p>
+        </div>
+        <div class="col-md-6 px-xl-0 text-center text-md-right">
+          <img class="img-fluid" src="../user/img/payments.png" alt="" />
+        </div>
+      </div>
+    
+    <!-- Footer End -->
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-primary back-to-top">
+      <i class="fa fa-angle-double-up"></i>
+    </a>
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="../user/lib/easing/easing.min.js"></script>
+    <script src="../user/lib/owlcarousel/owl.carousel.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="../user/mail/jqBootstrapValidation.min.js"></script>
+    <script src="../user/mail/contact.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="../user/js/main.js"></script>
+    <script>
+    setTimeout(()=>{
+      let a=document.getElementById("alreadyUser");
+      a.style.display="none";
+    },2000)
+    </script>
+    
+  </body>
+</html>
