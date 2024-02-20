@@ -110,22 +110,21 @@ const searchUser = async (req, res) => {
 const searchProduct = async (req, res) => {
   try {
     const searchProdName = req.body.searchProduct;
-    console.log(searchProdName);
+    console.log("admin searched for: -------  " + searchProdName);
     const prodData = await prodModel.find({
       name: { $regex: new RegExp(searchProdName, "i") },
     });
     console.log("Searched product is :" + prodData);
     req.session.prodData = prodData;
-
-    res.redirect("/admin/product");
-    console.log("req.session.data is" + req.session.data);
+    //console.log(prodData[0]);
+    res.redirect(`/admin/product`);
+    //console.log("req.session.data is" + req.session.data);
   } catch (error) {
     console.log("Error while searching a product :" + error);
   }
 };
 
-const 
-userHide = async (req, res) => {
+const userHide = async (req, res) => {
   try {
     console.log(req.body.id);
     const data = await userModel.findOne({ _id: req.body.id });

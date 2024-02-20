@@ -6,14 +6,31 @@ const multer = require("multer");
 
 const adminProduct = async (req, res) => {
   try {
-    var product = await productModel.find({}).sort({ _id: -1 }); //cant use const here as it will render error when a product is searched//
-    //const category = await categoryModel.find({});
+    var page = 1;
+    if (req.query.page) {
+      page = req.query.page;
+    }
+    const limit = 3;
+    var product = await productModel
+      .find({})
+      .sort({ _id: -1 })
+      .limit(limit * 1)
+      .skip((page - 1) * limit); //cant use const here as it will render error when a product is searched//
+
+    const count = await productModel.find({}).countDocuments(); // counts the total products //
+    console.log("PRODUCT COUNT IS :" + count);
+
     if (req.session.prodData) {
       product = req.session.prodData;
     }
     console.log("product list:" + product);
     console.log("ADMIN: PRODUCTS");
-    res.render("admin_products", { name: req.session.name, product });
+    res.render("admin_products", {
+      name: req.session.name,
+      product,
+      totalPages: Math.floor(count / limit),
+      currentPage: page,
+    });
   } catch (err) {
     console.log(err);
     res.send("Error Occurred");

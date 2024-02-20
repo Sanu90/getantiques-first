@@ -1,6 +1,6 @@
 //const path = require("path");
 const multer = require("multer");
-const sharp = require("sharp");
+//const sharp = require("sharp");
 
 //MULTER CONFIGURATION//
 
@@ -15,8 +15,5 @@ const storage = multer.diskStorage({
 });
 
 const upload = multer({ storage: storage });
-
-
-
 
 module.exports = upload;

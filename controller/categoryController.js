@@ -2,7 +2,7 @@ const categoryModel = require("../model/categoryModel");
 
 const adminCategory = async (req, res) => {
   try {
-    var category = await categoryModel.find({}).sort({ _id: -1 });  //cant use const here as it will render error when a category is searched//
+    var category = await categoryModel.find({}).sort({ _id: -1 }); //cant use const here as it will render error when a category is searched//
     if (req.session.data) {
       category = req.session.data;
       value = req.session.search;
@@ -32,21 +32,6 @@ const addCategory = async (req, res) => {
   }
 };
 
-const updateCategory = async (req, res) => {
-  try {
-    console.log(req.body);
-    await categoryModel.updateOne(
-      { name: req.body.oldCatName },
-      { $set: { name: req.body.newCatname, description: req.body.newCatDesc } }
-    );
-    console.log("CATEGORY UPDATED");
-    return res.redirect("/admin/category");
-  } catch (err) {
-    console.log(err.message);
-    res.redirect("/admin/error?message=error-while-updating-category");
-  }
-};
-
 const editCategory = async (req, res) => {
   try {
     const oldName = req.body.oldCategory;
@@ -63,6 +48,21 @@ const editCategory = async (req, res) => {
   } catch (err) {
     console.log(err.message);
     res.redirect("/error?message=error-while-updating-category");
+  }
+};
+
+const updateCategory = async (req, res) => {
+  try {
+    console.log(req.body);
+    await categoryModel.updateOne(
+      { name: req.body.oldCatName },
+      { $set: { name: req.body.newCatname, description: req.body.newCatDesc } }
+    );
+    console.log("CATEGORY UPDATED");
+    return res.redirect("/admin/category");
+  } catch (err) {
+    console.log(err.message);
+    res.redirect("/admin/error?message=error-while-updating-category");
   }
 };
 

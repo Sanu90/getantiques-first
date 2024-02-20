@@ -35,8 +35,7 @@ const sendmail = (email) => {
       to: email,
       subject: "E-Mail Verification",
       text:
-        "Hi user, Welcome to getantiques. <br><br>Please verify with the OTP:" +
-        otp +
+        "Hi user, Welcome to getantiques. Please verify with the OTP:" + otp +
         " to proceed further.",
     };
 

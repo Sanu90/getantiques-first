@@ -61,7 +61,7 @@ router.get("/product", adminMiddleware.isAdmin, productController.adminProduct);
 router.post(
   "/product",
   adminMiddleware.isAdmin,
-  multer.array("images", 5),
+  multer.array("images", 10),
   productController.addProduct
 );
 

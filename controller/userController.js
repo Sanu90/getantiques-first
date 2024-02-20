@@ -12,8 +12,10 @@ const indexPage = async (req, res) => {
       res.redirect("/home");
     } else {
       const category = await categoryModel.find({});
-      const product1 = await productModel.find({}).sort({ _id: -1 }).limit(4);
-      const product2 = await productModel.find({}).skip(4).limit(4);
+      // const product1 = await productModel.find({}).sort({ _id: -1 }).limit(4);
+      // const product2 = await productModel.find({}).skip(4).limit(4);
+      const product1 = await productModel.find({}).sort({ _id: -1 });
+      const product2 = await productModel.find({}).sort({ _id: 1 });
       console.log(category[0].name);
       res.render("index", { category, product1, product2 });
       console.log("INDEX PAGE");
@@ -28,8 +30,7 @@ const login = (req, res) => {
     if (req.session.isUser) {
       res.redirect("/home");
     } else {
-      let message =
-        req.session.error || req.session.logout ;
+      let message = req.session.error || req.session.logout;
       const success = req.query.success || req.session.passChange;
 
       res.render("login", { error: message, success });
