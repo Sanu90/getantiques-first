@@ -85,21 +85,21 @@
           <p class="m-0 px-2">-</p>
           <p class="m-0"><a href="/account">Account</a></p>
           <p class="m-0 px-2">-</p>
-          <p class="m-0">Profile</p>
+          <p class="m-0">Edit Profile</p>
         </div>
       </div>
     </div>
     <!-- Page Header End -->
 
+    <% if(data_exist){ %>
+    <p id="alreadyUser" style="color: red; text-align: center">
+      <%=data_exist%>
+    </p>
+    <%}%>
     <!-- Container Cards Start -->
     <div class="w-25" style="margin-left: 40%">
-      <span id="submit-error"></span><br />
-      <p>
-        <%# if(error){ %>
-        <!-- <p id="alreadyUser" style="color: red;"><%#=error%></p>  -->
-        <%#} %>
-      </p>
-      <form action="/account/editProfile" method="post">
+      <br />
+      <form action="/account/editProfile_Success" method="post">
         <!-- Username input -->
         <div class="form-outline mb-4">
           <label class="form-label" for="form2Example1"
@@ -107,10 +107,11 @@
           >
           <input
             type="text"
-            value="<%=user.username%>"
+            id="username"
             class="form-control"
             name="username"
-            disabled
+            placeholder="Please update username"
+            onkeyup="validateUserName()"
           />
           <span id="name-error"></span>
         </div>
@@ -125,9 +126,9 @@
             value="<%=user.email%>"
             class="form-control"
             name="email"
-            disabled
+            readonly="true"
           />
-          <span id="email-error"></span>
+          <!-- <span id="email-error"></span> -->
         </div>
 
         <!-- Mobile input -->
@@ -141,32 +142,31 @@
 
           <input
             type="text"
-            value="<%=user.mobile%>"
+            value=""
             class="form-control"
             name="mobile"
-            placeholder="Enter your number"
-            id="mobile"
-            disabled
+            placeholder="Please update mobile number"
+            maxlength="10"
+            id="tele"
+            onkeyup="validatePhone()"
           />
-          <span id="phone-error"></span>
+          <span id="tele-error"></span>
         </div>
 
-        <!-- DOB -->
         <div class="form-outline mb-4">
           <label class="form-label" for="form2Example1"
             >Date of Birth<sup style="color: red">*</sup></label
           >
-          <!-- &nbsp;
-          <button onclick="toggleMobile()">Edit</button> -->
-          <!-- <button>Edit</button> -->
 
           <input
             type="text"
-            value="<%=user.dob%>"
+            placeholder="Please add/update your DOB"
+            value=""
             class="form-control"
             name="dob"
             id="dob"
-            readonly="true"
+            onkeyup="validateDOB()"
+            onfocus="(this.type='date')"
           />
           <span id="dob-error"></span>
         </div>
@@ -177,16 +177,17 @@
         &nbsp; &nbsp;
         <input type="radio" name="gender" value="male" disabled /> Male
         <input type="radio" name="gender" value="female" disabled /> Female -->
+
         <!-- Submit button -->
-        <br /><br />
-        <button type="submit" class="btn btn-primary btn-block mb-4">
-          Make changes
+        <span id="update-error"></span><br />
+        <br />
+        <button
+          onclick="return validateForm()"
+          type="submit"
+          class="btn btn-primary btn-block mb-4"
+        >
+          Update
         </button>
-        <!-- <span id="submit-error"></span> -->
-        <!-- Register buttons -->
-        <div class="text-center">
-          <p><a href="/account">Back</a></p>
-        </div>
       </form>
 
       <!-- <a href="#" class="btn btn-primary back-to-top">
@@ -240,12 +241,91 @@
     <script src="../user/mail/contact.js"></script>
 
     <!-- Template Javascript -->
-    <script src="../user/js/main.js"></script>
+    <!-- <script src="../user/js/main.js"></script> -->
     <script>
-      function toggleMobile() {
-        var textBox = document.getElementById("mobile");
-        textBox.disabled = !textBox.disabled;
+      var nameError = document.getElementById("name-error");
+      var teleError = document.getElementById("tele-error");
+      var updateError = document.getElementById("update-error");
+      var dobError = document.getElementById("dob-error");
+
+      function validateUserName() {
+        var name = document.getElementById("username").value;
+        if (name.length == 0) {
+          nameError.style.color = "red";
+          nameError.innerHTML = "Name is required";
+          return false;
+        }
+        if (!name.match(/^[A-Za-z].{4,}$/)) {
+          nameError.style.color = "red";
+          nameError.innerHTML = "Minimum 5 characters needed";
+          return false;
+        }
+
+        nameError.innerHTML = "valid";
+        if ((nameError.innerHTML = "valid")) {
+          nameError.style.color = "green";
+        }
+        return true;
       }
+
+      function validatePhone() {
+        var phone = document.getElementById("tele").value;
+        if (phone.length === 0) {
+          teleError.style.color = "red";
+          teleError.innerHTML = "Mobile number is required";
+          return false;
+        } else if (!phone.match(/^[0-9]{10}$/)) {
+          teleError.style.color = "red";
+          teleError.innerHTML = "Please enter only numbers";
+          return false;
+        }
+        teleError.innerHTML = "valid";
+        if ((teleError.innerHTML = "valid")) {
+          teleError.style.color = "green";
+        }
+
+        return true;
+      }
+
+      function validateDOB() {
+        var dobirth = document.getElementById("dob").value;
+        var inputDate = new Date(dobirth);
+        var minDate = new Date("1950-01-01");
+        var maxDate = new Date();
+        if (!dobirth) {
+          dobError.style.color = "red";
+          dobError.innerHTML = "DOB cant be avoided";
+          return false;
+        }
+
+        if (dobirth) {
+          if (inputDate < minDate || inputDate > maxDate) {
+            dobError.style.color = "red";
+            dobError.innerHTML = "Date must be between 1950-01-01 and today";
+            return false;
+          } else {
+            dobError.style.color = "green";
+            dobError.innerHTML = "valid";
+            return true;
+          }
+        }
+      }
+
+      function validateForm() {
+        if (!validateUserName() || !validatePhone() || !validateDOB()) {
+          updateError.style.display = "block";
+          updateError.innerHTML = "All fields required";
+          setTimeout(() => {
+            updateError.style.display = "none";
+          }, 2000);
+          return false;
+        }
+      }
+
+      setTimeout(() => {
+        var ab = document.getElementById("alreadyUser");
+        ab.style.display = "none";
+      }, 2000);
     </script>
   </body>
 </html>

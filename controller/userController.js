@@ -14,8 +14,14 @@ const indexPage = async (req, res) => {
       const category = await categoryModel.find({});
       // const product1 = await productModel.find({}).sort({ _id: -1 }).limit(4);
       // const product2 = await productModel.find({}).skip(4).limit(4);
-      const product1 = await productModel.find({}).sort({ _id: -1 });
-      const product2 = await productModel.find({}).sort({ _id: 1 });
+      const product1 = await productModel
+        .find({ hide: 0 })
+        .sort({ _id: -1 })
+        .limit(4);
+      const product2 = await productModel
+        .find({ hide: 0 })
+        .sort({ _id: 1 })
+        .limit(4);
       console.log(category[0].name);
       res.render("index", { category, product1, product2 });
       console.log("INDEX PAGE");
@@ -215,9 +221,12 @@ const validateUser = async (req, res) => {
 const redirectUser = async (req, res) => {
   try {
     const category = await categoryModel.find({});
-    const product1 = await productModel.find({}).sort({ _id: -1 }).limit(4);
+    const product1 = await productModel
+      .find({ hide: 0 })
+      .sort({ _id: -1 })
+      .limit(4);
     const product2 = await productModel
-      .find({})
+      .find({ hide: 0 })
       .sort({ _id: -1 })
       .skip(4)
       .limit(4);
@@ -403,7 +412,7 @@ const userCategoryPage = async (req, res) => {
     const category = await categoryModel.find({});
     //console.log("This is category check :" + category);
     const catName = req.params.catName;
-    const catProd = await productModel.find({ category: catName });
+    const catProd = await productModel.find({ category: catName, hide: 0 });
     // console.log("Category products is::::" +catProd);
     res.render("userCategoryPage", {
       user: userName,
@@ -453,7 +462,7 @@ const search = async (req, res) => {
 const shop = async (req, res) => {
   try {
     const id = req.params.id;
-    const productDetails = await productModel.findOne({ _id: id });
+    //const productDetails = await productModel.findOne({ _id: id });
     var searchValue = req.body.searchValue;
     const userName = req.session.name;
     console.log("The searched data is: " + searchValue);
@@ -468,7 +477,6 @@ const shop = async (req, res) => {
       searchData,
       searchValue,
       user: userName,
-      productDetails,
       noProduct,
     });
   } catch (error) {
@@ -492,13 +500,66 @@ const account = async (req, res) => {
 const profile = async (req, res) => {
   try {
     const user = await userModel.findOne({ username: req.session.name });
-    // console.log("USER IS:" + user);
-    // console.log(user.username);
     res.render("userProfile", { user });
     console.log("USER PROFILE");
   } catch (error) {
     console.log("Error while rendering user profile page :" + error);
   }
+};
+
+const editProfile = async (req, res) => {
+  try {
+    const user = await userModel.findOne({ username: req.session.name });
+    res.render("userEditProfile", {
+      user: req.session.name,
+      user,
+      data_exist: "",
+      // data2_exist: "",
+    });
+    console.log("Edit User profile");
+  } catch (error) {
+    console.log("Error while updating user profile :" + error);
+  }
+};
+
+const updateUserProfile = async (req, res) => {
+  const user = await userModel.findOne({ username: req.session.name });
+  console.log("req.body.username :" + req.body.username);
+  console.log("user.username  :" + user.username);
+  if (req.body.username === user.username) {
+    req.session.error1 = "New name & the current name should not be the same";
+    res.redirect("/account/editProfile");
+  } else if (req.body.mobile === user.mobile) {
+    req.session.error1 = "You have entered same old number";
+    res.redirect("/account/editProfile");
+  } else {
+    console.log(req.body.dob);
+    await userModel.updateOne(
+      { email: req.body.email },
+      {
+        $set: {
+          username: req.body.username,
+          mobile: req.body.mobile,
+          dob: req.body.dob,
+        },
+      },
+      { upsert: true }
+    );
+    res.redirect("/account");
+  }
+};
+
+const showEditProfile = async (req, res) => {
+  const user = await userModel.findOne({ username: req.session.name });
+  let data_exist = req.session.error1;
+  //let data2_exist = req.session.error2;
+  console.log("username_exist is" + data_exist);
+  res.render("userEditProfile", {
+    user: req.session.name,
+    user,
+    data_exist,
+    // data2_exist,
+  });
 };
 
 const logout = (req, res) => {
@@ -514,6 +575,8 @@ const logout = (req, res) => {
 };
 
 module.exports = {
+  updateUserProfile,
+  showEditProfile,
   indexPage,
   login,
   register,
@@ -538,4 +601,5 @@ module.exports = {
   logout,
   account,
   profile,
+  editProfile,
 };

@@ -32,6 +32,10 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="../user/css/style.css" rel="stylesheet" />
+    <script
+      src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js"
+      type="application/javascript"
+    ></script>
   </head>
 
   <body>
@@ -195,13 +199,6 @@
                   alt="Image"
                 />
               </div>
-              <!-- <div class="carousel-item">
-                <img
-                  class="w-100 h-100"
-                  src="../user/img/product-4.jpg"
-                  alt="Image"
-                />
-              </div> -->
             </div>
             <a
               class="carousel-control-prev"
@@ -693,6 +690,7 @@
     ></a>
 
     <!-- JavaScript Libraries -->
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="../user/lib/easing/easing.min.js"></script>
@@ -705,5 +703,13 @@
 
     <!-- Template Javascript -->
     <script src="../user/js/main.js"></script>
+    <script>
+      var options = {
+        width: 400,
+        zoomWidth: 500,
+        offset: { vertical: 0, horizontal: 10 },
+      };
+      new ImageZoom(document.getElementById("w-50 h-50 img-fluid"), options);
+    </script>
   </body>
 </html>

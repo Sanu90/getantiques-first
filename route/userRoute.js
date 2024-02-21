@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const userController = require("../controller/userController");
-const productController = require("../controller/productController");
-const orderController = require("../controller/orderController");
+// const productController = require("../controller/productController");
+// const orderController = require("../controller/orderController");
 const userCheck = require("../middleware/userAuth");
 
 router.get("/", userController.indexPage);
@@ -20,6 +20,18 @@ router.get("/home", userCheck.isUser, userController.redirectUser);
 router.post("/shop", userCheck.isUser, userController.shop);
 router.get("/account", userCheck.isUser, userController.account);
 router.get("/account/profile", userCheck.isUser, userController.profile);
+router
+  .post("/account/editProfile", userCheck.isUser, userController.editProfile)
+  .get(
+    "/account/editProfile",
+    userCheck.isUser,
+    userController.showEditProfile
+  );
+router.post(
+  "/account/editProfile_Success",
+  userCheck.isUser,
+  userController.updateUserProfile
+);
 router.post("/home", userController.validateUser);
 router.get("/product/:id", userController.productView);
 

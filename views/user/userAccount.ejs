@@ -118,27 +118,21 @@
             <span style="color: chocolate"><%=user.mobile %></span>
           </h5>
         </div>
-        <!-- <button
-          type="button"
-          class="btn btn-outline-primary"
-          onclick="location.href='/logout'"
-        >
-          Logout
-        </button> -->
       </div>
-      <!-- <div class="text-center mb-4">
-        <h5>
-          Hey
-          <span style="color: chocolate"><%=user.username %></span>, You are
-          connected with us by
-          <span style="color: chocolate"><%=user.email %></span>
-          &
-          <span style="color: chocolate"><%=user.mobile %></span>
-        </h5>
-      </div> -->
     </div>
     <!-- User Details End-->
-
+    <div class="container-md" style="text-align: center">
+      <p
+        id="showUpdate"
+        style="
+          font-family: 'Times New Roman', Times, serif;
+          font: 1.2em sans-serif;
+          color: red;
+        "
+      >
+        You have successfully updated your profile.
+      </p>
+    </div>
     <!-- Container Cards Start -->
     <div class="container">
       <div class="card">
@@ -228,5 +222,11 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+    <script>
+      setTimeout(() => {
+        var showAlert = document.getElementById("showUpdate");
+        showAlert.style.display = "none";
+      }, 2500);
+    </script>
   </body>
 </html>

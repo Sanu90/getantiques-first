@@ -40,8 +40,13 @@ const userData = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  gender: {
-    type: String,
+  // gender: {
+  //   type: String,
+  //   required: false,
+  //   trim: true,
+  // },
+  dob: {
+    type: Date,
     required: false,
     trim: true,
   },

@@ -6,6 +6,8 @@ const isUser = async (req, res, next) => {
       res.redirect("/");
     } else {
       console.log("req.session.isUser ====" + req.session.isUser);
+      const email = req.session.sessionEmail;
+      console.log("EMAIL IS : " + email);
       const name = req.session.sessionName;
       console.log("NAME IS : " + name);
       isBlock = await userModel.findOne({ username: name });
