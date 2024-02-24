@@ -8,8 +8,7 @@
     <meta content="Free HTML Templates" name="description" />
 
     <!-- Favicon -->
-    <link rel="icon" href="/" />
-    <link href="/" rel="icon" />
+    <link href="../user/img/logo.png" rel="icon" />
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -168,20 +167,24 @@
     function validateOTP() {
       var otpname = document.getElementById("otp").value;
       if (otpname.length == 0) {
+        otpError.style.color = 'red';
         otpError.innerHTML = "Please enter OTP";
         return false;
       
       } else if (!otpname.match(/^[0-9]{4,}$/)) {
+        otpError.style.color = 'red';
     otpError.innerHTML = "Only numbers allowed";
     return false;
        }
       
       else if (otpname.length != 5) {
-        otpError.innerHTML = "5 digit OTP";
+        otpError.style.color = 'red';
+        otpError.innerHTML = "5 digit OTP expecting";
         return false;
       }
 
       otpError.innerHTML = "valid";
+      otpError.style.color = 'green';
       return true;
     }
 

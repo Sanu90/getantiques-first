@@ -25,7 +25,7 @@
 
     <!-- Libraries Stylesheet -->
     <link
-      href=".../user/lib/owlcarousel/assets/owl.carousel.min.css"
+      href="../user/lib/owlcarousel/assets/owl.carousel.min.css"
       rel="stylesheet"
     />
 
@@ -79,121 +79,154 @@
         class="d-flex flex-column align-items-center justify-content-center"
         style="min-height: 180px"
       >
-        <h1 class="font-weight-semi-bold text-capitalize mb-3">Profile</h1>
+        <h1 class="font-weight-semi-bold text-capitalize mb-3">Add Address</h1>
         <div class="d-inline-flex">
           <p class="m-0"><a href="/">Home</a></p>
           <p class="m-0 px-2">-</p>
           <p class="m-0"><a href="/account">Account</a></p>
           <p class="m-0 px-2">-</p>
-          <p class="m-0">Edit Profile</p>
+          <p class="m-0">Add Address</p>
         </div>
       </div>
     </div>
     <!-- Page Header End -->
 
-    <% if(data_exist){ %>
+    <!-- <%# if(data_exist){ %>
     <p id="alreadyUser" style="color: red; text-align: center">
-      <%=data_exist%>
+      <%#=data_exist%>
     </p>
-    <%}%>
+    <%#}%> -->
     <!-- Container Cards Start -->
-    <div class="w-25" style="margin-left: 40%">
-      <br />
-      <form action="/account/editProfile_Success" method="post">
-        <!-- Username input -->
-        <div class="form-outline mb-4">
-          <label class="form-label" for="form2Example1"
-            >Username<sup style="color: red">*</sup></label
-          >
-          <input
-            type="text"
-            id="username"
-            class="form-control"
-            name="username"
-            placeholder="Please update username"
-            onkeyup="validateUserName()"
-          />
-          <span id="name-error"></span>
+    <div class="container justify-content-end">
+      <form action="/account/saveAddress" method="post">
+        <div class="row mb-6 w-75">
+          <div class="col-md-6 mb-4">
+            <label for="one" class="form-label"
+              >Full name<sup style="color: red">*</sup></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="Fullname"
+              name="Fullname"
+              placeholder="Enter the name"
+              minlength="5"
+              maxlength="15"
+              required
+            />
+          </div>
+          <div class="col-md-6 mb-4">
+            <label for="two" class="form-label"
+              >Mobile number<sup style="color: red">*</sup></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="mobile"
+              name="mobile"
+              placeholder="Enter the contact number"
+              maxlength="10"
+              required
+            />
+          </div>
+
+          <div class="col-md-6 mb-4">
+            <label for="three" class="form-label"
+              >House name<sup style="color: red">*</sup></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="house"
+              name="house"
+              maxlength="14"
+              placeholder="Enter the house name"
+              required
+            />
+          </div>
+          <div class="col-md-6 mb-4">
+            <label for="four" class="form-label"
+              >Street<sup style="color: red">*</sup></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="street"
+              name="street"
+              maxlength="15"
+              placeholder="Enter the street name"
+              required
+            />
+          </div>
+          <div class="col-md-6 mb-4">
+            <label for="five" class="form-label"
+              >City<sup style="color: red">*</sup></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="city"
+              name="city"
+              maxlength="15"
+              placeholder="Enter the city name"
+              required
+            />
+          </div>
+          <div class="col-md-6 mb-4">
+            <label for="inputField2" class="form-label"
+              >State<sup style="color: red">*</sup></label
+            >
+            <select
+              id="state"
+              class="form-control form-control-sm custom-select"
+              aria-label="Search"
+              aria-labelledby="state"
+              name="state"
+              required
+            >
+              <option selected value="" disabled>Choose One</option>
+              <option value="Andhra Pradesh">Andhra Pradesh</option>
+              <option value="Karnataka">Karnataka</option>
+              <option value="Kerala">Kerala</option>
+              <option value="Telangana">Telangana</option>
+              <option value="Tamil Nadu">Tamil Nadu</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-4">
+            <label for="inputField2" class="form-label"
+              >Country<sup style="color: red">*</sup></label
+            >
+            <select
+              id="country"
+              class="form-control form-control-sm custom-select"
+              aria-label="Search"
+              aria-labelledby="country"
+              name="country"
+              required
+            >
+              <option selected value="" disabled>Choose One</option>
+              <option value="India">India</option>
+            </select>
+          </div>
+          <div class="col-md-6 mb-4">
+            <label for="six" class="form-label"
+              >Pincode<sup style="color: red">*</sup></label
+            >
+            <input
+              type="text"
+              class="form-control"
+              id="inputField3"
+              required
+              placeholder="Enter the pincode"
+              maxlength="6"
+              name="pincode"
+            />
+          </div>
         </div>
-
-        <!-- Email input -->
-        <div class="form-outline mb-4">
-          <label class="form-label" for="form2Example1"
-            >Email address<sup style="color: red">*</sup></label
-          >
-          <input
-            type="email"
-            value="<%=user.email%>"
-            class="form-control"
-            name="email"
-            readonly="true"
-          />
-          <!-- <span id="email-error"></span> -->
-        </div>
-
-        <!-- Mobile input -->
-        <div class="form-outline mb-4">
-          <label class="form-label" for="form2Example1"
-            >Mobile<sup style="color: red">*</sup></label
-          >
-          <!-- &nbsp;
-          <button onclick="toggleMobile()">Edit</button> -->
-          <!-- <button>Edit</button> -->
-
-          <input
-            type="text"
-            value=""
-            class="form-control"
-            name="mobile"
-            placeholder="Please update mobile number"
-            maxlength="10"
-            id="tele"
-            onkeyup="validatePhone()"
-          />
-          <span id="tele-error"></span>
-        </div>
-
-        <div class="form-outline mb-4">
-          <label class="form-label" for="form2Example1"
-            >Date of Birth<sup style="color: red">*</sup></label
-          >
-
-          <input
-            type="text"
-            placeholder="Please add/update your DOB"
-            value=""
-            class="form-control"
-            name="dob"
-            id="dob"
-            onkeyup="validateDOB()"
-            onfocus="(this.type='date')"
-          />
-          <span id="dob-error"></span>
-        </div>
-
-        <!-- <label class="form-label" for="form2Example1"
-          >Gender<sup style="color: red">*</sup></label
-        >
-        &nbsp; &nbsp;
-        <input type="radio" name="gender" value="male" disabled /> Male
-        <input type="radio" name="gender" value="female" disabled /> Female -->
-
-        <!-- Submit button -->
-        <span id="update-error"></span><br />
-        <br />
-        <button
-          onclick="return validateForm()"
-          type="submit"
-          class="btn btn-primary btn-block mb-4"
-        >
-          Update
-        </button>
+        <button type="submit" class="btn btn-primary">Save</button>
       </form>
-
-      <!-- <a href="#" class="btn btn-primary back-to-top">
-        <i class="fa fa-angle-double-up"></i>
-      </a> -->
     </div>
+
     <!-- Container Cards End -->
     <!-- <div class="container">
       <div class="card">
@@ -242,7 +275,7 @@
 
     <!-- Template Javascript -->
     <!-- <script src="../user/js/main.js"></script> -->
-    <script>
+    <!-- <script>
       var nameError = document.getElementById("name-error");
       var teleError = document.getElementById("tele-error");
       var updateError = document.getElementById("update-error");
@@ -326,6 +359,6 @@
         var ab = document.getElementById("alreadyUser");
         ab.style.display = "none";
       }, 2000);
-    </script>
+    </script> -->
   </body>
 </html>

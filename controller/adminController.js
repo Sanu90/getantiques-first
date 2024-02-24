@@ -30,7 +30,7 @@ const adminDashboard = async (req, res) => {
       password = await bcrypt.compare(req.body.pass, adminData.password);
       if (password) {
         req.session.isAdmin = true;
-        req.session.name = req.body.name;
+        req.session.adminName = req.body.name;
         res.redirect("/admin/dashboard");
       } else {
         res.redirect("/admin?error=Invalid password");
@@ -45,8 +45,8 @@ const adminDashboard = async (req, res) => {
 
 const admintoDash = (req, res) => {
   try {
-    res.render("admin_dashboard", { name: req.session.name });
-    console.log("Name is:" + req.session.name);
+    res.render("admin_dashboard", { name: req.session.adminName });
+    console.log("Name is:" + req.session.adminName);
     console.log("ADMIN: DASHBOARD");
   } catch (error) {
     console.log("Error while accessing  admin Dash: " + error);
@@ -62,7 +62,7 @@ const adminShowUsers = async (req, res) => {
       users = req.session.userData;
     }
 
-    res.render("admin_showUsers", { name: req.session.name, users });
+    res.render("admin_showUsers", { name: req.session.adminName, users });
     console.log("ADMIN: USERS");
   } catch (error) {
     console.log("Error while Admin showing user data: " + error);
@@ -131,6 +131,7 @@ const userHide = async (req, res) => {
     console.log("Error while blocking user :");
     if (data.hide == 0) {
       await userModel.updateOne({ _id: req.body.id }, { $set: { hide: 1 } });
+      req.session.isUser = false;
     } else {
       await userModel.updateOne({ _id: req.body.id }, { $set: { hide: 0 } });
     }

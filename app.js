@@ -18,7 +18,7 @@ app.use(
   session({
     secret: "secretvalue",
     resave: false,
-    saveUninitialized: true,
+    saveUninitialized: false,
     cookie: {
       maxAge: 500000,
     },
@@ -26,7 +26,7 @@ app.use(
 );
 app.use(paginate.middleware(3, 10));
 
-//app.use(flash());
+app.use(flash());
 app.use((req, res, next) => {
   res.header("Cache-Control", "private,no-cache,no-store, must-revalidate");
   res.header("Expires", "-1");

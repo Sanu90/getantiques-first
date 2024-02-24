@@ -37,7 +37,7 @@ const login = (req, res) => {
       res.redirect("/home");
     } else {
       let message = req.session.error || req.session.logout;
-      const success = req.query.success || req.session.passChange;
+      let success = req.query.success || req.session.passChange;
 
       res.render("login", { error: message, success });
       console.log("USER LOGIN PAGE");
@@ -132,6 +132,9 @@ const authOTP = async (req, res) => {
           hide: 0,
         });
         await registeredUser.save();
+        console.log("--------------------------");
+        console.log(req.session.userDetails.email);
+        console.log("--------------------------");
         console.log("User OTP successfully verified");
         res.redirect("/login?success=Registered-Login now");
       } else {
@@ -160,10 +163,8 @@ const otp = (req, res) => {
   }
 };
 
-//var OTP1;
 const resendOTP = (req, res) => {
   try {
-    //console.log("Hello");
     const email = req.session.userDetails.email;
     console.log("Resending OTP to email: " + email);
     const otpRData = otpSend.sendmail(email);
@@ -185,6 +186,7 @@ const validateUser = async (req, res) => {
   try {
     const name = await req.body.username;
     req.session.sessionName = name;
+
     console.log(name);
     const userProfile = await userModel.findOne({ username: name });
     if (!userProfile) {
@@ -200,7 +202,8 @@ const validateUser = async (req, res) => {
         if (userProfile.hide == 0) {
           req.session.isUser = true;
           req.session.name = req.body.username;
-          // console.log(req.session.isUser);
+          req.session.userID = userProfile._id;
+          console.log("req.session.userID", req.session.userID);
           res.redirect("/home");
         } else {
           req.session.error = "You are not authorized. Contact Admin.";
@@ -232,7 +235,12 @@ const redirectUser = async (req, res) => {
       .limit(4);
     const userName = req.session.name;
     console.log(userName);
-    res.render("home", { category, product1, product2, user: userName });
+    res.render("home", {
+      category,
+      product1,
+      product2,
+      user: userName,
+    });
   } catch (error) {
     console.log("Error while redirection");
   }
@@ -335,6 +343,7 @@ const productView = async (req, res) => {
   try {
     console.log("**********()()()()()()()()************");
     const id = req.params.id;
+    req.session.productID = id;
     console.log("product id is: " + id);
     const category = await categoryModel.find({});
     const productDetails = await productModel.findOne({ _id: id });
@@ -425,24 +434,6 @@ const userCategoryPage = async (req, res) => {
   }
 };
 
-// const search = async (req, res) => {
-//   try {
-//     const category = await categoryModel.find({});
-//     console.log("This is category check :" + category);
-//     // const catName = req.params.catName;
-//     // const catProd = await productModel.find({ category: catName });
-//     const products = await productModel.find({}).sort({ name: -1 });
-//     console.log("All products: +++++" + products);
-//     res.render("allProducts", {
-//       user: "Sanup",
-//       category,
-//       products,
-//     });
-//   } catch (error) {
-//     console.log("Error while rendering all products: " + error);
-//   }
-// };
-
 const search = async (req, res) => {
   try {
     var searchValue = req.body.searchValue;
@@ -461,7 +452,7 @@ const search = async (req, res) => {
 
 const shop = async (req, res) => {
   try {
-    const id = req.params.id;
+    //const id = req.params.id;
     //const productDetails = await productModel.findOne({ _id: id });
     var searchValue = req.body.searchValue;
     const userName = req.session.name;
@@ -523,44 +514,122 @@ const editProfile = async (req, res) => {
 };
 
 const updateUserProfile = async (req, res) => {
-  const user = await userModel.findOne({ username: req.session.name });
-  console.log("req.body.username :" + req.body.username);
-  console.log("user.username  :" + user.username);
-  if (req.body.username === user.username) {
-    req.session.error1 = "New name & the current name should not be the same";
-    res.redirect("/account/editProfile");
-  } else if (req.body.mobile === user.mobile) {
-    req.session.error1 = "You have entered same old number";
-    res.redirect("/account/editProfile");
-  } else {
-    console.log(req.body.dob);
-    await userModel.updateOne(
-      { email: req.body.email },
-      {
-        $set: {
-          username: req.body.username,
-          mobile: req.body.mobile,
-          dob: req.body.dob,
-        },
-      },
-      { upsert: true }
+  try {
+    const user = await userModel.findOne({ username: req.session.name });
+    console.log("req.body.username :" + req.body.username);
+    console.log("user.username  :" + user.username);
+    console.log(
+      "user.email  :" +
+        user.email +
+        "------------------------------------------->>>>"
     );
-    res.redirect("/account");
+    req.session.sessionEmail = user.email;
+    console.log(
+      req.session.sessionEmail,
+      +"-------------------------------------------<<<<"
+    );
+    if (req.body.username === user.username) {
+      req.session.error1 = "New name & the current name should not be the same";
+      res.redirect("/account/editProfile");
+    } else if (req.body.mobile === user.mobile) {
+      req.session.error1 = "You have entered same old number";
+      res.redirect("/account/editProfile");
+    } else {
+      console.log(req.body.dob);
+      await userModel.updateOne(
+        { email: req.body.email },
+        {
+          $set: {
+            username: req.body.username,
+            mobile: req.body.mobile,
+            dob: req.body.dob,
+          },
+        },
+        { upsert: true }
+      );
+      req.session.isUser = false;
+      req.session.logout = "Please relogin to access";
+      res.redirect("/login");
+    }
+  } catch (error) {
+    console.log("Error occurred in between updateUserProfile : " + error);
   }
 };
 
 const showEditProfile = async (req, res) => {
-  const user = await userModel.findOne({ username: req.session.name });
-  let data_exist = req.session.error1;
-  //let data2_exist = req.session.error2;
-  console.log("username_exist is" + data_exist);
-  res.render("userEditProfile", {
-    user: req.session.name,
-    user,
-    data_exist,
-    // data2_exist,
-  });
+  try {
+    const user = await userModel.findOne({ username: req.session.name });
+    let data_exist = req.session.error1;
+    //let data2_exist = req.session.error2;
+    console.log("username_exist is" + data_exist);
+    res.render("userEditProfile", {
+      user: req.session.name,
+      user,
+      data_exist,
+      // data2_exist,
+    });
+  } catch (error) {
+    console.log("Error occurred during showEditProfile : " + error);
+  }
 };
+
+const security = async (req, res) => {
+  try {
+    let oldPasswordError = req.session.oldPasswordError
+      ? req.session.oldPasswordError
+      : "";
+    res.render("userSetNewPassword", { oldPasswordError });
+    console.log("USER NOW ON CHANGE PASSWORD PAGE IN HIS ACCOUNT");
+  } catch (error) {
+    console.log("Error occurred while security : " + error);
+  }
+};
+
+const setNewPassword = async (req, res) => {
+  try {
+    const name = req.session.name;
+    const data = await userModel.findOne(
+      { username: name },
+      { _id: 0, password: 1 }
+    );
+    const result = await bcrypt.compare(req.body.oldPassword, data.password);
+    console.log("RESULT IS" + result);
+
+    if (!result) {
+      req.session.oldPasswordError = "Old password entered is incorrect";
+      res.redirect("/account/security");
+    } else {
+      let newPass = await bcrypt.hash(req.body.newPassword1, 10);
+      console.log(newPass);
+      await userModel.updateOne(
+        { username: name },
+        { $set: { password: newPass } }
+      );
+      req.session.passChange =
+        "You changed the password. Please login to proceed";
+      req.session.isUser = false;
+      res.redirect("/login");
+    }
+  } catch (error) {
+    console.log("Error occurred in between setNewPassword : " + error);
+  }
+};
+
+// const address = (req, res) => {
+//   try {
+//     res.render("userAddress", { user: req.session.name });
+//   } catch (error) {
+//     console.log("Error when accessing address : " + error);
+//   }
+// };
+
+// const newAddress = (req, res) => {
+//   try {
+//     res.render("userAddAddress");
+//   } catch (error) {
+//     console.log("Error when accessing newAddress : " + error);
+//   }
+// };
 
 const logout = (req, res) => {
   try {
@@ -602,4 +671,6 @@ module.exports = {
   account,
   profile,
   editProfile,
+  security,
+  setNewPassword,
 };

@@ -8,8 +8,7 @@
     <meta content="Free HTML Templates" name="description" />
 
     <!-- Favicon -->
-    <link href="../user/img/favicon.ico" rel="icon" />
-    <link href="../user/img/favicon.ico" rel="icon" />
+    <link href="../user/img/logo.png" rel="icon" />
 
     <!-- Google Web Fonts -->
     <link rel="preconnect" href="https://fonts.gstatic.com" />
@@ -37,6 +36,11 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="../user/css/style.css" rel="stylesheet" />
+
+    <script
+      src="https://unpkg.com/js-image-zoom@0.4.1/js-image-zoom.js"
+      type="application/javascript"
+    ></script>
   </head>
 
   <body>
@@ -46,11 +50,6 @@
         <div class="col-lg-3 d-none d-lg-block">
           <a href="/" class="text-decoration-none">
             <img src="../user/img/logo.png" width="100" />
-            <!-- <h1 class="m-0 display-5 font-weight-semi-bold">
-              <span class="text-primary font-weight-bold border px-3 mr-1"
-                >E</span
-              >Shopper
-            </h1> -->
           </a>
         </div>
         <div class="col-lg-6 col-4 text-left">
@@ -94,9 +93,7 @@
                   <a href="/account" style="text-decoration: none">Account</a>
                 </button>
               </li>
-              <!-- <li>
-                <button class="dropdown-item" type="button">Log out</button>
-              </li> -->
+
               <li>
                 <button class="dropdown-item" type="button">
                   <a href="/logout" style="text-decoration: none">Logout</a>
@@ -104,22 +101,7 @@
               </li>
             </ul>
           </div>
-
-          <!-- <a href="/register" class="nav-item nav-link">Register</a> -->
         </div>
-
-        <!-- <div class="col-lg-3 col-6 text-right">
-          <a href="/login" class="nav-item nav-link">Login</a>
-          <a href="/register" class="nav-item nav-link">Register</a>
-          <a href="" class="btn border">
-            <i class="fas fa-heart text-primary"></i>
-            <span class="badge">0</span>
-          </a>
-          <a href="" class="btn border">
-            <i class="fas fa-shopping-cart text-primary"></i>
-            <span class="badge">0</span>
-          </a>
-        </div> -->
       </div>
     </div>
     <!-- Topbar End -->
@@ -136,27 +118,11 @@
             <h6 class="m-0">Categories</h6>
             <i class="fa fa-angle-right text-dark"></i>
           </a>
-          <!-- <nav
-            class="collapse show navbar navbar-vertical navbar-light align-items-start p-0 border border-top-0 border-bottom-0"
-            id="navbar-vertical"
-          >
-            <div class="navbar-nav w-100 overflow-hidden" style="height: 150px">
-              <%# for(let i of category) {%>
-              <a href="" class="nav-item nav-link"><%#=i.name%></a> <%# } %>
-            </div>
-          </nav> -->
         </div>
         <div class="col-lg-9">
           <nav
             class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0"
           >
-            <!-- <a href="" class="text-decoration-none d-block d-lg-none">
-              <h1 class="m-0 display-5 font-weight-semi-bold">
-                <span class="text-primary font-weight-bold border px-3 mr-1"
-                  >E</span
-                >Shopper
-              </h1>
-            </a> -->
             <button
               type="button"
               class="navbar-toggler"
@@ -176,7 +142,6 @@
                   class="nav-item nav-link"
                   ><%=i.name%></a
                 >
-
                 <%}%>
               </div>
             </div>
@@ -218,34 +183,28 @@
             data-ride="carousel"
           >
             <div class="carousel-inner border">
-              <div class="carousel-item active">
+              <div class="carousel-item active mx-auto text-center">
                 <img
                   class="w-50 h-50 img-fluid"
+                  id="hi"
                   src="<%=productDetails.image[0] %>"
                   alt="Image"
                 />
               </div>
-              <div class="carousel-item">
+              <div class="carousel-item mx-auto text-center">
                 <img
                   class="w-50 h-50 img-fluid"
                   src="<%=productDetails.image[1] %>"
                   alt="Image"
                 />
               </div>
-              <div class="carousel-item">
+              <div class="carousel-item mx-auto text-center">
                 <img
                   class="w-50 h-50 img-fluid"
                   src="<%=productDetails.image[2] %>"
                   alt="Image"
                 />
               </div>
-              <!-- <div class="carousel-item">
-                <img
-                  class="w-100 h-100"
-                  src="../user/img/product-4.jpg"
-                  alt="Image"
-                />
-              </div> -->
             </div>
             <a
               class="carousel-control-prev"
@@ -366,9 +325,18 @@
                 </button>
               </div>
             </div>
-            <button class="btn btn-primary px-3">
+            <% if(productDetails.stock>=1){ %>
+            <button
+              class="btn btn-primary px-3"
+              onclick="location.href='/cart'"
+            >
               <i class="fa fa-shopping-cart mr-1"></i> Add To Cart
             </button>
+            <% } else {%>
+            <button class="btn btn-primary px-3" disabled>
+              <i class="fa fa-shopping-cart mr-1"></i> Add To Cart
+            </button>
+            <% } %>
           </div>
           <div class="d-flex pt-2">
             <p class="text-dark font-weight-medium mb-0 mr-2">Share on:</p>
@@ -581,10 +549,7 @@
                   class="btn btn-sm text-dark p-0"
                   ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
                 >
-                <a href="" class="btn btn-sm text-dark p-0"
-                  ><i class="fas fa-shopping-cart text-primary mr-1"></i>Add To
-                  Cart</a
-                >
+                <a href="" class="btn btn-sm text-dark p-0">Add To Cart</a>
               </div>
             </div>
             <% } %>
@@ -730,6 +695,15 @@
     ></a>
 
     <!-- JavaScript Libraries -->
+    <script>
+      var options = {
+        width: 400,
+        zoomWidth: 500,
+        offset: { vertical: 0, horizontal: 10 },
+      };
+      new ImageZoom(document.getElementById("hi"), options);
+    </script>
+
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
     <script src="../user/lib/easing/easing.min.js"></script>

@@ -60,7 +60,6 @@
                 class="form-control"
                 placeholder="Search for products"
                 name="searchValue"
-                value="<%=searchValue %>"
               />
               <div class="input-group-append">
                 <span class="input-group-text bg-transparent text-primary">
@@ -174,7 +173,6 @@
                 <a href="/Ucategory/<%=i.name %>" class="nav-item nav-link"
                   ><%=i.name%></a
                 >
-
                 <%}%>
               </div>
             </div>
@@ -188,217 +186,116 @@
     <div class="container-fluid bg-secondary mb-5">
       <div
         class="d-flex flex-column align-items-center justify-content-center"
-        style="min-height: 150px"
+        style="min-height: 130px"
       >
-        <h1 class="font-weight-semi-bold text-uppercase mb-3">Our Shop</h1>
+        <h1 class="font-weight-semi-bold text-uppercase mb-3">Shopping Cart</h1>
         <div class="d-inline-flex">
           <p class="m-0"><a href="/">Home</a></p>
           <p class="m-0 px-2">-</p>
-          <p class="m-0">Shop</p>
+          <p class="m-0">Shopping Cart</p>
         </div>
       </div>
     </div>
     <!-- Page Header End -->
 
-    <!-- Shop Start -->
+    <!-- Cart Start -->
     <div class="container-fluid pt-5">
       <div class="row px-xl-5">
-        <!-- Shop Sidebar Start -->
-        <div class="col-lg-3 col-md-12">
-          <!-- Price Start -->
-          <div class="border-bottom mb-4 pb-4">
-            <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
-            <form>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  checked
-                  id="price-all"
-                />
-                <label class="custom-control-label" for="price-all"
-                  >All Price</label
-                >
-                <!-- <span class="badge border font-weight-normal">1000</span> -->
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-1"
-                />
-                <label class="custom-control-label" for="price-1"
-                  >₹100 - ₹5000</label
-                >
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-2"
-                />
-                <label class="custom-control-label" for="price-2"
-                  >₹5001 - ₹10000</label
-                >
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-3"
-                />
-                <label class="custom-control-label" for="price-3"
-                  >₹10001 - ₹20000</label
-                >
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-4"
-                />
-                <label class="custom-control-label" for="price-4"
-                  >₹20001 - ₹50000</label
-                >
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-5"
-                />
-                <label class="custom-control-label" for="price-5"
-                  >₹50001 - ₹100000</label
-                >
-              </div>
-            </form>
-          </div>
-          <!-- Price End -->
-        </div>
-        <!-- Shop Sidebar End -->
-
-        <!-- Shop Product Start -->
-        <div class="col-lg-9 col-md-12">
-          <div class="row pb-3">
-            <div class="col-12 pb-1">
-              <div
-                class="d-flex align-items-center justify-content-between mb-4"
-              >
-                <form action="">
-                  <!-- <div class="input-group">
+        <div class="col-lg-8 table-responsive mb-5">
+          <table class="table table-bordered text-center mb-0">
+            <thead class="bg-secondary text-dark">
+              <tr>
+                <th>Products</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th>Remove</th>
+              </tr>
+            </thead>
+            <tbody class="align-middle">
+              <tr>
+                <td class="align-middle">
+                  <img
+                    src="../user/img/classical-bronze-statue-of-a-standing-lady-.jpg"
+                    alt=""
+                    style="width: 50px"
+                  />
+                  Colorful Stylish Shirt
+                </td>
+                <td class="align-middle">₹150</td>
+                <td class="align-middle">
+                  <div
+                    class="input-group quantity mx-auto"
+                    style="width: 100px"
+                  >
+                    <div class="input-group-btn">
+                      <button class="btn btn-sm btn-primary btn-minus">
+                        <i class="fa fa-minus"></i>
+                      </button>
+                    </div>
                     <input
                       type="text"
-                      class="form-control"
-                      placeholder="Search by name"
+                      class="form-control form-control-sm bg-secondary text-center"
+                      value="1"
                     />
-                    <div class="input-group-append">
-                      <span
-                        class="input-group-text bg-transparent text-primary"
-                      >
-                        <i class="fa fa-search"></i>
-                      </span>
+                    <div class="input-group-btn">
+                      <button class="btn btn-sm btn-primary btn-plus">
+                        <i class="fa fa-plus"></i>
+                      </button>
                     </div>
-                  </div> -->
-                </form>
-                <div class="dropdown ml-4">
-                  <button
-                    class="btn border dropdown-toggle"
-                    type="button"
-                    id="triggerId"
-                    data-toggle="dropdown"
-                    aria-haspopup="true"
-                    aria-expanded="false"
-                  >
-                    Sort by
+                  </div>
+                </td>
+                <td class="align-middle">₹150</td>
+                <td class="align-middle">
+                  <button class="btn btn-sm btn-primary">
+                    <i class="fa fa-times"></i>
                   </button>
-                  <div
-                    class="dropdown-menu dropdown-menu-right"
-                    aria-labelledby="triggerId"
-                  >
-                    <a class="dropdown-item" href="#">Latest</a>
-                    <a class="dropdown-item" href="#">Popularity</a>
-                    <a class="dropdown-item" href="#">Best Rating</a>
-                  </div>
-                </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="col-lg-4">
+          <!-- <form class="mb-5" action="">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control p-4"
+                placeholder="Coupon Code"
+              />
+              <div class="input-group-append">
+                <button class="btn btn-primary">Apply Coupon</button>
               </div>
             </div>
-            <% if(searchData=="") { %>
-            <p style="color: red"><%=noProduct %></p>
-            <%}else{%> <% for(let sd of searchData){ %>
-            <div class="col-lg-4 col-md-6 col-sm-12 pb-1">
-              <div class="card product-item border-0 mb-4">
-                <div
-                  class="card-header product-img position-relative overflow-hidden bg-transparent border p-0"
-                >
-                  <img class="img-fluid w-100" src="<%=sd.image[0] %>" alt="" />
-                </div>
-
-                <div
-                  class="card-body border-left border-right text-center p-0 pt-4 pb-3"
-                >
-                  <h6 class="text-truncate mb-3"><%=sd.name %></h6>
-                  <div class="d-flex justify-content-center">
-                    <h6>₹<%=sd.rate %></h6>
-                    <!-- <h6 class="text-muted ml-2"><del>$123.00</del></h6> -->
-                  </div>
-                </div>
-                <div
-                  class="card-footer d-flex justify-content-between bg-light border"
-                >
-                  <a
-                    href="/productPage/<%=sd.id %>"
-                    class="btn btn-sm text-dark p-0"
-                    ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
-                  >
-                  <a href="" class="btn btn-sm text-dark p-0"
-                    ><i class="fas fa-shopping-cart text-primary mr-1"></i>Add
-                    To Cart</a
-                  >
-                </div>
-              </div>
+          </form> -->
+          <div class="card border-secondary mb-5">
+            <div class="card-header bg-secondary border-0">
+              <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
             </div>
-            <% } %> <% } %>
-            <div class="col-12 pb-1">
-              <nav aria-label="Page navigation">
-                <ul class="pagination justify-content-center mb-3">
-                  <li class="page-item disabled">
-                    <a class="page-link" href="#" aria-label="Previous">
-                      <span aria-hidden="true">&laquo;</span>
-                      <span class="sr-only">Previous</span>
-                    </a>
-                  </li>
-                  <li class="page-item active">
-                    <a class="page-link" href="#">1</a>
-                  </li>
-                  <li class="page-item"><a class="page-link" href="#">2</a></li>
-                  <li class="page-item"><a class="page-link" href="#">3</a></li>
-                  <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
-                      <span aria-hidden="true">&raquo;</span>
-                      <span class="sr-only">Next</span>
-                    </a>
-                  </li>
-                </ul>
-              </nav>
+            <div class="card-body">
+              <div class="d-flex justify-content-between mb-3 pt-1">
+                <h6 class="font-weight-medium">Subtotal</h6>
+                <h6 class="font-weight-medium">₹150</h6>
+              </div>
+              <!-- <div class="d-flex justify-content-between">
+                <h6 class="font-weight-medium">Shipping</h6>
+                <h6 class="font-weight-medium">$10</h6>
+              </div> -->
+            </div>
+            <div class="card-footer border-secondary bg-transparent">
+              <div class="d-flex justify-content-between mt-2">
+                <h5 class="font-weight-bold">Total</h5>
+                <h5 class="font-weight-bold">₹150</h5>
+              </div>
+              <button class="btn btn-block btn-primary my-3 py-3">
+                Proceed To Checkout
+              </button>
             </div>
           </div>
         </div>
-        <!-- Shop Product End -->
       </div>
     </div>
-    <!-- Shop End -->
+    <!-- Cart End -->
 
     <!-- Footer Start -->
     <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
@@ -538,15 +435,14 @@
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="../user/lib/easing/easing.min.js"></script>
-    <script src="../user/lib/owlcarousel/owl.carousel.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
 
     <!-- Contact Javascript File -->
-    <script src="../user/mail/jqBootstrapValidation.min.js"></script>
-    <script src="../user/mail/contact.js"></script>
+    <script src="mail/jqBootstrapValidation.min.js"></script>
+    <script src="mail/contact.js"></script>
 
     <!-- Template Javascript -->
-    <script src="../user/js/main.js"></script>
+    <script src="js/main.js"></script>
   </body>
 </html>

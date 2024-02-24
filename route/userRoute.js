@@ -1,8 +1,10 @@
 const router = require("express").Router();
 const userController = require("../controller/userController");
+const addressController = require("../controller/addressController");
 // const productController = require("../controller/productController");
-// const orderController = require("../controller/orderController");
+const orderController = require("../controller/orderController");
 const userCheck = require("../middleware/userAuth");
+const cartController = require("../controller/cartController");
 
 router.get("/", userController.indexPage);
 router.get("/login", userController.login);
@@ -32,6 +34,49 @@ router.post(
   userCheck.isUser,
   userController.updateUserProfile
 );
+
+router.get("/account/security", userCheck.isUser, userController.security);
+
+router.post(
+  "/account/setNewPassword",
+  userCheck.isUser,
+  userController.setNewPassword
+);
+
+router.get("/account/address", userCheck.isUser, addressController.address);
+router.get(
+  "/account/newAddress",
+  userCheck.isUser,
+  addressController.newAddress
+);
+router.post(
+  "/account/saveAddress",
+  userCheck.isUser,
+  addressController.saveAddress
+);
+
+router.get("/cart/:id", userCheck.isUser, cartController.cart);
+
+router.get(
+  "/account/editAddress/:id",
+
+  addressController.editAddress
+);
+
+router.post(
+  "/account/updateAddress",
+  userCheck.isUser,
+  addressController.updateAddress
+);
+
+router.get(
+  "/account/deleteAddress/:id",
+  userCheck.isUser,
+  addressController.deleteAddress
+);
+
+router.get("/account/order", userCheck.isUser, orderController.userOrder);
+
 router.post("/home", userController.validateUser);
 router.get("/product/:id", userController.productView);
 

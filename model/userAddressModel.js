@@ -9,12 +9,13 @@ mongoose
   });
 
 const addressData = new mongoose.Schema({
-  user_id: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Users",
+    ref: "user",
     required: true,
+    trim: true,
   },
-  name: {
+  customerName: {
     type: String,
     required: true,
     trim: true,
@@ -56,11 +57,11 @@ const addressData = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  primary: {
-    type: Number,
-    required: true,
-    trim: true,
-  },
+  // primary: {
+  //   type: Number,
+  //   required: true,
+  //   trim: true,
+  // },
 });
 
 const addressInfo = mongoose.model("address", addressData);

@@ -9,9 +9,9 @@ mongoose
   });
 
 const orderData = new mongoose.Schema({
-  user_id: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "Users",
+    ref: "users",
     required: true,
     trim: true,
   },
@@ -22,7 +22,7 @@ const orderData = new mongoose.Schema({
     trim: true,
   },
 
-  product_id: {
+  product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "products",
     required: true,

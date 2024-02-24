@@ -26,7 +26,7 @@ const adminProduct = async (req, res) => {
     console.log("product list:" + product);
     console.log("ADMIN: PRODUCTS");
     res.render("admin_products", {
-      name: req.session.name,
+      name: req.session.adminName,
       product,
       totalPages: Math.floor(count / limit),
       currentPage: page,
@@ -41,7 +41,7 @@ const newProductPage = async (req, res) => {
   const category = await categoryModel.find({}).sort({ name: 1 });
   try {
     console.log("category details: " + category);
-    res.render("admin_add_product", { name: req.session.name, category });
+    res.render("admin_add_product", { name: req.session.adminName, category });
     console.log("ADMIN WILL ADD PRODUCT");
   } catch (err) {
     console.log("Error while redirecting the page to add product: " + err);
@@ -95,7 +95,7 @@ const editProduct = async (req, res) => {
     console.log(oldCategory);
     console.log("ADMIN: PRODUCT EDIT");
     res.render("admin_product_edit", {
-      name: req.session.name,
+      name: req.session.adminName,
       oldName,
       oldCategory,
       oldRate,

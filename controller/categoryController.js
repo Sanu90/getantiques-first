@@ -8,7 +8,7 @@ const adminCategory = async (req, res) => {
       value = req.session.search;
     }
     console.log(category);
-    res.render("admin_categories", { name: req.session.name, category });
+    res.render("admin_categories", { name: req.session.adminName, category });
     console.log("ADMIN: CATEGORY");
   } catch (err) {
     console.log(err);
@@ -41,7 +41,7 @@ const editCategory = async (req, res) => {
     console.log(oldDesc);
     console.log("ADMIN: CATEGORY EDIT");
     res.render("admin_categories_edit", {
-      name: req.session.name,
+      name: req.session.adminName,
       oldName,
       oldDesc,
     });

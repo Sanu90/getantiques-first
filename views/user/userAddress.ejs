@@ -79,108 +79,52 @@
         class="d-flex flex-column align-items-center justify-content-center"
         style="min-height: 180px"
       >
-        <h1 class="font-weight-semi-bold text-capitalize mb-3">My account</h1>
+        <h1 class="font-weight-semi-bold text-capitalize mb-3">Addresses</h1>
         <div class="d-inline-flex">
           <p class="m-0"><a href="/">Home</a></p>
           <p class="m-0 px-2">-</p>
-          <p class="m-0">Account</p>
+          <p class="m-0"><a href="/account">Account</a></p>
         </div>
       </div>
     </div>
     <!-- Page Header End -->
 
     <!-- User Details Start-->
-    <div class="container-fluid">
-      <div class="text-center m-lg-2">
-        <button
-          style="margin-right: 10%"
-          type="button"
-          class="btn btn-outline-primary"
-          onclick="location.href='/home'"
-        >
-          Continue Shopping
-        </button>
-        <button
-          style="margin-left: 60%"
-          type="button"
-          class="btn btn-outline-primary"
-          onclick="location.href='/logout'"
-        >
-          Logout
-        </button>
-        <div class="text-center mb-4">
-          <h5>
-            Hey
-            <span style="color: chocolate"><%=user.username %></span>, You are
-            connected with us by
-            <span style="color: chocolate"><%=user.email %></span>
-            &
-            <span style="color: chocolate"><%=user.mobile %></span>
-          </h5>
-        </div>
-      </div>
-    </div>
+
     <!-- User Details End-->
     <div class="container-md" style="text-align: center">
-      <!-- <p
-        id="showUpdate"
-        style="
-          font-family: 'Times New Roman', Times, serif;
-          font: 1.2em sans-serif;
-          color: red;
-        "
-      >
-        You have successfully updated your profile.
-      </p> -->
+      <button onclick="location.href='/account/newAddress'">
+        <img src="../user/img/add.png" style="height: 10px" width="10px" />
+        Add Address
+      </button>
     </div>
     <!-- Container Cards Start -->
     <div class="container">
-      <div class="card">
-        <a href="/account/profile">
-          <img src="../user/img/user.png" alt="Profile" />
-          <h2>Profile</h2>
-          <p>View/update your profile</p>
-        </a>
+      <!--loop should start from here-->
+      <% if(userAddress.length==0){ %>
+      <div class="container">
+        <h1 style="margin: 5%">No address available</h1>
       </div>
+      <% } else if(userAddress.length>=1) {%> <% for(let i of userAddress){ %>
       <div class="card">
-        <a href="/account/address">
-          <img src="../user/img/home.png" alt="Address" />
-          <h2>Address</h2>
-          <p>Add/view your addresses</p>
-        </a>
+        <div class="card-body">
+          <h5 class="card-title alert-danger">Shipping Address</h5>
+          <p class="card-header"><%=i.customerName %></p>
+          <p class="card-text"><%=i.houseName %>, <%=i.street %></p>
+          <p class="card-text"><%=i.city %></p>
+          <p class="card-text"><%=i.state %></p>
+          <p class="card-text"><%=i.country %> - <%=i.pincode %></p>
+          
+            <img src="../user/img/smartphone.png" /> <%=i.mobile %>
+          </p>
+          <a href="/account/editAddress/<%=i._id%>" class="card-link alert-warning">Edit</a>
+          <a href="/account/deleteAddress/<%=i._id%>" class="card-link alert-dark" onclick="return confirm('You are about to delete this address')">Delete</a>
+        </div>
       </div>
-      <div class="card">
-        <a href="/account/security">
-          <img src="../user/img/password.png" alt="Card Image" />
-          <h2>Password</h2>
-          <p>Update your password</p>
-        </a>
-      </div>
+      <!--loop should end here-->
+      <%} %> <% } %>
     </div>
     <!-- Container Cards End -->
-    <div class="container">
-      <div class="card">
-        <a href="/account/order">
-          <img src="../user/img/purchase.png" alt="Card Image" />
-          <h2>Orders</h2>
-          <p>All about your orders</p>
-        </a>
-      </div>
-      <!-- <div class="card">
-        <a href="#">
-          <img src="path/to/image.jpg" alt="Card Image" />
-          <h2>Card Title 2</h2>
-          <p>Card Description 2</p>
-        </a>
-      </div> -->
-      <!--<div class="card">
-        <a href="#">
-          <img src="path/to/image.jpg" alt="Card Image" />
-          <h2>Card Title 3</h2>
-          <p>Card Description 3</p>
-        </a>
-      </div> -->
-    </div>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
