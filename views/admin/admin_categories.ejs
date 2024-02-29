@@ -137,10 +137,13 @@
               <%#}%>
               <button type="submit" class="btn btn-success mt-3 ml-2">Search</button>
                 </form>
+                <div class="container">
+             <%  if(catAvailable){ %>
+            <h4 class="text-danger mt-5 text-right" id="catAvailable">Category already available</h4>
+            <% } %>
             </div>
-            <!-- <div class="container">
-            <h4 class="text-danger mt-5 text-center" id="para"  style="display: none;">Not found</h4>
-            </div> -->
+            </div>
+            
         </div>
         </header>
       </div>
@@ -235,6 +238,14 @@
           var hide=0;
         }
       }
+
+      setTimeout(()=>{
+        let a=document.getElementById("catAvailable");
+        a.style.display='none';
+      },2500)
+
+
+
     </script>
   </body>
 </html>

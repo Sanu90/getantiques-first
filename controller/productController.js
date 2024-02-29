@@ -89,7 +89,12 @@ const editProduct = async (req, res) => {
     const oldRate = req.body.oldRate;
     const oldStock = req.body.oldStock;
     const oldDesc = req.body.oldDesc;
-    //const oldDesc = req.body.oldDescription;
+    const allOldData = await productModel.findOne({ name: oldName });
+    console.log("::allOldData::-------------------->..." + allOldData);
+    totalImages = allOldData.image.length;
+    //console.log("length of image folder:------->" + allOldData.image.length);
+    //console.log(allOldData.image.countDocuments({}));
+
     console.log(req.body);
     console.log(oldName);
     console.log(oldCategory);
@@ -102,6 +107,8 @@ const editProduct = async (req, res) => {
       oldStock,
       oldDesc,
       category,
+      allOldData,
+      totalImages,
     });
   } catch (err) {
     console.log(err.message);
@@ -112,6 +119,7 @@ const editProduct = async (req, res) => {
 const updateProduct = async (req, res) => {
   try {
     console.log(req.body);
+    console.log(req.file);
     await productModel.updateOne(
       { name: req.body.oldProdName },
       {

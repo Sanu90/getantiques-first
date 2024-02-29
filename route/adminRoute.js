@@ -80,6 +80,7 @@ router.get(
 router.post(
   "/productUpdate",
   adminMiddleware.isAdmin,
+  multer.single("image", 1),
   productController.updateProduct
 );
 

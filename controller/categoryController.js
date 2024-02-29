@@ -8,7 +8,13 @@ const adminCategory = async (req, res) => {
       value = req.session.search;
     }
     console.log(category);
-    res.render("admin_categories", { name: req.session.adminName, category });
+    catAvailable = '';
+    let a = req.session.catAvailable;
+    res.render("admin_categories", {
+      name: req.session.adminName,
+      category,
+      catAvailable:catAvailable?catAvailable:a
+    });
     console.log("ADMIN: CATEGORY");
   } catch (err) {
     console.log(err);
@@ -18,14 +24,23 @@ const adminCategory = async (req, res) => {
 
 const addCategory = async (req, res) => {
   try {
-    const newCat = new categoryModel({
-      name: req.body.catName,
-      description: req.body.catDesc,
-      hide: 0,
-    });
-    await newCat.save();
-    console.log("category added");
-    res.redirect("/admin/category");
+    console.log("()()()()()");
+    let catSearch = await categoryModel.find({ name: req.body.catName });
+    console.log("catSearch is:" + catSearch);
+    if (catSearch.length >= 1) {
+      req.session.catAvailable = "Category already available";
+      res.redirect("/admin/category");
+    } else {
+      console.log("Not avail");
+      const newCat = new categoryModel({
+        name: req.body.catName,
+        description: req.body.catDesc,
+        hide: 0,
+      });
+      await newCat.save();
+      console.log("category added");
+      res.redirect("/admin/category");
+    }
   } catch (err) {
     console.log(err.message);
     res.redirect("/admin/error?message=error-while-adding-category");

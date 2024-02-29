@@ -418,9 +418,13 @@ const userCategoryPage = async (req, res) => {
   try {
     console.log("User category page");
     const userName = req.session.name;
+    const searchValue = "";
+    const searchData = "";
     const category = await categoryModel.find({});
     //console.log("This is category check :" + category);
     const catName = req.params.catName;
+    noProduct = "";
+
     const catProd = await productModel.find({ category: catName, hide: 0 });
     // console.log("Category products is::::" +catProd);
     res.render("userCategoryPage", {
@@ -428,7 +432,12 @@ const userCategoryPage = async (req, res) => {
       category,
       catName,
       catProd,
+      searchValue,
+      searchData,
+      noProduct,
     });
+    console.log("CATEGORY SELECTED IS::::" + catName);
+    req.session.categoryName = catName;
   } catch (error) {
     console.log("Error while accessing user category pages:" + error);
   }
@@ -447,6 +456,73 @@ const search = async (req, res) => {
     res.render("search", { category, searchData, searchValue, noProduct });
   } catch (error) {
     console.log("Error while searching a product by guest: " + error);
+  }
+};
+
+const userCategorySearch = async (req, res) => {
+  try {
+    var searchValue = req.body.searchValue;
+    const catName = req.params.catName;
+    const catProd = "";
+    console.log("The searched data is: " + searchValue);
+    console.log("Category is :" + catName);
+    const searchData = await productModel.find({
+      $and: [
+        { category: catName },
+        { name: { $regex: new RegExp(searchValue, "i") } },
+      ],
+    });
+    console.log("categoryProducts is: ", searchData);
+    console.log("length of categoryProducts is: ", searchData.length);
+
+    const category = await categoryModel.find({});
+    // const searchData = await productModel.find({
+    //   name: { $regex: new RegExp(searchValue, "i") },
+    // });
+    // console.log("searchData value is" + searchData);
+    const noProduct = "No such product available";
+    res.render("userCategoryPage", {
+      searchValue,
+      catName,
+      category,
+      searchData,
+      searchValue,
+      noProduct,
+      user: req.session.name,
+      catProd,
+    });
+  } catch (error) {
+    console.log("Error while searching a product by guest: " + error);
+  }
+};
+
+const browse = async (req, res) => {
+  try {
+    var page = 1;
+    if (req.query.page) {
+      page = req.query.page;
+    }
+    const limit = 3;
+    const products = await productModel
+      .find({})
+      .limit(limit * 1)
+      .skip((page - 1) * limit);
+    const productCount = await productModel.find({}).countDocuments({});
+    const totalPages = productCount / limit;
+    console.log("PRODUCTS:" + products);
+    //console.log(products);
+    res.render("browseAll", { user: req.session.name, products, totalPages });
+  } catch (error) {
+    console.log("Error while browse", error);
+  }
+};
+
+const searchInCategory = async (req, res) => {
+  try {
+    console.log("searchInCategory");
+    console.log(req.params);
+  } catch (error) {
+    console.log("Error while searchInCategory :" + error);
   }
 };
 
@@ -508,6 +584,7 @@ const editProfile = async (req, res) => {
       // data2_exist: "",
     });
     console.log("Edit User profile");
+    console.log(user.mobile);
   } catch (error) {
     console.log("Error while updating user profile :" + error);
   }
@@ -643,9 +720,17 @@ const logout = (req, res) => {
   }
 };
 
+const test = (req, res) => {
+  id = req.params.id;
+  console.log("TEST" + id);
+};
+
 module.exports = {
+  test,
   updateUserProfile,
+  userCategorySearch,
   showEditProfile,
+  browse,
   indexPage,
   login,
   register,
@@ -668,6 +753,7 @@ module.exports = {
   search,
   shop,
   logout,
+  searchInCategory,
   account,
   profile,
   editProfile,

@@ -24,7 +24,7 @@
     <div class="screen-overlay"></div>
       <aside class="navbar-aside" id="offcanvas_aside">
         <div class="aside-top">
-          <a href="index.html" class="brand-wrap">
+          <a href="/admin/" class="brand-wrap">
             <img
               src="/admin/assets/imgs/theme/logo.png"
               class="logo"
@@ -130,25 +130,27 @@
         <div class="card">
           <div class="card-body">
             <!-- <h1 class="card-title text-center mb-4">Edit User</h1> -->
-            <form action="/admin/productUpdate" method="POST">
+            <form action="/admin/productUpdate" method="POST" enctype="multipart/form-data">
               <div class="form-group">
               <input type="hidden" name="oldProdName" value="<%=oldName %>">
-                <label for="username" style="font-size:large;">Enter new name</label>
+                <label for="username" style="font-size:large;">Update name</label>
                 <input
                   type="text"
                   class="form-control"
                   id="username"
                   name="newProdName"
                   value="<%=oldName %>"
+                  required
                 />
                <p><br></p>
                 
               </div>
               <div class="form-group">
-                <label for="description" style="font-size:large;">Choose new category</label>
+                <label for="description" style="font-size:large;">Update category</label>
                 <select class="form-control" id="productCategory" name="newProdCat" required>
         
               <option value="" selected disabled>Choose a category</option>
+              <option value="<%=oldCategory%>" selected><%=oldCategory%></option> 
               <% for(let a of category) { %>
               <option value="<%=a.name %>"><%=a.name %></option> 
               <% } %>
@@ -157,19 +159,25 @@
               <br>
               <label for="username" style="font-size:large;">Update Rate</label>
                 <input
-                  type="text"
+                  type="number"
                   class="form-control"
                   id="username"
+                  min="0"
                   name="newProdRate"
                   value="<%=oldRate %>"
+                  required
+                  
                 /><br>
                 <label for="username" style="font-size:large;">Update Quantity</label>
                 <input
                   type="text"
                   class="form-control"
                   id="username"
+                  min="0"
                   name="newProStock"
                   value="<%=oldStock %>"
+                  required
+                  
                 /><br>
                 <label for="username" style="font-size:large;">Update Description</label>
                 <input
@@ -178,7 +186,19 @@
                   id="username"
                   name="newProdDesc"
                   value="<%=oldDesc %>"
+                  required
                 /><br>
+                <label for="image" style="font-size:large;">Update Images</label>
+<% for(let i=0; i<totalImages; i++){ %>
+  <div class="row">
+    <div style="display: flex; align-items: center;">
+      <img src="<%= allOldData.image[i] %>" alt="image of <%= oldName %>" style="height: 75px; width: 75px; margin-right: 10px;">
+      <!-- <button style="margin-left: auto;" onclick="">Delete</button> -->
+    </div>
+    <div><input name="image" type="file" class="form-control"></div>
+  </div>
+<% } %>
+                <br>
               <button type="submit" class="btn btn-primary btn-block">
                 Update
               </button>

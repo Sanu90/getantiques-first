@@ -79,7 +79,9 @@
         class="d-flex flex-column align-items-center justify-content-center"
         style="min-height: 180px"
       >
-        <h1 class="font-weight-semi-bold text-capitalize mb-3">Profile</h1>
+        <h1 class="font-weight-semi-bold text-capitalize mb-3">
+          Edit your Profile
+        </h1>
         <div class="d-inline-flex">
           <p class="m-0"><a href="/">Home</a></p>
           <p class="m-0 px-2">-</p>
@@ -111,6 +113,7 @@
             class="form-control"
             name="username"
             placeholder="Please update username"
+            value="<%=user.username%>"
             onkeyup="validateUserName()"
           />
           <span id="name-error"></span>
@@ -142,10 +145,10 @@
 
           <input
             type="text"
-            value=""
             class="form-control"
             name="mobile"
             placeholder="Please update mobile number"
+            value="<%=user.mobile%>"
             maxlength="10"
             id="tele"
             onkeyup="validatePhone()"
@@ -161,7 +164,7 @@
           <input
             type="text"
             placeholder="Please add/update your DOB"
-            value=""
+            value="<%=user.dob %>"
             class="form-control"
             name="dob"
             id="dob"

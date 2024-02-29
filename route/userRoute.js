@@ -20,6 +20,7 @@ router.get("/changePassword", userController.toChangePassword);
 router.post("/updatePassword", userController.updatePassword);
 router.get("/home", userCheck.isUser, userController.redirectUser);
 router.post("/shop", userCheck.isUser, userController.shop);
+router.get("/browse", userCheck.isUser, userController.browse);
 router.get("/account", userCheck.isUser, userController.account);
 router.get("/account/profile", userCheck.isUser, userController.profile);
 router
@@ -85,6 +86,13 @@ router.get(
   userCheck.isUser,
   userController.userCategoryPage
 );
+
+router.post(
+  "/Ucategory/:catName",
+  userCheck.isUser,
+  userController.userCategorySearch
+);
+
 // router.get("/allProducts", userController.allProducts); //
 router.get("/category/:catName", userController.categoryPage);
 
