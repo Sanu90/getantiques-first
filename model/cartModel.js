@@ -22,13 +22,13 @@ const cartData = new mongoose.Schema({
         ref: "product",
         trim: true,
       },
+
+      product_quantity: {
+        type: Number,
+        trim: true,
+      },
     },
   ],
-  product_quantity: {
-    type: Number,
-    trim: true,
-  },
-
 });
 
 const cartInfo = mongoose.model("cart", cartData);

@@ -1,7 +1,7 @@
 const router = require("express").Router();
 const userController = require("../controller/userController");
 const addressController = require("../controller/addressController");
-// const productController = require("../controller/productController");
+const productController = require("../controller/productController");
 const orderController = require("../controller/orderController");
 const userCheck = require("../middleware/userAuth");
 const cartController = require("../controller/cartController");
@@ -101,6 +101,13 @@ router.get(
   userCheck.isUser,
   userController.userProductView
 );
+
+router.get(
+  "/Ucategory/sort/:number",
+  userCheck.isUser,
+  productController.categoryProductSort
+);
+
 router.get("/resendOTP", userController.resendOTP);
 
 router.post("/search", userController.search);

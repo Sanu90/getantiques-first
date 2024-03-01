@@ -94,11 +94,13 @@ const editProduct = async (req, res) => {
     totalImages = allOldData.image.length;
     //console.log("length of image folder:------->" + allOldData.image.length);
     //console.log(allOldData.image.countDocuments({}));
-
-    console.log(req.body);
-    console.log(oldName);
-    console.log(oldCategory);
     console.log("ADMIN: PRODUCT EDIT");
+    console.log("********************");
+    console.log(req.body);
+    console.log("11111111111");
+    console.log(oldCategory);
+    console.log("********************");
+
     res.render("admin_product_edit", {
       name: req.session.adminName,
       oldName,
@@ -118,8 +120,51 @@ const editProduct = async (req, res) => {
 
 const updateProduct = async (req, res) => {
   try {
-    console.log(req.body);
-    console.log(req.file);
+    console.log("ADMIN UPDATED PRODUCT");
+    console.log("req.body is", req.body);
+    console.log("********************");
+    console.log("req.file", req.files);
+    console.log("********************");
+    for (let i in req.files) {
+      console.log(parseInt(`${i}`));
+      let index = parseInt(`${i}`);
+      console.log("###############################");
+      let newImagePath = req.files[i][0].path
+        .replace(/\\/g, "/")
+        .replace("public", "");
+      console.log(newImagePath);
+      await productModel.updateOne(
+        { name: req.body.oldProdName },
+        {
+          $set: { [`image.${index}`]: newImagePath },
+        }
+      );
+    }
+
+    //console.log("Image updated for is:", req.body.image);
+    //let updatedImages = req.body.image;
+
+    // console.log("updatedImages is ====>", updatedImages);
+    // for (let i = 0; i < updatedImages.length; i++) {
+    //   if (updatedImages[i] != "") {
+    //     console.log("value of i is ", i);
+    //     newPush.push(i);
+    //   }
+    // }
+    // console.log("Images to be updated in the index position:--->", newPush);
+    // console.log("length is: ", newPush.length);
+
+    //console.log("req.session.i ----------->", req.session.i);
+    console.log("************************");
+
+    // const imageData = req.file.path;
+    // let imagePath = [];
+    // for (let i = 0; i < imageData.length; i++) {
+    //   imagePath[i] = imageData[i].path
+    //     .replace(/\\/g, "/")
+    //     .replace("public", "");
+    // }
+    // console.log(imagePath);
     await productModel.updateOne(
       { name: req.body.oldProdName },
       {
@@ -142,7 +187,6 @@ const updateProduct = async (req, res) => {
 
 const productHide = async (req, res) => {
   try {
-    //console.log("jchf");
     console.log(req.body.id);
     const data = await productModel.findOne({ _id: req.body.id });
     if (data.hide == 0) {
@@ -157,6 +201,75 @@ const productHide = async (req, res) => {
   }
 };
 
+const categoryProductSort = async (req, res) => {
+  try {
+    const catName = req.session.categoryName;
+    const userName = req.session.name;
+    const searchValue = "";
+    const searchData = "";
+    const category = await categoryModel.find({});
+    const number = req.params.number;
+    //console.log(number);
+    if (number == 1) {
+      const catProd = await productModel
+        .find({ category: catName })
+        .sort({ name: 1 });
+      console.log("DATA IF 1 is pressed:" + catProd);
+      const value = "A - Z";
+      res.render("userCategoryPageSorted", {
+        user: userName,
+        category,
+        catName,
+        catProd,
+        value,
+        // searchValue,
+        // searchData,
+      });
+    } else if (number == 2) {
+      const catProd = await productModel
+        .find({ category: catName })
+        .sort({ name: -1 });
+      console.log("DATA IF 2 is pressed:" + catProd);
+      res.render("userCategoryPageSorted", {
+        user: userName,
+        category,
+        catName,
+        catProd,
+        searchValue,
+        searchData,
+      });
+    } else if (number == 3) {
+      const catProd = await productModel
+        .find({ category: catName })
+        .sort({ rate: 1 });
+      console.log("DATA IF 3 is pressed:" + catProd);
+      res.render("userCategoryPageSorted", {
+        user: userName,
+        category,
+        catName,
+        catProd,
+        searchValue,
+        searchData,
+      });
+    } else if (number == 4) {
+      const catProd = await productModel
+        .find({ category: catName })
+        .sort({ rate: -1 });
+      console.log("DATA IF 4 is pressed:" + catProd);
+      res.render("userCategoryPageSorted", {
+        user: userName,
+        category,
+        catName,
+        catProd,
+        searchValue,
+        searchData,
+      });
+    }
+  } catch (error) {
+    console.log("Error happened while accessing categoryProductSort: " + error);
+  }
+};
+
 module.exports = {
   adminProduct,
   newProductPage,
@@ -164,4 +277,5 @@ module.exports = {
   editProduct,
   updateProduct,
   productHide,
+  categoryProductSort,
 };

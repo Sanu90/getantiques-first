@@ -131,6 +131,7 @@
           <div class="card-body">
             <!-- <h1 class="card-title text-center mb-4">Edit User</h1> -->
             <form action="/admin/productUpdate" method="POST" enctype="multipart/form-data">
+            <!-- <form action="/admin/productUpdate" method="POST"> -->
               <div class="form-group">
               <input type="hidden" name="oldProdName" value="<%=oldName %>">
                 <label for="username" style="font-size:large;">Update name</label>
@@ -189,13 +190,14 @@
                   required
                 /><br>
                 <label for="image" style="font-size:large;">Update Images</label>
-<% for(let i=0; i<totalImages; i++){ %>
-  <div class="row">
-    <div style="display: flex; align-items: center;">
-      <img src="<%= allOldData.image[i] %>" alt="image of <%= oldName %>" style="height: 75px; width: 75px; margin-right: 10px;">
+                <% for(let i=0; i<totalImages; i++){ %>
+                <div class="row">
+                <div style="display: flex; align-items: center;">
+                <input type="text" value="<%=i %>" name="image <%=i %>" hidden >
+                <img src="<%= allOldData.image[i] %>" alt="image of <%= oldName %>" style="height: 75px; width: 75px; margin-right: 10px;">
       <!-- <button style="margin-left: auto;" onclick="">Delete</button> -->
     </div>
-    <div><input name="image" type="file" class="form-control"></div>
+    <div><input name="<%=i%>Image" type="file" id="productImage" class="form-control"></div>
   </div>
 <% } %>
                 <br>

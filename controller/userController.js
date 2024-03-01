@@ -423,6 +423,7 @@ const userCategoryPage = async (req, res) => {
     const category = await categoryModel.find({});
     //console.log("This is category check :" + category);
     const catName = req.params.catName;
+    req.session.categoryName = catName;
     noProduct = "";
 
     const catProd = await productModel.find({ category: catName, hide: 0 });
@@ -437,6 +438,7 @@ const userCategoryPage = async (req, res) => {
       noProduct,
     });
     console.log("CATEGORY SELECTED IS::::" + catName);
+    console.log(catProd);
     req.session.categoryName = catName;
   } catch (error) {
     console.log("Error while accessing user category pages:" + error);

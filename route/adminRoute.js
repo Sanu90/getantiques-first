@@ -80,7 +80,13 @@ router.get(
 router.post(
   "/productUpdate",
   adminMiddleware.isAdmin,
-  multer.single("image", 1),
+  //multer.array("image", 10),
+  multer.fields([
+    { name: "0Image", maxCount: 1 },
+    { name: "1Image", maxCount: 1 },
+    { name: "2Image", maxCount: 1 },
+    { name: "3Image", maxCount: 1 },
+  ]),
   productController.updateProduct
 );
 
