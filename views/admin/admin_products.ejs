@@ -108,6 +108,8 @@
               <input type="text" placeholder="Search for a product.." class="form-control-lg" id="searchProduct" name="searchProduct" value="" />
               <%#}%><br>
               <button type="submit" class="btn btn-success mt-3 ml-2">Search</button>
+
+              
                 </form>
             </div>
           </div>
@@ -130,6 +132,7 @@
                     <th style="color:tomato;font-size:small; text-align: center; width: 250px;">Description</th>
                    <th style="color:tomato;font-size:small; text-align: center; ">Edit</th>
                     <th style="color:tomato;font-size:small; text-align: center; ">Hide</th>
+                    <!-- <th style="color:tomato;font-size:small; text-align: center; ">New Image</th> -->
                   </tr>
                    <% for(let p of product) { %>
                   <tr>
@@ -171,8 +174,9 @@
                   </button>
                   <% } %>
                     </td> 
+                    
                   </tr>
-                  <% } %>
+                        <% } %>
                   
                 </table>
                 </div>

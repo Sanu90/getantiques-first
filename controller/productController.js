@@ -48,19 +48,19 @@ const newProductPage = async (req, res) => {
   }
 };
 
+var imagePath = [];
 const addProduct = async (req, res) => {
   try {
-    //res.send("product added");
     console.log(req.body);
     console.log(req.files);
     const imageData = req.files;
-    let imagePath = [];
     for (let i = 0; i < imageData.length; i++) {
       imagePath[i] = imageData[i].path
         .replace(/\\/g, "/")
         .replace("public", "");
     }
-    console.log(imagePath);
+    //console.log("IMAGEPATH is: ", imagePath);
+    req.imagePath = imagePath;
     const newProd = new productModel({
       name: req.body.prodName,
       category: req.body.category,
@@ -71,7 +71,9 @@ const addProduct = async (req, res) => {
       hide: 0,
     });
     await newProd.save();
-    //   console.log("product added");
+    //productImages = await productModel.find({})
+    //console.log("Product Images: ");
+    console.log("product added");
     //   console.log(req.body.images);
     //   console.log(req.file.filename);
     return res.redirect(`/admin/product`);
@@ -100,7 +102,9 @@ const editProduct = async (req, res) => {
     console.log("11111111111");
     console.log(oldCategory);
     console.log("********************");
-
+    imagePath = allOldData.image;
+    console.log("IMAGEPATH is: ", imagePath);
+    console.log("********************");
     res.render("admin_product_edit", {
       name: req.session.adminName,
       oldName,
@@ -140,31 +144,7 @@ const updateProduct = async (req, res) => {
         }
       );
     }
-
-    //console.log("Image updated for is:", req.body.image);
-    //let updatedImages = req.body.image;
-
-    // console.log("updatedImages is ====>", updatedImages);
-    // for (let i = 0; i < updatedImages.length; i++) {
-    //   if (updatedImages[i] != "") {
-    //     console.log("value of i is ", i);
-    //     newPush.push(i);
-    //   }
-    // }
-    // console.log("Images to be updated in the index position:--->", newPush);
-    // console.log("length is: ", newPush.length);
-
-    //console.log("req.session.i ----------->", req.session.i);
     console.log("************************");
-
-    // const imageData = req.file.path;
-    // let imagePath = [];
-    // for (let i = 0; i < imageData.length; i++) {
-    //   imagePath[i] = imageData[i].path
-    //     .replace(/\\/g, "/")
-    //     .replace("public", "");
-    // }
-    // console.log(imagePath);
     await productModel.updateOne(
       { name: req.body.oldProdName },
       {
@@ -177,12 +157,49 @@ const updateProduct = async (req, res) => {
         },
       }
     );
+    console.log("IMAGEPATH is: ", imagePath);
     console.log("PRODUCT UPDATED");
     return res.redirect("/admin/product");
   } catch (err) {
     console.log(err.message);
     return res.redirect("/admin/error?message=error-while-updating-category");
   }
+};
+
+const addProductImages = async (req, res) => {
+  //console.log("::allOldData::-------------------->..." + allOldData);
+  //totalImages = allOldData.image.length;
+  console.log(req.files);
+  id = req.params.id;
+  productFind = await productModel.findOne({ _id: id });
+  console.log("Product ID is:" + id);
+  const newImagesData = req.files;
+  console.log("newImagesData", newImagesData);
+  console.log(newImagesData.length);
+  newLength = newImagesData.length;
+  productImages = productFind.image;
+  let savePath = [];
+  for (let i = 0; i < newLength; i++) {
+    savePath[i] = newImagesData[i].path
+      .replace(/\\/g, "/")
+      .replace("public", "");
+  }
+  console.log("New Images path is: ", savePath);
+  console.log("Length of new images:" + newLength);
+
+  const newImages = await productModel.updateOne(
+    { _id: id },
+    { $push: { image: { $each: savePath, $position: 0 } } }
+  );
+  console.log("newImages: ", newImages);
+  return res.redirect("/admin/product");
+  //res.redirect("/admin/productEdit");
+
+  //await newImages.save();
+
+  // //console.log("imagePath ", imagePath);
+  // console.log("******************************");
+  // console.log("New images added to DB.");
 };
 
 const productHide = async (req, res) => {
@@ -278,4 +295,5 @@ module.exports = {
   updateProduct,
   productHide,
   categoryProductSort,
+  addProductImages,
 };

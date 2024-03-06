@@ -80,7 +80,7 @@ router.get(
 router.post(
   "/productUpdate",
   adminMiddleware.isAdmin,
-  //multer.array("image", 10),
+  // multer.array("newImages", 5),
   multer.fields([
     { name: "0Image", maxCount: 1 },
     { name: "1Image", maxCount: 1 },
@@ -88,6 +88,13 @@ router.post(
     { name: "3Image", maxCount: 1 },
   ]),
   productController.updateProduct
+);
+
+router.post(
+  "/addProductImages/:id",
+  adminMiddleware.isAdmin,
+  multer.array("newImages", 5),
+  productController.addProductImages
 );
 
 router.post(

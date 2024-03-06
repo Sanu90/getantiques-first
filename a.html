@@ -64,6 +64,16 @@
             placeholder="Enter your name"
           />
         </div>
+        <label for="name">Test</label>
+        <input type="file" id="fileInput" onchange="showCloseButton()" />
+        <label for="fileInput" style="cursor: pointer"></label>
+        <span
+          id="closeButton"
+          style="cursor: pointer; color: red; display: none"
+          onclick="removeFile()"
+          >X</span
+        >
+
         <div class="form-group">
           <label for="email">Email address</label>
           <input
@@ -137,5 +147,15 @@
 
     <!-- Template Javascript -->
     <script src="js/main.js"></script>
+
+    <script>
+      function showCloseButton() {
+        document.getElementById("closeButton").style.display = "inline";
+      }
+      function removeFile() {
+        document.getElementById("fileInput").value = "";
+        document.getElementById("closeButton").style.display = "none";
+      }
+    </script>
   </body>
 </html>
