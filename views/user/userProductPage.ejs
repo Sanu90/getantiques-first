@@ -23,10 +23,10 @@
       rel="stylesheet"
     />
 
-    <link
+    <!-- <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    />
+    /> -->
 
     <!-- Libraries Stylesheet -->
     <link
@@ -71,13 +71,13 @@
           </form>
         </div>
         <div class="col-lg-3 d-flex">
-          <a href="" class="btn border">
+          <!-- <a href="" class="btn border">
             <i class="fas fa-heart text-primary"></i>
             <span class="badge">0</span>
-          </a>
-          <a href="" class="btn border">
+          </a> -->
+          <a href="/cart" class="btn border">
             <i class="fas fa-shopping-cart text-primary"></i>
-            <span class="badge">0</span> </a
+            <span class="badge"><%=cartCount%></span> </a
           ><br />
           <div class="dropdown">
             <button
@@ -94,7 +94,9 @@
                   <a href="/account" style="text-decoration: none">Account</a>
                 </button>
               </li>
-
+              <!-- <li>
+                <button class="dropdown-item" type="button">Log out</button>
+              </li> -->
               <li>
                 <button class="dropdown-item" type="button">
                   <a href="/logout" style="text-decoration: none">Logout</a>
@@ -102,6 +104,8 @@
               </li>
             </ul>
           </div>
+
+          <!-- <a href="/register" class="nav-item nav-link">Register</a> -->
         </div>
       </div>
     </div>
@@ -315,7 +319,7 @@
           </div>
 
           <div class="d-flex align-items-center mb-4 pt-2">
-            <div class="input-group quantity mr-3" style="width: 130px">
+            <!-- <div class="input-group quantity mr-3" style="width: 130px">
               <div class="input-group-btn">
                 <button class="btn btn-primary btn-minus">
                   <i class="fa fa-minus"></i>
@@ -331,11 +335,15 @@
                   <i class="fa fa-plus"></i>
                 </button>
               </div>
-            </div>
+            </div> -->
             <% if(productDetails.stock>=1){ %>
-            <button
+            <!-- <button
               class="btn btn-primary px-3"
               onclick="location.href='/cart'"
+            > -->
+            <button
+              class="btn btn-primary px-3"
+              onclick="addProductTocart('<%=productDetails._id %>')"
             >
               <i class="fa fa-shopping-cart mr-1"></i> Add To Cart
             </button>
@@ -556,7 +564,24 @@
                   class="btn btn-sm text-dark p-0"
                   ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
                 >
-                <a href="" class="btn btn-sm text-dark p-0">Add To Cart</a>
+                <% if(cd.stock>=1){ %>
+                <button
+                  class="btn btn-sm text-dark p-1"
+                  onclick="addProductTocart('<%=cd._id %>')"
+                >
+                  <i class="fas fa-shopping-cart text-primary mr-1"></i> Add To
+                  Cart
+                </button>
+                <% } else{%>
+                <a
+                  class="text-danger"
+                  onclick="this.onclick=function(){return false}"
+                  style="pointer-events: none"
+                >
+                  <i class="fas fa-shopping-cart text-primary mr-1"></i>
+                  Out of Stock</a
+                >
+                <% } %>
               </div>
             </div>
             <% } %>
@@ -716,6 +741,29 @@
           img.style.transform = "scale(1)";
         });
       });
+
+      // function to add product to cart//
+      function addProductTocart(id) {
+        console.log(id);
+        fetch(`/cart/${id}`, {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              window.alert(data.message);
+              window.location.reload();
+            }
+          });
+      }
     </script>
 
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>

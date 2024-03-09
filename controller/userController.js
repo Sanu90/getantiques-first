@@ -1,10 +1,11 @@
 const userModel = require("../model/userModel");
 const categoryModel = require("../model/categoryModel");
 const productModel = require("../model/productModel");
+const cartModel = require("../model/cartModel");
 const addressModel = require("../model/userAddressModel");
 const otpSend = require("../middleware/otp");
 const bcrypt = require("bcrypt");
-const sendmail = require("../middleware/otp");
+//const sendmail = require("../middleware/otp");
 
 const indexPage = async (req, res) => {
   try {
@@ -223,6 +224,7 @@ const validateUser = async (req, res) => {
 
 const redirectUser = async (req, res) => {
   try {
+    const userName = req.session.name;
     const category = await categoryModel.find({});
     const product1 = await productModel
       .find({ hide: 0 })
@@ -233,16 +235,27 @@ const redirectUser = async (req, res) => {
       .sort({ _id: -1 })
       .skip(4)
       .limit(4);
-    const userName = req.session.name;
+
     console.log(userName);
+    console.log("checkcheck chcek check");
+    const cartProducts = await cartModel.find({ user: req.session.userID });
+    console.log(cartProducts);
+    if (cartProducts == "") {
+      var cartCount = 0;
+    }else{
+      cartCount = cartProducts[0].item.length;
+    console.log("cartCount is:", cartCount);
+    }
+    
     res.render("home", {
       category,
       product1,
       product2,
       user: userName,
+      cartCount,
     });
   } catch (error) {
-    console.log("Error while redirection");
+    console.log("Error while redirection in redirectUser (userController)");
   }
 };
 
@@ -372,6 +385,11 @@ const productView = async (req, res) => {
 
 const userProductView = async (req, res) => {
   try {
+    console.log("userProductView");
+    const cartProducts = await cartModel.find({ user: req.session.userID });
+    const cartCount = cartProducts[0].item.length;
+    console.log("cartCount is:", cartCount);
+
     const id = req.params.id;
     const userName = req.session.name;
     console.log("product id is: " + id);
@@ -395,6 +413,7 @@ const userProductView = async (req, res) => {
       notAvailable: "Out of Stock",
       categoryData,
       user: userName,
+      cartCount,
     });
   } catch (error) {
     console.log("Error while displaying product page " + error);
@@ -416,6 +435,10 @@ const categoryPage = async (req, res) => {
 
 const userCategoryPage = async (req, res) => {
   try {
+    const cartProducts = await cartModel.find({ user: req.session.userID });
+    const cartCount = cartProducts[0].item.length;
+    console.log("cartCount is:", cartCount);
+
     console.log("User category page");
     const userName = req.session.name;
     const searchValue = "";
@@ -436,6 +459,7 @@ const userCategoryPage = async (req, res) => {
       searchValue,
       searchData,
       noProduct,
+      cartCount,
     });
     console.log("CATEGORY SELECTED IS::::" + catName);
     console.log(catProd);
@@ -463,6 +487,9 @@ const search = async (req, res) => {
 
 const userCategorySearch = async (req, res) => {
   try {
+    const cartProducts = await cartModel.find({ user: req.session.userID });
+    const cartCount = cartProducts[0].item.length;
+
     var searchValue = req.body.searchValue;
     const catName = req.params.catName;
     const catProd = "";
@@ -492,6 +519,7 @@ const userCategorySearch = async (req, res) => {
       noProduct,
       user: req.session.name,
       catProd,
+      cartCount,
     });
   } catch (error) {
     console.log("Error while searching a product by guest: " + error);
@@ -500,6 +528,13 @@ const userCategorySearch = async (req, res) => {
 
 const browse = async (req, res) => {
   try {
+    const cartProducts = await cartModel.find({ user: req.session.userID });
+    const cartCount = cartProducts[0].item.length;
+    const category = await categoryModel.find();
+    console.log("***********");
+    console.log(category);
+    console.log("***********");
+
     var page = 1;
     if (req.query.page) {
       page = req.query.page;
@@ -513,7 +548,13 @@ const browse = async (req, res) => {
     const totalPages = productCount / limit;
     console.log("PRODUCTS:" + products);
     //console.log(products);
-    res.render("browseAll", { user: req.session.name, products, totalPages });
+    res.render("browseAll", {
+      user: req.session.name,
+      products,
+      totalPages,
+      cartCount,
+      category,
+    });
   } catch (error) {
     console.log("Error while browse", error);
   }

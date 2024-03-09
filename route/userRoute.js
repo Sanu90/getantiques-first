@@ -18,7 +18,7 @@ router.get("/forgotPassword/getOTP", userController.fpGetOTP);
 router.post("/forgotPassword/authOTP", userController.fpAuthOTP);
 router.get("/changePassword", userController.toChangePassword);
 router.post("/updatePassword", userController.updatePassword);
-router.get("/home", userCheck.isUser, userController.redirectUser);
+router.get("/home", userController.redirectUser);
 router.post("/shop", userCheck.isUser, userController.shop);
 router.get("/browse", userCheck.isUser, userController.browse);
 router.get("/account", userCheck.isUser, userController.account);
@@ -56,11 +56,17 @@ router.post(
   addressController.saveAddress
 );
 
-router.get("/cart/:id", userCheck.isUser, cartController.cart);
+router.post(
+  "/saveNewAddressfromCheckout",
+  userCheck.isUser,
+  addressController.saveNewAddressfromCheckout
+);
+
+router.get("/cart/:id", userCheck.isUser, cartController.addToCart);
 
 router.get(
   "/account/editAddress/:id",
-
+  userCheck.isUser,
   addressController.editAddress
 );
 
@@ -106,6 +112,21 @@ router.get(
   "/Ucategory/sort/:number",
   userCheck.isUser,
   productController.categoryProductSort
+);
+router.get("/cart", userCheck.isUser, cartController.cartPage);
+router.post("/removeCart", userCheck.isUser, cartController.removeCart);
+
+router.post("/minusCartvalue", userCheck.isUser, cartController.minusCartvalue);
+router.post("/addCartvalue", userCheck.isUser, cartController.addCartvalue);
+
+router.get("/checkout", userCheck.isUser, cartController.checkout);
+
+router.post("/")
+
+router.get(
+  "/showAddressInCheckout",
+  userCheck.isUser,
+  addressController.showAddressInCheckout
 );
 
 router.get("/resendOTP", userController.resendOTP);

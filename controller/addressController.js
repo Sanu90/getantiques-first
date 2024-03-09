@@ -96,6 +96,46 @@ const deleteAddress = async (req, res) => {
   }
 };
 
+const showAddressInCheckout = async (req, res) => {
+  try {
+    console.log("showAddressInCheckout");
+    let address = await addressModel.find({ user: req.session.userID });
+    console.log(address[0].houseName + address[0].street);
+  } catch (error) {
+    console.log("Error happened while showAddressInCheckout: " + error);
+  }
+};
+
+const saveNewAddressfromCheckout = async (req, res) => {
+  try {
+    console.log("User saving new address from checkout");
+    console.log(req.body);
+    console.log(req.session.userID);
+    console.log(req.session.name);
+    let userNewAddress = new addressModel({
+      user: req.session.userID,
+      customerName: req.body.fullname,
+      mobile: req.body.mobile,
+      houseName: req.body.house,
+      street: req.body.street,
+      city: req.body.city,
+      state: req.body.state,
+      country: req.body.country,
+      pincode: req.body.pincode,
+    });
+    console.log("USER new Address saved from checkout is :" + userNewAddress);
+    await userNewAddress.save();
+    console.log("USER new address is saved.");
+    // window.alert("Your address is saved.");
+    res.redirect("/checkout");
+  } catch (error) {
+    console.log(
+      "Error happened while saveNewAddressfromCheckout in addressController: " +
+        error
+    );
+  }
+};
+
 module.exports = {
   address,
   newAddress,
@@ -103,4 +143,6 @@ module.exports = {
   editAddress,
   updateAddress,
   deleteAddress,
+  showAddressInCheckout,
+  saveNewAddressfromCheckout,
 };

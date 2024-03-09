@@ -1,5 +1,6 @@
 const productModel = require("../model/productModel");
 const categoryModel = require("../model/categoryModel");
+const cartModel = require("../model/cartModel");
 const multer = require("multer");
 //const { name } = require("ejs");
 //const multer = require("../middleware/multer");
@@ -192,7 +193,9 @@ const addProductImages = async (req, res) => {
     { $push: { image: { $each: savePath, $position: 0 } } }
   );
   console.log("newImages: ", newImages);
-  return res.redirect("/admin/product");
+  const data = { key: "details updated" };
+  // return res.redirect("/admin/product");
+  return res.redirect(`/admin/product?data=${JSON.stringify(data)}`);
   //res.redirect("/admin/productEdit");
 
   //await newImages.save();
@@ -220,6 +223,9 @@ const productHide = async (req, res) => {
 
 const categoryProductSort = async (req, res) => {
   try {
+    const cartProducts = await cartModel.find({ user: req.session.userID });
+    const cartCount = cartProducts[0].item.length;
+
     const catName = req.session.categoryName;
     const userName = req.session.name;
     const searchValue = "";
@@ -239,6 +245,7 @@ const categoryProductSort = async (req, res) => {
         catName,
         catProd,
         value,
+        cartCount,
         // searchValue,
         // searchData,
       });
@@ -254,6 +261,7 @@ const categoryProductSort = async (req, res) => {
         catProd,
         searchValue,
         searchData,
+        cartCount,
       });
     } else if (number == 3) {
       const catProd = await productModel
@@ -267,6 +275,7 @@ const categoryProductSort = async (req, res) => {
         catProd,
         searchValue,
         searchData,
+        cartCount,
       });
     } else if (number == 4) {
       const catProd = await productModel
@@ -280,6 +289,7 @@ const categoryProductSort = async (req, res) => {
         catProd,
         searchValue,
         searchData,
+        cartCount,
       });
     }
   } catch (error) {

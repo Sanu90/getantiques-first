@@ -23,10 +23,10 @@
       rel="stylesheet"
     />
 
-    <link
+    <!-- <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
-    />
+    /> -->
 
     <!-- Libraries Stylesheet -->
     <link
@@ -70,13 +70,13 @@
           </form>
         </div>
         <div class="col-lg-3 d-flex">
-          <a href="" class="btn border">
+          <!-- <a href="" class="btn border">
             <i class="fas fa-heart text-primary"></i>
             <span class="badge">0</span>
-          </a>
-          <a href="" class="btn border">
+          </a> -->
+          <a href="/cart" class="btn border">
             <i class="fas fa-shopping-cart text-primary"></i>
-            <span class="badge">0</span> </a
+            <span class="badge"><%=cartCount%></span> </a
           ><br />
           <div class="dropdown">
             <button
@@ -211,47 +211,59 @@
                 <th>Total</th>
                 <th>Remove</th>
               </tr>
+              
             </thead>
             <tbody class="align-middle">
-              <tr>
-                <td class="align-middle">
+            <% for(let i=0;i<cartProducts.length;i++){ %>
+              <tr id="<%cartProducts[i].productId %>">
+                    <td class="align-middle">
                   <img
-                    src="../user/img/classical-bronze-statue-of-a-standing-lady-.jpg"
+                    src="<%=cartProducts[i].productImage[0] %>"
                     alt=""
                     style="width: 50px"
                   />
-                  Colorful Stylish Shirt
+                  <%=cartProducts[i].productName %>
                 </td>
-                <td class="align-middle">₹150</td>
+                <td class="align-middle">₹<%=cartProducts[i].productPrice %></td>
+                
+                
                 <td class="align-middle">
                   <div
                     class="input-group quantity mx-auto"
                     style="width: 100px"
                   >
                     <div class="input-group-btn">
-                      <button class="btn btn-sm btn-primary btn-minus">
+                      <%# if(cartProducts[i].productQuantity = 1){ %>
+                      <!-- <button class="btn btn-sm btn-primary btn-minus" disabled> -->
+                      <%# } else {%>
+                      <button class="btn btn-sm btn-primary btn-minus" <%= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = minus("<%= cartProducts[i].productId %>")
+                      >
+                      <%# } %>
+                     
                         <i class="fa fa-minus"></i>
                       </button>
                     </div>
                     <input
                       type="text"
                       class="form-control form-control-sm bg-secondary text-center"
-                      value="1"
+                      value="<%=cartProducts[i].productQuantity%>"
                     />
+                    
                     <div class="input-group-btn">
-                      <button class="btn btn-sm btn-primary btn-plus">
+                      <button class="btn btn-sm btn-primary btn-plus" <% %> onclick = add("<%= cartProducts[i].productId %>")>
                         <i class="fa fa-plus"></i>
                       </button>
                     </div>
                   </div>
                 </td>
-                <td class="align-middle">₹150</td>
+                <td class="align-middle" id="<%= cartProducts[i].productId %>">₹<%=cartProducts[i].productPrice * cartProducts[i].productQuantity %></td>
                 <td class="align-middle">
-                  <button class="btn btn-sm btn-primary">
-                    <i class="fa fa-times"></i>
-                  </button>
-                </td>
+                <button class="btn btn-sm btn-primary btn-delete" data-product-id="<%= cartProducts[i].productId %>">
+                <i class="fa fa-times"></i>
+                </button>
+</td> 
               </tr>
+              <% } %>
             </tbody>
           </table>
         </div>
@@ -275,7 +287,7 @@
             <div class="card-body">
               <div class="d-flex justify-content-between mb-3 pt-1">
                 <h6 class="font-weight-medium">Subtotal</h6>
-                <h6 class="font-weight-medium">₹150</h6>
+                <h6 class="font-weight-medium">₹<%=total %></h6>
               </div>
               <!-- <div class="d-flex justify-content-between">
                 <h6 class="font-weight-medium">Shipping</h6>
@@ -285,11 +297,11 @@
             <div class="card-footer border-secondary bg-transparent">
               <div class="d-flex justify-content-between mt-2">
                 <h5 class="font-weight-bold">Total</h5>
-                <h5 class="font-weight-bold">₹150</h5>
+                <h5 class="font-weight-bold">₹<%=total %></h5>
               </div>
-              <button class="btn btn-block btn-primary my-3 py-3">
+              <a href="/checkout" style="text-decoration: none;" ><button class="btn btn-block btn-primary my-3 py-3" type="submit">
                 Proceed To Checkout
-              </button>
+              </button></a>
             </div>
           </div>
         </div>
@@ -421,7 +433,7 @@
           </p>
         </div>
         <div class="col-md-6 px-xl-0 text-center text-md-right">
-          <img class="img-fluid" src="img/payments.png" alt="" />
+          <img class="img-fluid" src="../user/img/payments.png" alt="" />
         </div>
       </div>
     </div>
@@ -435,14 +447,128 @@
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="../user/lib/easing/easing.min.js"></script>
+    <script src="../user/lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
     <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
+    <script src="../user/mail/jqBootstrapValidation.min.js"></script>
+    <script src="../user/mail/contact.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Template Javascript -->
-    <script src="js/main.js"></script>
+    <script src="../user/js/main.js"></script>
+
+<script>
+// Add event listener to all delete buttons - SWEET ALERT //
+document.addEventListener("DOMContentLoaded", function() {
+  const deleteButtons = document.querySelectorAll(".btn-delete");
+  deleteButtons.forEach(function(button) {
+    button.addEventListener("click", function() {
+      const productId = button.dataset.productId;
+      console.log(productId); //consoles the product ID in browser //
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You are about to remove this product from cart.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove !'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // If confirmed, call clearCart() with productId
+          fetch(`/removeCart`,{
+            method:'post',
+            headers: {
+                    'Content-Type': 'application/json',
+                },
+                  body: JSON.stringify({
+                    productId: productId,
+                    }),
+          })  // fetch closed //
+          .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data=>{
+                  if(data.success){
+                    window.location.reload();
+                  }
+                })
+        }   // if closed //
+      });  //.then closed//
+    }); // addEventListener button closed //
+  });  //forEach closed//
+});    //addEventListener closed //
+
+//reduce the product count in the cart //
+
+function minus(id){
+  let a=document.getElementById(id);
+   console.log("minus  " ,id);
+  fetch(`/minusCartvalue`,{
+            method:'post',
+            headers: {
+                    'Content-Type': 'application/json',
+                },
+                  body: JSON.stringify({
+                    productId: id,
+                    }),
+                    
+          }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data=>{
+                  if(data.productCount==1){
+                      window.location.reload();
+                    }
+                  console.log("json.productTotalValue ..." , data.productTotalValue);                  
+                    a.innerText = "₹"+data.productTotalValue;
+                   //window.location.reload(); 
+                  console.log("hhfgyfyyfyfyff");
+                })
+         
+}
+
+
+
+//add the product count in the cart //
+
+function add(id){
+    let a=document.getElementById(id);
+     console.log("add  " ,id);
+  fetch(`/addCartvalue`,{
+            method:'post',
+            headers: {
+                    'Content-Type': 'application/json',
+                },
+                  body: JSON.stringify({
+                    productId: id,
+                    }),
+                    
+          }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data=>{
+                    if(data.productCount==2){
+                      window.location.reload();
+                    }
+                    // window.location.reload();
+                    console.log("json.productTotalValue ..." , data.productTotalValue);                  
+                    a.innerText = "₹"+data.productTotalValue;
+                   //window.location.reload();  
+                  console.log("hhfgyfyyfyfyff");
+                })
+}
+
+</script>
+
   </body>
 </html>
