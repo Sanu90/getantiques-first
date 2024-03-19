@@ -31,15 +31,12 @@
               <span class="text">Orders</span>
             </a>
           </li>
-          <!-- WILL ADD IT IN COMING WEEK  -->
-          <!--
-          
           <li class="menu-item">
-            <a class="menu-link" href="page-transactions-1.html">
-              <i class="icon material-icons md-monetization_on"></i>
-              <span class="text">Coupons</span>
-            </a>
-          </li> -->
+          <a class="menu-link" href="/admin/coupon">
+            <i class="icon material-icons md-article"></i>
+            <span class="text">Coupons</span>
+          </a>
+        </li>
         <br />
         <br />
       </nav>
@@ -98,13 +95,14 @@
               <div class="modal-body">
                 <form action="/admin/addCategory" method="post">
                   <label style="color:brown">Category Name</label>
-                      <input
+                  <input class="form-control" placeholder="Enter the category name" v-model:value="catName" pattern="[A-Za-z0-9]+" name="catName" minlength="3"
+                      required onkeydown="if(['Space'].includes(arguments[0].code)){return false;} ">
+                      <!-- <input @keydown.space.prevent type="text"
                       class="form-control"
                       placeholder="Enter the category name"
-                      type="text"
                       name="catName" minlength="3"
-                      required
-                      /> 
+                      required 
+                      />  -->
                       <br>
                   <label style="color:brown">Description</label>
                       <br>
@@ -159,6 +157,7 @@
                     <th style="color:tomato;font-size: large; text-align: center; width: 240px; ">DESCRIPTION</th>
                     <!-- <th>Mobile</th> -->
                     <th style="color:tomato;font-size: large; text-align: center; ">EDIT</th>
+                    <th style="color:tomato;font-size: large; text-align: center; ">OFFER</th>
                     <th style="color:tomato;font-size: large; text-align: center; ">HIDE</th>
                   </tr>
                   <% for(let c of category) { %>
@@ -172,7 +171,13 @@
                         <button class="btn btn-success" type="submit">Edit</button>                       
                       </form>
                     </td>
-                    
+                    <td style="text-align: center;">
+                    <% if(c.offer > 0) { %>
+                        <button class="btn btn-success" type="button" disabled><%=c.offer%>% Applied</button> 
+                        <% } else if (c.offer == 0){ %>
+                        <button class="btn btn-danger" type="button" disabled>No Offer</button> 
+                        <% } %>                      
+                    </td>
                     <td style="text-align: center;">
                       <form action="">
                         <input

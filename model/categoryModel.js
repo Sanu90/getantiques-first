@@ -21,6 +21,11 @@ const categoryData = new mongoose.Schema({
     trim: true,
   },
 
+  offer: {
+    type: Number,
+    trim: true,
+  },
+
   hide: {
     type: Number,
     required: true,

@@ -70,10 +70,10 @@
           </form>
         </div>
         <div class="col-lg-3 d-flex">
-          <!-- <a href="" class="btn border">
+          <a href="/wishlist" class="btn border">
             <i class="fas fa-heart text-primary"></i>
             <span class="badge">0</span>
-          </a> -->
+          </a>
           <a href="/cart" class="btn border">
             <i class="fas fa-shopping-cart text-primary"></i>
             <span class="badge"><%=cartCount%></span> </a
@@ -200,6 +200,24 @@
 
     <!-- Cart Start -->
     <div class="container-fluid pt-5">
+     <% if(cartProducts.length==0){ %>
+     <div class="col-lg-8 table-responsive mb-5 text-center">
+     <h5>Hi <span><%=user %>, </span> Your cart is empty.</h5>
+     <div class="container-fluid">
+      <div class="text-center m-lg-2">
+        <button
+          style="margin-right: 0%"
+          type="button"
+          class="btn btn-outline-primary"
+          onclick="location.href='/home'"
+        >
+          Continue Shopping
+        </button>
+        </div>
+        </div>
+     </div>
+     <% } else {  %>
+
       <div class="row px-xl-5">
         <div class="col-lg-8 table-responsive mb-5">
           <table class="table table-bordered text-center mb-0">
@@ -250,7 +268,7 @@
                     />
                     
                     <div class="input-group-btn">
-                      <button class="btn btn-sm btn-primary btn-plus" <% %> onclick = add("<%= cartProducts[i].productId %>")>
+                      <button class="btn btn-sm btn-primary btn-plus" <%= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = add("<%= cartProducts[i].productId %>")>
                         <i class="fa fa-plus"></i>
                       </button>
                     </div>
@@ -261,26 +279,28 @@
                 <button class="btn btn-sm btn-primary btn-delete" data-product-id="<%= cartProducts[i].productId %>">
                 <i class="fa fa-times"></i>
                 </button>
-</td> 
-              </tr>
-              <% } %>
-            </tbody>
-          </table>
-        </div>
-        <div class="col-lg-4">
-          <!-- <form class="mb-5" action="">
-            <div class="input-group">
-              <input
-                type="text"
-                class="form-control p-4"
-                placeholder="Coupon Code"
-              />
-              <div class="input-group-append">
-                <button class="btn btn-primary">Apply Coupon</button>
-              </div>
-            </div>
-          </form> -->
-          <div class="card border-secondary mb-5">
+                </td> 
+                  </tr>
+                  <% } %>
+                </tbody>
+            </table>
+          </div>
+            <div class="col-lg-4">
+                <!-- <form class="mb-5" action="/applycoupon" method="post">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control p-4"
+                      placeholder="Coupon Code"
+                      name="coupon"
+                      required
+                    />
+                    <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">Apply Coupon</button>
+                    </div>
+                  </div>
+                </form> -->
+            <div class="card border-secondary mb-5">
             <div class="card-header bg-secondary border-0">
               <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
             </div>
@@ -297,7 +317,7 @@
             <div class="card-footer border-secondary bg-transparent">
               <div class="d-flex justify-content-between mt-2">
                 <h5 class="font-weight-bold">Total</h5>
-                <h5 class="font-weight-bold">₹<%=total %></h5>
+                <h5 class="font-weight-bold" id="total">₹<%=total %></h5>
               </div>
               <a href="/checkout" style="text-decoration: none;" ><button class="btn btn-block btn-primary my-3 py-3" type="submit">
                 Proceed To Checkout
@@ -307,6 +327,7 @@
         </div>
       </div>
     </div>
+    <% } %>
     <!-- Cart End -->
 
     <!-- Footer Start -->
@@ -454,7 +475,9 @@
     <!-- Contact Javascript File -->
     <script src="../user/mail/jqBootstrapValidation.min.js"></script>
     <script src="../user/mail/contact.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="
+https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js
+"></script>
 
     <!-- Template Javascript -->
     <script src="../user/js/main.js"></script>
@@ -478,7 +501,6 @@ document.addEventListener("DOMContentLoaded", function() {
         confirmButtonText: 'Yes, remove !'
       }).then((result) => {
         if (result.isConfirmed) {
-          // If confirmed, call clearCart() with productId
           fetch(`/removeCart`,{
             method:'post',
             headers: {
@@ -508,7 +530,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function minus(id){
   let a=document.getElementById(id);
-   console.log("minus  " ,id);
+  let b=document.getElementById(total)
+   console.log("minus", id);
   fetch(`/minusCartvalue`,{
             method:'post',
             headers: {
@@ -541,6 +564,7 @@ function minus(id){
 
 function add(id){
     let a=document.getElementById(id);
+    let b=document.getElementById(total)
      console.log("add  " ,id);
   fetch(`/addCartvalue`,{
             method:'post',
@@ -557,7 +581,7 @@ function add(id){
                     }
                     return response.json();
                 }).then(data=>{
-                    if(data.productCount==2){
+                    if(data.productCount==2 || 5){
                       window.location.reload();
                     }
                     // window.location.reload();

@@ -5,6 +5,7 @@ const productController = require("../controller/productController");
 const orderController = require("../controller/orderController");
 const userCheck = require("../middleware/userAuth");
 const cartController = require("../controller/cartController");
+const wishlistController = require("../controller/wishlistController");
 
 router.get("/", userController.indexPage);
 router.get("/login", userController.login);
@@ -82,7 +83,14 @@ router.get(
   addressController.deleteAddress
 );
 
-router.get("/account/order", userCheck.isUser, orderController.userOrder);
+router
+  .get("/account/order", userCheck.isUser, orderController.userOrder)
+  .post(
+    "/account/order/:id",
+    userCheck.isUser,
+    orderController.userEachOrderData
+  );
+
 
 router.post("/home", userController.validateUser);
 router.get("/product/:id", userController.productView);
@@ -115,13 +123,24 @@ router.get(
 );
 router.get("/cart", userCheck.isUser, cartController.cartPage);
 router.post("/removeCart", userCheck.isUser, cartController.removeCart);
-
 router.post("/minusCartvalue", userCheck.isUser, cartController.minusCartvalue);
 router.post("/addCartvalue", userCheck.isUser, cartController.addCartvalue);
 
+router.get("/wishlist", userCheck.isUser, wishlistController.wishlist);
+router.get(
+  "/addtoWishlist/:id",
+  userCheck.isUser,
+  wishlistController.addtoWishlist
+);
+router.post(
+  "/clearWishlist",
+  userCheck.isUser,
+  wishlistController.clearWishlist
+);
+
 router.get("/checkout", userCheck.isUser, cartController.checkout);
 
-router.post("/")
+router.post("/orderProduct", userCheck.isUser, orderController.orderProduct);
 
 router.get(
   "/showAddressInCheckout",
@@ -134,5 +153,7 @@ router.get("/resendOTP", userController.resendOTP);
 router.post("/search", userController.search);
 
 router.get("/logout", userController.logout);
+
+router.get("/test", userController.test);
 
 module.exports = router;

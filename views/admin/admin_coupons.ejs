@@ -1,0 +1,364 @@
+  <!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="../admin/assets/imgs/theme/logo.png"
+    />
+    <!-- Template CSS -->
+    <link
+      href="../admin/assets/css/main.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="../admin/assets/css/style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  </head>
+
+  <body>
+    <div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+      <div class="aside-top">
+        <a href="index.html" class="brand-wrap">
+          <img
+            src="../admin/assets/imgs/theme/logo.png"
+            class="logo"
+            alt="getantiques"
+          />
+        </a>
+        <div>
+          <button class="btn btn-icon btn-aside-minimize">
+            <i class="text-muted material-icons md-menu_open"></i>
+          </button>
+        </div>
+      </div>
+
+  
+    <nav>
+        <ul class="menu-aside">
+          <li class="menu-item">
+            <a class="menu-link" href="/admin/dashboard">
+              <i class="icon material-icons md-home"></i>
+              <span class="text">Dashboard</span>
+            </a>
+          </li>
+          <li class="menu-item">
+            <a class="menu-link" href="/admin/category">
+              <i class="icon material-icons md-shopping_bag"></i>
+              <span class="text">Categories</span>
+            </a>
+          </li>
+          <li class="menu-item ">
+            <a class="menu-link" href="/admin/user">
+              <i class="icon material-icons md-store"></i>
+              <span class="text">Users</span>
+            </a>
+          </li>
+          <li class="menu-item ">
+            <a class="menu-link" href="/admin/product">
+              <i class="icon material-icons md-add_box"></i>
+              <span class="text">Products</span>
+            </a>
+          </li>
+           <li class="menu-item">
+            <a class="menu-link" href="/admin/order">
+              <i class="icon material-icons md-store"></i>
+              <span class="text">Orders</span>
+            </a>
+          </li>
+          <li class="menu-item active">
+          <a class="menu-link" href="/admin/coupon">
+            <i class="icon material-icons md-article"></i>
+            <span class="text">Coupons</span>
+          </a>
+        </li>
+        <br />
+        <br />
+      </nav>
+    </aside>
+    <main class="main-wrap">
+      <header class="main-header navbar">
+        <div class="col-search">
+
+        </div>
+        <div class="col-nav" onload="timeCount();">
+          <p id="p1">
+            
+          </p>
+      
+      </div>
+        <div class="col-nav">
+          
+          <p>
+            
+            Welcome back, <%=name %> </p>
+      
+  </div>
+
+
+        <div class="col-nav">
+              <li class="dropdown nav-item">
+                <button class="btn btn-link" type="submit"> <a href="/admin/signout" ><i class="material-icons md-exit_to_app"></i>Logout</a></button>
+            
+              </li>
+          </ul>
+      </div>
+        
+      </header>
+    <section class="content-main">
+      <div class="content-header">
+        <div>
+          <h2 class="content-title card-title">Coupons</h2>
+          <p>Add, update or remove coupons here.</p>
+        </div>
+        <!-- <a href="/admin/newCategory" class="btn btn-primary btn-sm rounded">New Category</a> -->
+        <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addCatModal">
+          New Coupons
+        </button>
+        
+        <!-- Add Category: Modal -->
+
+         <div class="modal fade" id="addCatModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+          <div class="modal-dialog" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">ADD COUPONS</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body">
+                <form action="/admin/addCoupon" method="post">
+                  <label style="color:brown">Coupon Name<sup style="color: red;">*</sup></label>
+                  
+                      <input
+                      class="form-control"
+                      placeholder="Coupon Name"
+                      v-model:value="couponName" pattern="[A-Za-z0-9]+"
+                      type="text"
+                      name="couponName" minlength="4"
+                      required
+                      onkeydown="if(['Space'].includes(arguments[0].code)){return false;}"
+                      /> 
+                      <br>
+                      <label style="color:brown">Expiry on<sup style="color: red;">*</sup></label>
+                      <br>
+                      <input class="form-control" type="date" id="inputdate" name="expiry" required>
+                      <span id="dob-error"></span>
+                      <br>
+                      <label style="color:brown">Discount<sup style="color: red;">*</sup></label>
+                      <br>
+                      
+                      <input
+                      class="form-control"
+                      placeholder="Add a discount value"
+                      v-model:value="discount" pattern="[0-9]+"
+                      type="number"
+                      name="discount"
+                      id="discount"
+                    
+                      required
+                      />
+                      <br>
+                      <label style="color:brown">Minimum Cart Value<sup style="color: red;">*</sup></label>
+                      <br>
+                      <input
+                      class="form-control"
+                      placeholder="Minimum cart value to apply this coupon"
+                      type="number"
+                      name="minCartValue"
+                      id="minCartValue"
+                  
+                      required
+                      />
+                      <br>
+                      <p id="error-message" style="color: red;"></p>
+                      <button class="btn btn-outline-primary" onclick="validateFields()">Add</button>
+                </form>
+              </div>
+              
+            </div>
+          </div>
+        </div> 
+        
+        <!-- End of Modal -->
+
+          </div>
+        </div>
+        <div><br><br><br>
+       <% if(couponError ){%>
+        <p style="margin-left: 10%; font-size: large; color: red;" id="couponError"><%=couponError%></p>
+        <% } %>
+        <br></div>
+        
+      </div>
+      <div class="card">
+        <div class="card-body">
+          <div class="row">
+            
+            <div class="container mt-5">
+              <div class="row">
+                <table class="table table-striped" width="50%>">
+                  <tr>
+                    <th style="color:tomato;font-size: large; text-align: center; ">COUPON</th>
+                    <th style="color:tomato;font-size: large; text-align: center; ">EXPIRY</th>
+                    <th style="color:tomato;font-size: large; text-align: center; ">DISCOUNT</th>
+                    <th style="color:tomato;font-size: large; text-align: center; ">MIN CART VALUE</th> 
+                    <th style="color:tomato;font-size: large; text-align: center; ">EDIT</th>
+                    <th style="color:tomato;font-size: large; text-align: center; ">REMOVE</th>
+                  </tr>
+                  <% for(let cd of couponData) { %>
+                  <tr>
+                    <td style="text-align: center;"><%=cd.name %></td>
+                    <td style="text-align: center;" ><%=cd.expiry.toLocaleDateString() %></td>
+                    <td style="text-align: center;">₹<%=cd.discount %></td>
+                    <td style="text-align: center;">₹<%=cd.minimum_cart_value %></td>
+                    <td style="text-align: center;">
+                      <form action="/admin/couponEdit/<%=cd._id%>" method="post">
+                        <!-- <input type="hidden" value="<%#=cd._id%>" name="couponID"> -->
+                        <button class="btn btn-success" type="submit" data-toggle="modal" data-target="#editCouponModal">Edit</button> 
+                    
+                      </form>
+                      
+
+         
+                    </td>
+                    <td style="text-align: center;">
+                       <button class="delete-button" data-coupon-id="<%=cd._id%>">
+                          <i class="fas fa-trash"></i></button>
+                          </td>
+                  </tr>
+                  <% } %>
+                  
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-start">
+            <li class="page-item active">
+              <a class="page-link" href="#">01</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">02</a></li>
+            <li class="page-item"><a class="page-link" href="#">03</a></li>
+            <li class="page-item">
+              <a class="page-link dot" href="#">...</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#">16</a></li>
+            <li class="page-item">
+              <a class="page-link" href="#"
+                ><i class="material-icons md-chevron_right"></i
+              ></a>
+            </li>
+          </ul>
+        </nav>
+      </div> -->
+    </section>
+    <%- include ('partialsAdminFooter') %>
+    
+    <script>
+      
+
+      setTimeout(()=>{
+        let b=document.getElementById("couponError");
+        b.style.display='none';
+      },2500)
+
+
+
+    // Jquery for disabling previous dates in form //
+    $(function(){
+    var dtToday = new Date();
+ 
+    var month = dtToday.getMonth() + 1;
+    var day = dtToday.getDate();
+    var year = dtToday.getFullYear();
+    if(month < 10)
+        month = '0' + month.toString();
+    if(day < 10)
+     day = '0' + day.toString();
+    var maxDate = year + '-' + month + '-' + day;
+    $('#inputdate').attr('min', maxDate);
+});
+
+
+// Add event listener to all delete buttons - SWEET ALERT //
+
+  document.querySelectorAll('.delete-button').forEach(button => {
+    button.addEventListener('click', function() {
+      const couponId = this.dataset.couponId;
+      console.log("abcd   " ,couponId); //consoles the coupon ID in browser //
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "This action will remove this coupon.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Yes, remove !'
+      }).then((result) => {
+        if (result) {
+          fetch('/admin/removeCoupon',{
+            method:'POST',
+            headers: {
+                    'Content-Type': 'application/json',
+                },
+                  body: JSON.stringify({
+                    couponId: couponId,
+                    }),
+          })  // fetch closed //
+          .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data=>{
+                  if(data.success){
+                    // window.alert(data.message)
+                    window.location.href = '/admin/coupon';
+                  }
+                }).catch(error=>{
+                  console.error('Error:', error);
+                  swal("Error deleting coupon!", {
+                  icon: "error",
+                })
+                })
+        }   // if closed //
+      });  //.then closed//
+    }); // addEventListener button closed //
+  });  //forEach closed//    //addEventListener closed //
+  
+  
+  
+//   {
+//     Swal.fire({
+//       title: "Deleted!",
+//       text: "Your file has been deleted.",
+//       icon: "success"
+//     });
+//   }
+// });
+// })
+
+
+    </script>
+  </body>
+</html>
+    

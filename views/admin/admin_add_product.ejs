@@ -109,20 +109,29 @@
   <!-- <h2 class="mb-4">Add Product</h2> -->
   <form action="/admin/product" method="post" enctype="multipart/form-data">
     <div class="form-group">
-      <label for="productName" style="color:green; font-size: medium;">Product Name:</label>
+      <label for="productName" style="color:green; font-size: medium;">Product Name:<sup style="line-height: 120%; color: red;">*</sup></label>
       <input type="text" class="form-control" id="productName" placeholder="Product name" name="prodName" minlength="4" required>
     </div>
     <div class="form-group" style="padding-top: 3%;">
-      <label for="productDescription" style="color:green; font-size: medium;">Product Description:</label>
+      <label for="productDescription" style="color:green; font-size: medium;">Product Description:<sup style="line-height: 120%; color: red;">*</sup></label>
       <textarea class="form-control" id="productDescription" rows="3" placeholder="Product description" name="prodDesc" minlength="10" maxlength="100" required></textarea>
     </div>
     <div class="form-group" style="padding-top: 3%;">
-      <label for="productPrice" style="color:green; font-size: medium;">Product Price:</label>
-      <input type="number" class="form-control" id="productPrice" placeholder="Product price" name="prodRate" required min="100">
+      <label for="productPrice" style="color:green; font-size: medium;">Product Price:<sup style="line-height: 120%; color: red;">*</sup></label>
+      <input type="number" class="form-control" id="productPrice" placeholder="Product price" name="productPrice" required min="100" required>
     </div>
     <div class="form-group" style="padding-top: 3%;">
+      <label for="discount" style="color:green; font-size: medium;">Discount %:<sup style="line-height: 120%; color: red;">*</sup></label>
+      <input type="" class="form-control" id="discount" placeholder="Discount percentage" name="discount" min="1" required>
+    </div>
+    <div class="form-group" style="padding-top: 3%;">
+      <label for="DiscountedPrice" style="color:green; font-size: medium;">Discounted Price:<sup style="line-height: 120%; color: red;">*</sup></label>
+      <input type="number" class="form-control" id="DiscountedPrice" placeholder="Discounted Price" name="DiscountedPrice" readonly>
+    </div>
+
+    <div class="form-group" style="padding-top: 3%;">
     
-      <label for="productCategory" style="color:green; font-size: medium;">Product Category:</label>
+      <label for="productCategory" style="color:green; font-size: medium;">Product Category:<sup style="line-height: 120%; color: red;">*</sup></label>
       <select class="form-control" id="productCategory" name="category" required>
         
         <option value="" selected disabled>Choose a category</option>
@@ -132,11 +141,11 @@
       </select>
     </div>
     <div class="form-group" style="padding-top: 3%;">
-      <label for="productQuantity" style="color:green; font-size: medium;">Product Quantity:</label>
+      <label for="productQuantity" style="color:green; font-size: medium;">Product Quantity:<sup style="line-height: 120%; color: red;">*</sup></label>
       <input type="number" class="form-control" id="productQuantity" placeholder="Product quantity" name="quantity" required min="0">
     </div>
     <div class="form-group" style="padding-top: 3%;">
-      <label for="productImage" style="color:green; font-size: medium;">Product Image:</label><br>
+      <label for="productImage" style="color:green; font-size: medium;">Product Image:<sup style="line-height: 120%; color: red;">*</sup></label><br>
       <input type="file" class="form-control-file" id="productImage" name="images" multiple accept="image/*" required>
     </div>
     <br><br>
@@ -156,5 +165,26 @@
       <!-- content-main end// -->
     <%- include ('partialsAdminFooter') %>
     
+
+    <script>
+    const productRateInput = document.getElementById("productPrice");
+    const productDiscountInput = document.getElementById("discount");
+    const productDiscountedInput = document.getElementById("DiscountedPrice");
+
+    function calculateDiscountedValue() {
+            const productRate = parseFloat(productRateInput.value);
+            const discount = parseFloat(productDiscountInput.value);
+            const discountedValue = productRate - (productRate * (discount / 100));
+
+            // Update the discounted value input field
+            productDiscountedInput.value = discountedValue; 
+        }
+
+        // Add event listeners to the product rate and discount input fields
+        productRateInput.addEventListener('input', calculateDiscountedValue);
+        productDiscountInput.addEventListener('input', calculateDiscountedValue);
+
+    
+    </script>
   </body>
 </html>

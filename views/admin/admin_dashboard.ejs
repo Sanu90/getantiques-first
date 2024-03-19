@@ -32,13 +32,13 @@
             <span class="text">Orders</span>
           </a>
         </li>
-        <!-- WILL ADD IT IN COMING WEEK  -->
-        <!--<li class="menu-item">
-          <a class="menu-link" href="page-transactions-1.html">
-            <i class="icon material-icons md-monetization_on"></i>
+        
+        <li class="menu-item">
+          <a class="menu-link" href="/admin/coupon">
+            <i class="icon material-icons md-article"></i>
             <span class="text">Coupons</span>
           </a>
-        </li> -->
+        </li>
       <br />
       <br />
     </nav>
@@ -103,7 +103,7 @@
             >
           </div> -->
         </div>
-        <!-- <div class="row">
+        <div class="row">
           <div class="col-lg-3">
             <div class="card card-body mb-4">
               <article class="icontext">
@@ -112,8 +112,8 @@
                 ></span>
                 <div class="text">
                   <h6 class="mb-1 card-title">Revenue</h6>
-                  <span>₹13,456</span>
-                  <span class="text-sm"> Shipping fees are not included </span>
+                  <span>₹<%=sum_of_revenue %></span>
+                  <span class="text-sm"> Including Shipping fees</span>
                 </div>
               </article>
             </div>
@@ -126,8 +126,8 @@
                 ></span>
                 <div class="text">
                   <h6 class="mb-1 card-title">Orders</h6>
-                  <span>4</span>
-                  <span class="text-sm"> Excluding orders in transit </span>
+                  <span><%=orderData.length %></span>
+                  <span class="text-sm"> All orders </span>
                 </div>
               </article>
             </div>
@@ -140,28 +140,30 @@
                 ></span>
                 <div class="text">
                   <h6 class="mb-1 card-title">Products</h6>
-                  <span>10</span>
-                  <span class="text-sm"> In 3 Categories </span>
+                  <span><%=productData.length %></span>
+                  <span class="text-sm"> In <%=categoryData.length %> Categories </span>
                 </div>
               </article>
             </div>
           </div>
           <div class="col-lg-3">
+          <p>Download the reports</p>
             <div class="card card-body mb-4">
-              <article class="icontext">
+            
+              <!-- <article class="icontext">
                 <span class="icon icon-sm rounded-circle bg-info-light"
                   ><i class="text-info material-icons md-shopping_basket"></i
                 ></span>
-                <div class="text">
+                 <div class="text">
                   <h6 class="mb-1 card-title">Monthly Earning</h6>
                   <span>₹6,982</span>
                   <span class="text-sm"> Based on your local time. </span>
-                </div>
-              </article>
+                </div> 
+              </article> -->
             </div>
           </div>
-        </div> -->
-        <!-- <div class="row">
+        </div>
+        <div class="row">
           <div class="col-xl-8 col-lg-12">
             <div class="card mb-4">
               <article class="card-body">
@@ -198,7 +200,7 @@
               </li>
             </ul>
           </nav>
-        </div> -->
+        </div>
       </section>
       <!-- content-main end// -->
       <%- include ('partialsAdminFooter') %>

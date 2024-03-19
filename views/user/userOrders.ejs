@@ -24,10 +24,10 @@
     />
 
     <!-- Libraries Stylesheet -->
-    <link
-      href=".../user/lib/owlcarousel/assets/owl.carousel.min.css"
+    <!-- <link
+      href="../user/lib/owlcarousel/assets/owl.carousel.min.css"
       rel="stylesheet"
-    />
+    /> -->
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="../user/css/style.css" rel="stylesheet" />
@@ -89,7 +89,7 @@
           <p class="m-0 px-2">-</p>
           <p class="m-0"><a href="/account">Account</a></p>
           <p class="m-0 px-2">-</p>
-          <p class="m-0">Orders</p>
+          <p class="m-0">Order History</p>
         </div>
       </div>
     </div>
@@ -97,28 +97,57 @@
 
     <!-- Container Cards Start -->
     <!-- <div class="w-25" style="margin-left: 40%"> -->
-    <p>
-      <!-- <#% if(oldPasswordError){ %>
-        <p id="alreadyUser" style="color: red;"><%#=oldPasswordError%></p> 
-        <%#} %> -->
-    </p>
-    <!-- <div class="container">
-      <div class="card" onclick="window.location.href=''">
+    <% if(orderHistory.length==0){ %>
+    <div class="container">
+    <p style="font-size: large; color:tomato;">Your Order history is empty.</p>
+    <br>
+    <p style="font-size: large; color:tomato;">Enjoy your shopping experience by clicking below button. </p><br>
+    <button type="button"
+          class="btn btn-outline-primary"
+          onclick="location.href='/home'"
+        >
+          Keep Shopping
+        </button>
+    </div>
+    <% }else{ %>
+    <div class="container">
+      <div class="card" style="cursor: default;" >
         <table class="table">
-          <tbody>
+          <thead>
             <tr>
-              <th scope="row">1</th>
-              <td>Mark</td>
-              <td>Otto</td>
-              <td>@mdo</td>
-              <td>@mdo</td>
-              <td>@mdo</td>
-              <td>@mdo</td>
+              <th scope="col">#</th>
+              <th scope="col">ID</th>
+              <th scope="col" style="width: 150px;" >Date, Time</th>
+              <th scope="col">Product count</th>
+              <th scope="col">Total</th>
+              <th scope="col">Payment Mode</th>
+              <th scope="col">Payment Status</th>
+              <th scope="col">Details</th>
             </tr>
+          </thead>
+          <tbody>
+          <% for(let i=0;i<orderHistory.length;i++){ %>
+            <tr>
+              <td><%=i+1 %></td>
+              <td><%=orderHistory[i].orderID %></td>
+              <td><%=orderHistory[i].date.toLocaleString() %></td>
+              <td style="text-align: center;"><%=orderHistory[i].products.length %></td>
+              <td>₹<%=orderHistory[i].totalOrderValue %></td>
+              <td><%=orderHistory[i].paymentMethod %></td>
+              <td><%=orderHistory[i].paymentStatus %></td>
+              <td style="text-align: left;">
+                      <form action="/account/order/<%=orderHistory[i].orderID %>" method="post">
+                        <!-- <input type="hidden" value="<%#=p.name%>" name="oldName">  -->
+                        <button class="btn btn-success" type="submit">More..</button>
+                      </form>
+            </tr>
+            <%} %>
           </tbody>
         </table>
+        
       </div>
-    </div> -->
+    </div>
+    <% } %>
     <div class="container-fluid"><br /><br /><br /><br /><br /><br /></div>
 
     <!-- <a href="#" class="btn btn-primary back-to-top">
@@ -164,19 +193,14 @@
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="../user/lib/easing/easing.min.js"></script>
-    <script src="../user/lib/owlcarousel/owl.carousel.min.js"></script>
+    <!-- <script src="../user/lib/easing/easing.min.js"></script>
+    <script src="../user/lib/owlcarousel/owl.carousel.min.js"></script> -->
 
     <!-- Contact Javascript File -->
-    <script src="../user/mail/jqBootstrapValidation.min.js"></script>
-    <script src="../user/mail/contact.js"></script>
+    <!-- <script src="../user/mail/jqBootstrapValidation.min.js"></script>
+    <script src="../user/mail/contact.js"></script> -->
 
     <!-- Template Javascript -->
-    <script src="../user/js/main.js"></script>
-    <script>
-      document.getElementById("clickID").addEventListener("click", function () {
-        alert("You clicked the div!");
-      });
-    </script>
+    <!-- <script src="../user/js/main.js"></script> -->
   </body>
 </html>

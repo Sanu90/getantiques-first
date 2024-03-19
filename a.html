@@ -1,161 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <title>Update Profile</title>
-    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-    <meta content="Free HTML Templates" name="keywords" />
-    <meta content="Free HTML Templates" name="description" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <style>
+      .float-container {
+        border: 3px solid #fff;
+        padding: 20px;
+      }
 
-    <!-- Favicon -->
-    <link href="../user/img/favicon.ico" rel="icon" />
-
-    <!-- Google Web Fonts -->
-    <link rel="preconnect" href="https://fonts.gstatic.com" />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap"
-      rel="stylesheet"
-    />
-
-    <!-- Font Awesome -->
-    <link
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.0/css/all.min.css"
-      rel="stylesheet"
-    />
-
-    <!-- Bootstrap -->
-    <link
-      href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
-      rel="stylesheet"
-    />
-
-    <!-- Customized Bootstrap Stylesheet -->
-    <link href="../user/css/style.css" rel="stylesheet" />
+      .float-child {
+        width: 50%;
+        float: left;
+        padding: 20px;
+        border: 2px solid red;
+      }
+    </style>
   </head>
 
   <body>
-    <!-- Page Header Start -->
-    <div class="container-fluid bg-secondary mb-5">
-      <div
-        class="d-flex flex-column align-items-center justify-content-center"
-        style="min-height: 180px"
-      >
-        <h1 class="font-weight-semi-bold text-uppercase mb-3">
-          Update Profile
-        </h1>
-        <div class="d-inline-flex">
-          <p class="m-0"><a href="/">Home</a></p>
-          <p class="m-0 px-2">-</p>
-          <p class="m-0">Update Profile</p>
-        </div>
+    <div class="float-container">
+      <div class="float-child">
+        <div class="green">Float Column 11</div>
+      </div>
+
+      <div class="float-child">
+        <div class="blue">Float Column 21</div>
       </div>
     </div>
-    <!-- Page Header End -->
-
-    <!-- Update Profile Form Start -->
-    <div class="container">
-      <form>
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input
-            type="text"
-            class="form-control"
-            id="name"
-            placeholder="Enter your name"
-          />
-        </div>
-        <label for="name">Test</label>
-        <input type="file" id="fileInput" onchange="showCloseButton()" />
-        <label for="fileInput" style="cursor: pointer"></label>
-        <span
-          id="closeButton"
-          style="cursor: pointer; color: red; display: none"
-          onclick="removeFile()"
-          >X</span
-        >
-
-        <div class="form-group">
-          <label for="email">Email address</label>
-          <input
-            type="email"
-            class="form-control"
-            id="email"
-            placeholder="Enter your email"
-          />
-        </div>
-        <div class="form-group">
-          <label for="phone">Phone number</label>
-          <input
-            type="tel"
-            class="form-control"
-            id="phone"
-            placeholder="Enter your phone number"
-          />
-        </div>
-        <div class="form-group">
-          <label for="address">Address</label>
-          <textarea
-            class="form-control"
-            id="address"
-            rows="3"
-            placeholder="Enter your address"
-          ></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">Update Profile</button>
-      </form>
-    </div>
-    <!-- Update Profile Form End -->
-
-    <!-- Footer Start -->
-    <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
-      <!-- <div class="row border-top border-light mx-xl-5 py-4"> -->
-      <div class="col-md-6 px-xl-0">
-        <p class="mb-md-0 text-center text-md-left text-dark">
-          &copy;
-          <a class="text-dark font-weight-semi-bold" href="#">getantiques</a>.
-          All Rights Reserved. Designed by
-          <a
-            class="text-dark font-weight-semi-bold"
-            href="https://htmlcodex.com"
-            >HTML Codex</a
-          ><br />
-          Distributed By
-          <a href="https://themewagon.com" target="_blank">ThemeWagon</a>
-        </p>
-      </div>
-      <div class="col-md-6 px-xl-0 text-center text-md-right">
-        <img class="img-fluid" src="img/payments.png" alt="" />
-      </div>
-      <!-- </div> -->
-    </div>
-    <!-- Footer End -->
-
-    <!-- Back to Top -->
-    <a href="#" class="btn btn-primary back-to-top"
-      ><i class="fa fa-angle-double-up"></i
-    ></a>
-
-    <!-- JavaScript Libraries -->
-    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
-    <script src="lib/easing/easing.min.js"></script>
-    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
-
-    <!-- Contact Javascript File -->
-    <script src="mail/jqBootstrapValidation.min.js"></script>
-    <script src="mail/contact.js"></script>
-
-    <!-- Template Javascript -->
-    <script src="js/main.js"></script>
-
-    <script>
-      function showCloseButton() {
-        document.getElementById("closeButton").style.display = "inline";
-      }
-      function removeFile() {
-        document.getElementById("fileInput").value = "";
-        document.getElementById("closeButton").style.display = "none";
-      }
-    </script>
   </body>
 </html>

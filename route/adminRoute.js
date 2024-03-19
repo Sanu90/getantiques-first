@@ -7,6 +7,7 @@ const adminController = require("../controller/adminController");
 const categoryController = require("../controller/categoryController");
 const productController = require("../controller/productController");
 const orderController = require("../controller/orderController");
+const couponController = require("../controller/couponController");
 const multer = require("../middleware/multer");
 
 router.get("/", adminController.adminLoginPage);
@@ -61,7 +62,7 @@ router.get("/product", adminMiddleware.isAdmin, productController.adminProduct);
 router.post(
   "/product",
   adminMiddleware.isAdmin,
-  multer.array("images", 10),
+  multer.array("images", 5),
   productController.addProduct
 );
 
@@ -103,6 +104,29 @@ router.post(
   productController.productHide
 );
 
-router.get("/signout", adminController.adminSignout);
+router.get("/coupon", adminMiddleware.isAdmin, couponController.coupon);
+router.post("/addCoupon", adminMiddleware.isAdmin, couponController.addCoupon);
+router.post(
+  "/couponEdit/:id",
+  adminMiddleware.isAdmin,
+  couponController.couponEdit
+);
+router.post(
+  "/edit-coupon-save",
+  adminMiddleware.isAdmin,
+  couponController.saveEditCoupon
+);
+
+router.post(
+  "/removeCoupon",
+  adminMiddleware.isAdmin,
+  couponController.deleteCoupon
+);
+
+router.get(
+  "/signout",
+  adminController.adminSignout,
+  couponController.couponEdit
+);
 
 module.exports = router;

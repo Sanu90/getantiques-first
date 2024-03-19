@@ -66,6 +66,8 @@ const addToCart = async (req, res) => {
       "item.product": product_id,
     });
 
+    console.log("Existing cart item: ", existingCartItem);
+
     if (!existingCartItem) {
       // If the product doesn't exist, add it to the cart
       await cartModel.updateOne(
@@ -91,6 +93,7 @@ const addToCart = async (req, res) => {
 
 const cartPage = async (req, res) => {
   try {
+    console.log("CART PAGE");
     const userName = req.session.name;
     const category = await categoryModel.find({});
     const userID = req.session.userID;
@@ -100,7 +103,11 @@ const cartPage = async (req, res) => {
     console.log("cartData is:", cartData);
     //console.log(userID);
     console.log("***************");
-    console.log(cartData[0].item);
+    if (cartData.length > 0) {
+      console.log(cartData[0].item);
+    } else {
+      console.log("Cart is empty");
+    }
     console.log("***************");
 
     const cartProducts = await cartModel.aggregate([
@@ -124,7 +131,7 @@ const cartPage = async (req, res) => {
           productId: { $arrayElemAt: ["$product._id", 0] },
           productName: { $arrayElemAt: ["$product.name", 0] },
           productImage: { $arrayElemAt: ["$product.image", 0] },
-          productPrice: { $arrayElemAt: ["$product.rate", 0] },
+          productPrice: { $arrayElemAt: ["$product.rate_after_discount", 0] },
           productQuantity: "$item.product_quantity",
         },
       },
@@ -158,7 +165,7 @@ const cartPage = async (req, res) => {
 
 const removeCart = async (req, res) => {
   try {
-    console.log("Remove cart invoked");
+    console.log("Remove cart.... user clearing cart values");
     productId = req.body.productId;
     console.log(productId);
     const userID = req.session.userID;
@@ -169,7 +176,7 @@ const removeCart = async (req, res) => {
       { user: new ObjectId(userID) },
       { $pull: { item: { product: new ObjectId(productId) } } }
     );
-    console.log(result);
+    console.log("CART REMOVED RESULT IS: ", result);
     res
       .status(200)
       .json({ success: true, message: "Product removed from cart" });
@@ -200,7 +207,15 @@ const checkout = async (req, res) => {
     // console.log("****");
     //const cartCount = cartProducts[0].item.length;
     totalAmount = req.session.cartTotal;
-    console.log(totalAmount); //total cart value passed to check out page //
+    console.log("total cart amount is:  ", totalAmount); //total cart value passed to check out page //
+
+    const shippingCharges = totalAmount > 200000 ? 0 : 1000;
+
+    const totalCheckoutCharge = totalAmount + shippingCharges;
+
+    console.log("total checkout page amount is:  ", totalCheckoutCharge);
+
+    req.session.totalCheckoutCharge = totalCheckoutCharge;
 
     const checkoutPageValues = await cartModel.aggregate([
       {
@@ -222,7 +237,7 @@ const checkout = async (req, res) => {
           _id: 0,
           //productId: { $arrayElemAt: ["$product._id", 0] },
           productName: { $arrayElemAt: ["$product.name", 0] },
-          //productImage: { $arrayElemAt: ["$product.image", 0] },
+          productImage: { $arrayElemAt: ["$product.image", 0] },
           productPrice: { $arrayElemAt: ["$product.rate", 0] },
           productQuantity: "$item.product_quantity",
         },
@@ -230,7 +245,11 @@ const checkout = async (req, res) => {
     ]);
 
     console.log("checkoutPageValues ::::", checkoutPageValues);
+
+    req.session.userCheckOutProductList = checkoutPageValues;
+
     console.log(
+      "Just displaying cart first product details here::: ",
       checkoutPageValues[0].productName,
       checkoutPageValues[0].productPrice * checkoutPageValues[0].productQuantity
     );
@@ -240,6 +259,8 @@ const checkout = async (req, res) => {
       totalAmount,
       checkoutPageValues,
       address,
+      totalCheckoutCharge,
+      shippingCharges,
     });
   } catch (error) {
     console.log("Error occurred while checkout", error);
@@ -368,7 +389,7 @@ const addCartvalue = async (req, res) => {
 
     //console.log(abcd[0]);
   } catch (error) {
-    console.log("error occurred while addCartvalue", error);
+    console.log("error occurred while addCartvalue in cartController", error);
   }
 };
 

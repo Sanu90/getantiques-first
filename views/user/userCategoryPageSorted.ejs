@@ -84,10 +84,10 @@
           </form>
         </div>
         <div class="col-lg-3 d-flex">
-          <!-- <a href="" class="btn border">
+          <a href="" class="btn border">
             <i class="fas fa-heart text-primary"></i>
             <span class="badge">0</span>
-          </a> -->
+          </a>
           <a href="/cart" class="btn border">
             <i class="fas fa-shopping-cart text-primary"></i>
             <span class="badge"><%=cartCount%></span> </a
@@ -293,13 +293,10 @@
               <div
                 class="d-flex align-items-center justify-content-between mb-4"
               >
-                <form action="">
-                  <div class="input-group">
-                    <!-- <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Search by name"
-                    /> -->
+                <div class="input-group">
+                  <% if(offerCategories.offer > 0){ %>
+                    <p style="font-size:large; font-weight: 400; color:cornflowerblue;">Enjoy flat <%=offerCategories.offer%> % off on these products.  </p>
+                    <%}%>
                     <div class="input-group-append">
                       <span
                         class="input-group-text bg-transparent text-primary"
@@ -366,8 +363,15 @@
                 >
                   <h6 class="text-truncate mb-3"><%=cp.name %></h6>
                   <div class="d-flex justify-content-center">
-                    <h6>₹<%=cp.rate %></h6>
-                    <!-- <h6 class="text-muted ml-2"><del><%#=cp.rate %></del></h6> -->
+                    <% if(cp.discount > 0){ %>
+                    <h6>₹<%=cp.rate_after_discount %></h6>
+                    <h6 class="text-muted ml-2">
+                      <del>₹<%=cp.rate %></del>
+                    </h6>
+                    <% } else { %>
+
+                    <h6>₹<%=cp.rate_after_discount %></h6>
+                    <% } %>
                   </div>
                 </div>
                 <div

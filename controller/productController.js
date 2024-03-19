@@ -24,12 +24,12 @@ const adminProduct = async (req, res) => {
     if (req.session.prodData) {
       product = req.session.prodData;
     }
-    console.log("product list:" + product);
+    console.log("***************** Product list:" + product);
     console.log("ADMIN: PRODUCTS");
     res.render("admin_products", {
       name: req.session.adminName,
       product,
-      totalPages: Math.floor(count / limit),
+      totalPages: Math.ceil(count / limit),
       currentPage: page,
     });
   } catch (err) {
@@ -52,6 +52,7 @@ const newProductPage = async (req, res) => {
 var imagePath = [];
 const addProduct = async (req, res) => {
   try {
+    console.log("************ADMIN ADDING PRODUCT********");
     console.log(req.body);
     console.log(req.files);
     const imageData = req.files;
@@ -60,27 +61,29 @@ const addProduct = async (req, res) => {
         .replace(/\\/g, "/")
         .replace("public", "");
     }
-    //console.log("IMAGEPATH is: ", imagePath);
+    //   //console.log("IMAGEPATH is: ", imagePath);
     req.imagePath = imagePath;
     const newProd = new productModel({
       name: req.body.prodName,
       category: req.body.category,
-      rate: req.body.prodRate,
+      rate: req.body.productPrice,
+      discount: req.body.discount,
+      rate_after_discount: req.body.DiscountedPrice,
       description: req.body.prodDesc,
       stock: req.body.quantity,
       image: imagePath,
       hide: 0,
     });
     await newProd.save();
-    //productImages = await productModel.find({})
-    //console.log("Product Images: ");
+    //   //productImages = await productModel.find({})
+    //   //console.log("Product Images: ");
     console.log("product added");
-    //   console.log(req.body.images);
-    //   console.log(req.file.filename);
+    //   //   console.log(req.body.images);
+    //   //   console.log(req.file.filename);
     return res.redirect(`/admin/product`);
   } catch (err) {
     console.log("error while adding product to the DB: " + err);
-    // return res.redirect(`/admin/error`);
+    res.redirect(`/admin/error`);
   }
 };
 
@@ -151,9 +154,11 @@ const updateProduct = async (req, res) => {
       {
         $set: {
           name: req.body.newProdName,
-          category: req.body.newProdCat,
-          rate: req.body.newProdRate,
           description: req.body.newProdDesc,
+          rate: req.body.newProdRate,
+          discount: req.body.newDiscount,
+          rate_after_discount: req.body.DiscountedPrice,
+          category: req.body.newProdCat,
           stock: req.body.newProStock,
         },
       }
@@ -239,6 +244,12 @@ const categoryProductSort = async (req, res) => {
         .sort({ name: 1 });
       console.log("DATA IF 1 is pressed:" + catProd);
       const value = "A - Z";
+
+      const offerCategories = await categoryModel.findOne(
+        { name: catName },
+        { offer: 1 }
+      );
+
       res.render("userCategoryPageSorted", {
         user: userName,
         category,
@@ -246,6 +257,7 @@ const categoryProductSort = async (req, res) => {
         catProd,
         value,
         cartCount,
+        offerCategories,
         // searchValue,
         // searchData,
       });
@@ -254,6 +266,10 @@ const categoryProductSort = async (req, res) => {
         .find({ category: catName })
         .sort({ name: -1 });
       console.log("DATA IF 2 is pressed:" + catProd);
+      const offerCategories = await categoryModel.findOne(
+        { name: catName },
+        { offer: 1 }
+      );
       res.render("userCategoryPageSorted", {
         user: userName,
         category,
@@ -262,12 +278,17 @@ const categoryProductSort = async (req, res) => {
         searchValue,
         searchData,
         cartCount,
+        offerCategories,
       });
     } else if (number == 3) {
       const catProd = await productModel
         .find({ category: catName })
         .sort({ rate: 1 });
       console.log("DATA IF 3 is pressed:" + catProd);
+      const offerCategories = await categoryModel.findOne(
+        { name: catName },
+        { offer: 1 }
+      );
       res.render("userCategoryPageSorted", {
         user: userName,
         category,
@@ -276,12 +297,19 @@ const categoryProductSort = async (req, res) => {
         searchValue,
         searchData,
         cartCount,
+        offerCategories,
       });
     } else if (number == 4) {
       const catProd = await productModel
         .find({ category: catName })
         .sort({ rate: -1 });
       console.log("DATA IF 4 is pressed:" + catProd);
+
+      const offerCategories = await categoryModel.findOne(
+        { name: catName },
+        { offer: 1 }
+      );
+
       res.render("userCategoryPageSorted", {
         user: userName,
         category,
@@ -290,6 +318,7 @@ const categoryProductSort = async (req, res) => {
         searchValue,
         searchData,
         cartCount,
+        offerCategories,
       });
     }
   } catch (error) {

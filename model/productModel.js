@@ -24,6 +24,16 @@ const productData = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  discount: {
+    type: Number,
+    required: true,
+    trim: true,
+  },
+  rate_after_discount: {
+    type: Number,
+    required: true,
+    trim: true,
+  },
   description: {
     type: String,
     required: true,

@@ -36,6 +36,11 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="../user/css/style.css" rel="stylesheet" />
+    <style>
+      .custom-control-input {
+        color: brown;
+      }
+    </style>
   </head>
 
   <body>
@@ -149,13 +154,6 @@
           <nav
             class="navbar navbar-expand-lg bg-light navbar-light py-3 py-lg-0 px-0"
           >
-            <!-- <a href="" class="text-decoration-none d-block d-lg-none">
-              <h1 class="m-0 display-5 font-weight-semi-bold">
-                <span class="text-primary font-weight-bold border px-3 mr-1"
-                  >E</span
-                >Shopper
-              </h1>
-            </a> -->
             <button
               type="button"
               class="navbar-toggler"
@@ -202,57 +200,23 @@
 
     <!-- Checkout Start -->
     <div class="container-fluid pt-5">
+      <!-- from here -->
       <div class="row px-xl-5">
         <div class="col-lg-8">
-          <div class="mb-4">
-            <h4 class="font-weight-semi-bold mb-4">
-              Select a delivery address
-            </h4>
-
-            <div class="col-xxl">
-              <% for(let i = 0; i < address.length; i++) { %>
-              <div
-                class="custom-control custom-radio"
-                style="margin-bottom: 35px"
-              >
-                <input type="radio" class="custom-control-input" name="address"
-                id="<%= address[i]._id %>" <% if (i === 0) { %> checked <% } %>
-                />
-                <label class="custom-control-label" for="<%= address[i]._id %>"
-                  ><%= address[i].customerName + ", " + address[i].mobile
-                  %></label
-                >
-                <!-- Uncomment the following lines if you want to display additional information -->
-                <p>
-                  <%= address[i].houseName + ", " + address[i].street + ", " +
-                  address[i].city + ", " + address[i].state + ", " +
-                  address[i].country + " - " + address[i].pincode %>
-                </p>
-              </div>
-              <% } %>
-
-              <br />
-
-              <br /><br /><br />
-              <div class="col-md-12 form-group">
-                <div class="custom-control custom-checkbox">
-                  <input
-                    type="checkbox"
-                    class="custom-control-input"
-                    id="shipto"
-                  />
-                  <label
-                    class="custom-control-label"
-                    for="shipto"
-                    data-toggle="collapse"
-                    data-target="#shipping-address"
-                    >Add a delivery address from here</label
-                  >
-                </div>
-              </div>
-            </div>
+          <!-- to here -->
+          <!-- <div class="mb-4"> -->
+          <div class="custom-control custom-checkbox">
+            <input type="checkbox" class="custom-control-input" id="shipto" />
+            <label
+              class="custom-control-label"
+              for="shipto"
+              data-toggle="collapse"
+              data-target="#shipping-address"
+              >Add a delivery address from here</label
+            >
           </div>
           <div class="collapse mb-4" id="shipping-address">
+            <br />
             <h4 class="font-weight-semi-bold mb-4">New Shipping Address</h4>
 
             <form action="/saveNewAddressfromCheckout" method="post">
@@ -351,7 +315,92 @@
             </form>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="row px-xl-5">
+      <div class="col-lg-8">
+        <div class="mb-4">
+          <!-- let form starts here -->
+          <form action="/orderProduct" method="post">
+          <div class="col-xxl">
+            <h4 class="font-weight-semi-bold mb-4" style="padding-top: 50px">
+              Select a delivery address from below
+            </h4>
+            <% for(let i = 0; i < address.length; i++) { %>
+            <div class="custom-control custom-radio" style="margin: 35px">
+              <input type="radio" class="custom-control-input" name="address"
+              value="<%=address[i]._id%>"
+              id="<%= address[i]._id %>" <% if (i === 0) { %> checked <% } %> />
+              <label class="custom-control-label" for="<%= address[i]._id %>"
+                ><%= address[i].customerName + ", " + address[i].mobile
+                %></label
+              >
+              <p>
+                <%= address[i].houseName + ", " + address[i].street + ", " +
+                address[i].city + ", " + address[i].state + ", " +
+                address[i].country + " - " + address[i].pincode %>
+              </p>
+            </div>
+            <% } %>
+
+            <!-- Payment button starts -->
+            <div class="card border-secondary mb-10 mx-auto" style="max-width: 500px; margin-top: 100px;">
+                    <div class="card-header bg-secondary border-0">
+                      <h4 class="font-weight-semi-bold m-0 text-center">Payment</h4>
+                    </div>
+                    <div class="card-body">
+                      <div class="form-group">
+                        <div class="custom-control custom-radio">
+                          <input
+                            type="radio"
+                            class="custom-control-input"
+                            id="cod"
+                            name="payment"
+                            value="Cash on Delivery"
+                            checked
+                          />
+                          <label class="custom-control-label" for="cod">Pay on Delivery</label>
+                        </div>
+                      </div>
+                          <div class="form-group">
+                        <div class="custom-control custom-radio">
+                          <input
+                            type="radio"
+                            class="custom-control-input"
+                            id="razorpay"
+                            name="payment"
+                            value="Online"
+                          />
+                          <label class="custom-control-label" for="razorpay">Razorpay</label>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    <div class="card-footer border-secondary bg-transparent">
+                      <button  type="submit" class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Place Order</button>
+                    </div>
+                  </div>
+            <!-- Payment button  ends -->
+            </div>
+          </form>
+            <!-- let form ends here -->
+          </div>
+        </div>
         <div class="col-lg-4">
+        <form class="mb-5" action="/applycoupon" method="post">
+                  <div class="input-group">
+                    <input
+                      type="text"
+                      class="form-control p-4"
+                      placeholder="Coupon Code"
+                      name="coupon"
+                      required
+                    />
+                    <div class="input-group-append">
+                    <button class="btn btn-primary" type="button">Apply Coupon</button>
+                    </div>
+                  </div>
+                </form>
           <div class="card border-secondary mb-5">
             <div class="card-header bg-secondary border-0">
               <h4 class="font-weight-semi-bold m-0">Order Total</h4>
@@ -362,20 +411,15 @@
               <div class="d-flex justify-content-between">
                 <p><%=checkoutPageValues[i].productName %></p>
                 <p>&#215;<%=checkoutPageValues[i].productQuantity %></p>
-                <p>
-                  ₹&nbsp;&nbsp;&nbsp;<%=checkoutPageValues[i].productPrice
+                <!-- <p>
+                  ₹&nbsp;&nbsp;&nbsp;<%#=checkoutPageValues[i].productPrice
                   *checkoutPageValues[i].productQuantity %>
+                </p> -->
+                <p>
+                  ₹&nbsp;&nbsp;&nbsp;<%=totalAmount%>
                 </p>
               </div>
               <% } %>
-              <!-- <div class="d-flex justify-content-between">
-                <p>Colorful Stylish Shirt 2</p>
-                <p>$150</p>
-              </div>
-              <div class="d-flex justify-content-between">
-                <p>Colorful Stylish Shirt 3</p>
-                <p>$150</p>
-              </div> -->
               <hr class="mt-0" />
               <div class="d-flex justify-content-between mb-3 pt-1">
                 <h6 class="font-weight-medium">Subtotal</h6>
@@ -383,73 +427,36 @@
               </div>
               <div class="d-flex justify-content-between">
                 <h6 class="font-weight-medium">Shipping</h6>
-                <h6 class="font-weight-medium">₹100</h6>
+                <%# if(totalAmount < 200000){ %>
+                <h6 class="font-weight-medium">₹<%=shippingCharges %></h6>
+                <%# }else{ %>
+                <!-- <h6 class="font-weight-medium">₹ 0</h6> -->
+                <%# } %>
+                
+              </div>
+              <div class="d-flex justify-content-between">
+                <h6 class="font-weight-medium">Discount (if any)</h6>
+                <h6 class="font-weight-medium" id="discount"></h6>
+                
+                
               </div>
             </div>
             <div class="card-footer border-secondary bg-transparent">
               <div class="d-flex justify-content-between mt-2">
                 <h5 class="font-weight-bold">Total</h5>
-                <h5 class="font-weight-bold">₹<%=totalAmount +100%></h5>
-              </div>
-            </div>
-          </div>
-          <div class="card border-secondary mb-5">
-            <div class="card-header bg-secondary border-0">
-              <h4 class="font-weight-semi-bold m-0">Payment</h4>
-            </div>
-            <div class="card-body">
-              <div class="form-group">
-                <div class="custom-control custom-radio">
-                  <input
-                    type="radio"
-                    class="custom-control-input"
-                    name="payment"
-                    id="cod"
-                    checked
-                  />
-                  <label class="custom-control-label" for="cod"
-                    >Pay on Delivery</label
-                  >
-                </div>
-              </div>
-              <!-- <div class="form-group">
-                <div class="custom-control custom-radio">
-                  <input
-                    type="radio"
-                    class="custom-control-input"
-                    name="payment"
-                    id="directcheck"
-                  />
-                  <label class="custom-control-label" for="directcheck"
-                    >Direct Check</label
-                  >
-                </div>
-              </div> -->
-              <!-- <div class="">
-                <div class="custom-control custom-radio">
-                  <input
-                    type="radio"
-                    class="custom-control-input"
-                    name="payment"
-                    id="banktransfer"
-                  />
-                  <label class="custom-control-label" for="banktransfer"
-                    >Bank Transfer</label
-                  >
-                </div>
-              </div> -->
-            </div>
-            <div class="card-footer border-secondary bg-transparent">
-              <a href="/placeOrder" style="text-decoration: none"
-                ><button
-                  type="submit"
-                  class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3"
+                <h5
+                  class="font-weight-bold"
+                  id="cartTotalValue"
+                  name="cartTotalValue"
                 >
-                  Place Order
-                </button></a
-              >
+                  ₹<%=totalCheckoutCharge%>
+                </h5>
+              </div>
             </div>
           </div>
+          <!-- earlier payment button was starting from here -->
+
+          <!-- payment method ended here  -->
         </div>
       </div>
     </div>

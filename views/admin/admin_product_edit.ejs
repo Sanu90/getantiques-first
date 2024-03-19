@@ -154,7 +154,7 @@
             <!-- <form action="/admin/productUpdate" method="POST"> -->
               <div class="form-group">
               <input type="hidden" name="oldProdName" value="<%=oldName %>">
-                <label for="username" style="font-size:large;">Update name</label>
+                <label for="username" style="font-size:large;">Update Product Name<sup style="line-height: 120%; color: red;">*</sup></label>
                 <input
                   type="text"
                   class="form-control"
@@ -163,11 +163,46 @@
                   value="<%=oldName %>"
                   required
                 />
-               <p><br></p>
-                
               </div>
+              <br>
+              <label for="username" style="font-size:large;">Update Product Description<sup style="line-height: 120%; color: red;">*</sup></label>
+                <input
+                  type="text"
+                  class="form-control"
+                  id="username"
+                  name="newProdDesc"
+                  value="<%=oldDesc %>"
+                  required
+                /><br>
+                <label for="username" style="font-size:large;">Update Product Price<sup style="line-height: 120%; color: red;">*</sup></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="newProdRate"
+                  min="0"
+                  name="newProdRate"
+                  value="<%=oldRate %>"
+                  required
+                  
+                /><br>
+                <label for="username" style="font-size:large;">Update Discount %<sup style="line-height: 120%; color: red;">*</sup></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="newDiscount"
+                  min="0"
+                  name="newDiscount"
+                  value="<%=allOldData.discount %>"
+                  required
+                  
+                /><br>
+                <div class="form-group" style="padding-top:1%;">
+      <label for="DiscountedPrice" style="font-size: large;">Discounted Price:<sup style="line-height: 120%; color: red;">*</sup></label>
+      <input type="number" class="form-control" id="DiscountedPrice" placeholder="Discounted Price" name="DiscountedPrice" value="<%=allOldData.rate_after_discount %>" readonly>
+    </div>
+    <br>
               <div class="form-group">
-                <label for="description" style="font-size:large;">Update category</label>
+                <label for="description" style="font-size:large;">Update Product Category: <sup style="line-height: 120%; color: red;">*</sup></label>
                 <select class="form-control" id="productCategory" name="newProdCat" required>
         
               <option value="" selected disabled>Choose a category</option>
@@ -178,18 +213,8 @@
               </select> 
               </div>
               <br>
-              <label for="username" style="font-size:large;">Update Rate</label>
-                <input
-                  type="number"
-                  class="form-control"
-                  id="username"
-                  min="0"
-                  name="newProdRate"
-                  value="<%=oldRate %>"
-                  required
-                  
-                /><br>
-                <label for="username" style="font-size:large;">Update Quantity</label>
+              
+                <label for="username" style="font-size:large;">Update Product Quantity <sup style="line-height: 120%; color: red;">*</sup></label>
                 <input
                   type="number"
                   class="form-control"
@@ -200,16 +225,8 @@
                   required
                   
                 /><br>
-                <label for="username" style="font-size:large;">Update Description</label>
-                <input
-                  type="text"
-                  class="form-control"
-                  id="username"
-                  name="newProdDesc"
-                  value="<%=oldDesc %>"
-                  required
-                /><br>
-                <label for="image" style="font-size:large;">Replace Images</label>
+                
+                <label for="image" style="font-size:large;">Replace Images<sup style="line-height: 120%; color: red;">*</sup></label>
                 <% for(let i=0; i<totalImages; i++){ %>
                 <div class="row">
                 <div style="display: flex; align-items: center;">
@@ -258,7 +275,6 @@
              
         </div>
         
-        <p>Hello</p>
       </div>
       
     </div>
@@ -325,6 +341,26 @@
         //document.write(new Date().getTime())//
         // var date = new Date().toLocaleString();
         // document.getElementById("p1").innerHTML = date;
+
+      const productRateInput = document.getElementById("newProdRate");
+    const productDiscountInput = document.getElementById("newDiscount");
+    const productDiscountedInput = document.getElementById("DiscountedPrice");
+
+    function calculateDiscountedValue() {
+            const productRate = parseFloat(productRateInput.value);
+            const discount = parseFloat(productDiscountInput.value);
+            const discountedValue = productRate - (productRate * (discount / 100));
+
+            // Update the discounted value input field
+            productDiscountedInput.value = discountedValue; 
+        }
+
+        // Add event listeners to the product rate and discount input fields
+        productRateInput.addEventListener('input', calculateDiscountedValue);
+        productDiscountInput.addEventListener('input', calculateDiscountedValue);
+
+
+
       </script>
       ©, getantiques.
     </div>

@@ -8,12 +8,12 @@ const adminCategory = async (req, res) => {
       value = req.session.search;
     }
     console.log(category);
-    catAvailable = '';
+    catAvailable = "";
     let a = req.session.catAvailable;
     res.render("admin_categories", {
       name: req.session.adminName,
       category,
-      catAvailable:catAvailable?catAvailable:a
+      catAvailable: catAvailable ? catAvailable : a,
     });
     console.log("ADMIN: CATEGORY");
   } catch (err) {
@@ -49,8 +49,13 @@ const addCategory = async (req, res) => {
 
 const editCategory = async (req, res) => {
   try {
+    catName = req.params.name;
+    console.log("Admin is updating category, ", catName);
+    const categoryDetails = await categoryModel.find({ name: catName });
+    console.log("Respective category details: ", categoryDetails);
     const oldName = req.body.oldCategory;
     const oldDesc = req.body.oldDescription;
+    const offer = categoryDetails[0].offer;
     console.log(req.body);
     console.log(oldName);
     console.log(oldDesc);
@@ -59,6 +64,7 @@ const editCategory = async (req, res) => {
       name: req.session.adminName,
       oldName,
       oldDesc,
+      offer,
     });
   } catch (err) {
     console.log(err.message);
@@ -71,7 +77,13 @@ const updateCategory = async (req, res) => {
     console.log(req.body);
     await categoryModel.updateOne(
       { name: req.body.oldCatName },
-      { $set: { name: req.body.newCatname, description: req.body.newCatDesc } }
+      {
+        $set: {
+          name: req.body.newCatname,
+          description: req.body.newCatDesc,
+          offer: req.body.offer,
+        },
+      }
     );
     console.log("CATEGORY UPDATED");
     return res.redirect("/admin/category");

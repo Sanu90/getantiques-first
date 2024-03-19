@@ -2,6 +2,7 @@ const { name } = require("ejs");
 const userModel = require("../model/userModel");
 const catModel = require("../model/categoryModel");
 const prodModel = require("../model/productModel");
+const orderModel = require("../model/orderModel");
 const bcrypt = require("bcrypt");
 
 const adminLoginPage = (req, res) => {
@@ -43,9 +44,26 @@ const adminDashboard = async (req, res) => {
   }
 };
 
-const admintoDash = (req, res) => {
+const admintoDash = async (req, res) => {
   try {
-    res.render("admin_dashboard", { name: req.session.adminName });
+    const orderData = await orderModel.find({});
+    const productData = await prodModel.find({});
+    const categoryData = await catModel.find({});
+    console.log("All order data:", orderData);
+    console.log(orderData.length);
+    console.log(productData.length);
+    let sum_of_revenue = 0;
+    for (let i = 0; i < orderData.length; i++) {
+      sum_of_revenue = sum_of_revenue + orderData[i].totalOrderValue;
+    }
+    console.log("Total revenue from orders made is:", sum_of_revenue);
+    res.render("admin_dashboard", {
+      name: req.session.adminName,
+      orderData,
+      sum_of_revenue,
+      productData,
+      categoryData,
+    });
     console.log("Name is:" + req.session.adminName);
     console.log("ADMIN: DASHBOARD");
   } catch (error) {

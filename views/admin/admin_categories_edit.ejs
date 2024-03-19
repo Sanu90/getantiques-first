@@ -65,20 +65,20 @@
           <span class="text">Products</span>
         </a>
       </li>
-      <!-- WILL ADD IT IN COMING WEEK  -->
-      <!-- <li class="menu-item">
-        <a class="menu-link" href="index.html">
+      
+       <li class="menu-item">
+        <a class="menu-link" href="/admin/order">
           <i class="icon material-icons md-store"></i>
           <span class="text">Orders</span>
         </a>
       </li>
       
       <li class="menu-item">
-        <a class="menu-link" href="page-transactions-1.html">
+        <a class="menu-link" href="/admin/coupon">
           <i class="icon material-icons md-monetization_on"></i>
           <span class="text">Coupons</span>
         </a>
-      </li> -->
+      </li> 
     <br />
     <br />
   </nav>
@@ -134,7 +134,7 @@
               <div class="form-group">
               <input type="hidden" name="oldCatName" value="<%=oldName %>">
               <input type="hidden" name="oldDesc" value="<%=oldDesc %>">
-                <label for="username" style="font-size:large;">Enter new name</label>
+                <label for="username" style="font-size:large;">Enter new name<sup style="line-height: 120%; color: red;">*</sup></label>
                 <input
                   type="text"
                   class="form-control"
@@ -146,7 +146,7 @@
                 
               </div>
               <div class="form-group">
-                <label for="description" style="font-size:large;">Enter new description</label>
+                <label for="description" style="font-size:large;">Enter new description<sup style="line-height: 120%; color: red;">*</sup></label>
                 <input
                   type="text"
                   class="form-control"
@@ -156,6 +156,20 @@
                   required></input>
                 
               </div>
+              <br>
+              <div class="form-group">
+              <label for="description" style="font-size:large;">Enter Offer in %<sup style="line-height: 120%; color: red;">*</sup></label>
+              <br>
+              <span style="font-size: 10px; color: red;">(Enter zero if no offer to be applied.)</span>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="description"
+                  name="offer"
+                  value="<%=offer %>"
+                  min="0"
+                  required></input>
+                  </div>
               <br>
               <button type="submit" class="btn btn-primary btn-block">
                 Update

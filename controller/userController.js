@@ -2,6 +2,7 @@ const userModel = require("../model/userModel");
 const categoryModel = require("../model/categoryModel");
 const productModel = require("../model/productModel");
 const cartModel = require("../model/cartModel");
+const wishlistModel = require("../model/wishlistModel");
 const addressModel = require("../model/userAddressModel");
 const otpSend = require("../middleware/otp");
 const bcrypt = require("bcrypt");
@@ -225,6 +226,7 @@ const validateUser = async (req, res) => {
 const redirectUser = async (req, res) => {
   try {
     const userName = req.session.name;
+    const userID = req.session.userID;
     const category = await categoryModel.find({});
     const product1 = await productModel
       .find({ hide: 0 })
@@ -236,23 +238,50 @@ const redirectUser = async (req, res) => {
       .skip(4)
       .limit(4);
 
-    console.log(userName);
-    console.log("checkcheck chcek check");
+    console.log("product1--------------->", product1);
+    console.log(product1.length);
+
+    for (let i = 0; i < product1.length; i++) {
+      console.log(product1[i].category, product1[i].rate_after_discount);
+      cat = product1[i].category;
+    }
+
+    //const categoryDiscount = await categoryModel.find({name: })
+
+    console.log("username is:", userName);
+    console.log("checkcheck check check");
     const cartProducts = await cartModel.find({ user: req.session.userID });
-    console.log(cartProducts);
+    console.log("cartProducts: ", cartProducts);
     if (cartProducts == "") {
       var cartCount = 0;
-    }else{
+      console.log("Cart is empty");
+    } else {
       cartCount = cartProducts[0].item.length;
-    console.log("cartCount is:", cartCount);
+      console.log("cartCount is:", cartCount);
     }
-    
+
+    // wishlist count //
+    const total_Products_Wishlist = await wishlistModel.findOne({
+      userID: userID,
+    });
+    console.log("total_Products_Wishlist", total_Products_Wishlist);
+    if (total_Products_Wishlist == null) {
+      wishlistCount = 0;
+    } else {
+      wishlistCount = total_Products_Wishlist.products.length;
+    }
+
+    //
+    const test = await categoryModel.find();
+
+    //
     res.render("home", {
       category,
       product1,
       product2,
       user: userName,
       cartCount,
+      wishlistCount,
     });
   } catch (error) {
     console.log("Error while redirection in redirectUser (userController)");
@@ -436,8 +465,15 @@ const categoryPage = async (req, res) => {
 const userCategoryPage = async (req, res) => {
   try {
     const cartProducts = await cartModel.find({ user: req.session.userID });
-    const cartCount = cartProducts[0].item.length;
-    console.log("cartCount is:", cartCount);
+    console.log("cartProducts is:", cartProducts);
+    var cartCount = 0;
+    if (cartProducts.length > 0) {
+      cartCount = cartProducts[0].item.length;
+      console.log("cartCount is:", cartCount);
+    } else {
+      console.log("hey cart is empty");
+      //cartCount = 0;
+    }
 
     console.log("User category page");
     const userName = req.session.name;
@@ -449,8 +485,20 @@ const userCategoryPage = async (req, res) => {
     req.session.categoryName = catName;
     noProduct = "";
 
+    console.log("CATEGORY SELECTED IS::::" + catName);
+    const offerCategories = await categoryModel.findOne(
+      { name: catName },
+      { offer: 1 }
+    );
+
     const catProd = await productModel.find({ category: catName, hide: 0 });
-    // console.log("Category products is::::" +catProd);
+    console.log("Category products is::::" + catProd);
+
+    console.log(offerCategories);
+    console.log(offerCategories.offer > 0);
+
+    console.log("Checking offer in categories::::", offerCategories);
+
     res.render("userCategoryPage", {
       user: userName,
       category,
@@ -460,12 +508,15 @@ const userCategoryPage = async (req, res) => {
       searchData,
       noProduct,
       cartCount,
+      offerCategories,
     });
-    console.log("CATEGORY SELECTED IS::::" + catName);
+
     console.log(catProd);
     req.session.categoryName = catName;
   } catch (error) {
-    console.log("Error while accessing user category pages:" + error);
+    console.log(
+      "Error while accessing user category pages in userController:" + error
+    );
   }
 };
 
@@ -481,7 +532,9 @@ const search = async (req, res) => {
     const noProduct = "No such product available";
     res.render("search", { category, searchData, searchValue, noProduct });
   } catch (error) {
-    console.log("Error while searching a product by guest: " + error);
+    console.log(
+      "Error while searching a product by guest in userController: " + error
+    );
   }
 };
 
@@ -510,6 +563,12 @@ const userCategorySearch = async (req, res) => {
     // });
     // console.log("searchData value is" + searchData);
     const noProduct = "No such product available";
+
+    const offerCategories = await categoryModel.findOne(
+      { name: catName },
+      { offer: 1 }
+    );
+
     res.render("userCategoryPage", {
       searchValue,
       catName,
@@ -520,6 +579,7 @@ const userCategorySearch = async (req, res) => {
       user: req.session.name,
       catProd,
       cartCount,
+      offerCategories,
     });
   } catch (error) {
     console.log("Error while searching a product by guest: " + error);
@@ -554,6 +614,7 @@ const browse = async (req, res) => {
       totalPages,
       cartCount,
       category,
+      currentPage: page,
     });
   } catch (error) {
     console.log("Error while browse", error);
@@ -582,12 +643,23 @@ const shop = async (req, res) => {
     });
     console.log("searchData value is" + searchData);
     const noProduct = "No such product available";
+
+    const cartProducts = await cartModel.find({ user: req.session.userID });
+    // console.log(cartProducts);
+    if (cartProducts == "") {
+      var cartCount = 0;
+    } else {
+      cartCount = cartProducts[0].item.length;
+      console.log("cartCount is:", cartCount);
+    }
+
     res.render("shopUser", {
       category,
       searchData,
       searchValue,
       user: userName,
       noProduct,
+      cartCount,
     });
   } catch (error) {
     console.log("Error while searching a product by logged in user: " + error);
@@ -764,8 +836,9 @@ const logout = (req, res) => {
 };
 
 const test = (req, res) => {
-  id = req.params.id;
-  console.log("TEST" + id);
+  a = req.query.name;
+  console.log(a);
+  res.send(a);
 };
 
 module.exports = {

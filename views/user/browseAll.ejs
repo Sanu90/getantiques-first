@@ -71,11 +71,11 @@
           </form>
         </div>
         <div class="col-lg-3 d-flex">
-          <!-- <a href="" class="btn border">
+          <a href="/wishlist" class="btn border">
             <i class="fas fa-heart text-primary"></i>
             <span class="badge">0</span>
-          </a> -->
-          <a href="" class="btn border">
+          </a>
+          <a href="/cart" class="btn border">
             <i class="fas fa-shopping-cart text-primary"></i>
             <span class="badge"><%=cartCount %></span> </a
           ><br />
@@ -296,22 +296,6 @@
               <div
                 class="d-flex align-items-center justify-content-between mb-4"
               >
-                <form action="">
-                  <!-- <div class="input-group">
-                    <input
-                      type="text"
-                      class="form-control"
-                      placeholder="Search by name"
-                    />
-                    <div class="input-group-append">
-                      <span
-                        class="input-group-text bg-transparent text-primary"
-                      >
-                        <i class="fa fa-search"></i>
-                      </span>
-                    </div>
-                  </div> -->
-                </form>
                 <div class="dropdown ml-4">
                   <button
                     class="btn border dropdown-toggle"
@@ -354,7 +338,15 @@
                 >
                   <h6 class="text-truncate mb-3"><%=product.name %></h6>
                   <div class="d-flex justify-content-center">
-                    <h6>₹<%=product.rate %></h6>
+                    <% if(product.discount > 0){ %>
+                    <h6>₹<%=product.rate_after_discount %></h6>
+                    <h6 class="text-muted ml-2">
+                      <del>₹<%=product.rate %></del>
+                    </h6>
+                    <% } else { %>
+
+                    <h6>₹<%=product.rate_after_discount %></h6>
+                    <% } %>
                     <!-- <h6 class="text-muted ml-2"><del>$123.00</del></h6> -->
                   </div>
                 </div>
@@ -378,13 +370,17 @@
               <nav aria-label="Page navigation">
                 <ul class="pagination justify-content-center mb-3">
                   <% for(let page = 1; page <= totalPages; page++){ %>
-                  <a
-                    class="page-item active"
-                    href="?page=<%=page%>"
-                    style="margin-right: 20px"
+                  <li
+                    class="page-item <%= currentPage === page ? 'active' : '' %>"
                   >
-                    <%=page%>
-                  </a>
+                    <a
+                      class="page-item active"
+                      href="?page=<%=page%>"
+                      style="margin-right: 20px"
+                    >
+                      <%=page%>
+                    </a>
+                  </li>
                   <%}%>
                 </ul>
               </nav>

@@ -9,33 +9,54 @@ mongoose
   });
 
 const orderData = new mongoose.Schema({
+  orderID: {
+    type: String,
+    required: true,
+    trim: true,
+  },
+  // user: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "user",
+  //   required: true,
+  //   trim: true,
+  // },
   user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "users",
+    type: String,
     required: true,
     trim: true,
   },
 
   date: {
     type: Date,
+    trim: true,
+  },
+
+  // product: {
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: "product",
+  //   required: true,
+  //   trim: true,
+  // },
+
+  products: {
+    type: Array,
     required: true,
     trim: true,
   },
 
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "products",
+  address: {
+    type: Object,
     required: true,
     trim: true,
   },
 
-  quantity: {
-    type: Number,
-    required: true,
-    trim: true,
-  },
+  // quantity: {
+  //   type: Number,
+  //   required: true,
+  //   trim: true,
+  // },
 
-  amount: {
+  totalOrderValue: {
     type: Number,
     required: true,
     trim: true,
@@ -59,6 +80,12 @@ const orderData = new mongoose.Schema({
 
   cancel: {
     type: String,
+    trim: true,
+  },
+
+  paymentStatus: {
+    type: String,
+    required: true,
     trim: true,
   },
 });
