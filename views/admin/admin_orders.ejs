@@ -92,7 +92,7 @@
       <section class="content-main">
         <div class="content-header">
           <div>
-            <h2 class="content-title card-title">Order Details</h2>
+            <h2 class="content-title card-title">Orders</h2>
             <p>Fetch order information here.</p>
           </div>
           <!-- <div>
@@ -129,7 +129,7 @@
                     <th style="color:tomato;font-size:small; text-align: center; ">Payment</th>
                     <!-- <th style="color:tomato;font-size:small; text-align: center; width: 250px;">Description</th>
                    <th style="color:tomato;font-size:small; text-align: center; ">Edit</th>-->
-                    <th style="color:tomato;font-size:small; text-align: center; ">Update</th> 
+                    <th style="color:tomato;font-size:small; text-align: center; ">More</th> 
                   </tr>
                    <% for(let i=0;i<orderDetails.length;i++) { %>
                   <tr>
@@ -139,17 +139,26 @@
                     <td style="text-align: center;"><%=orderDetails[i].date.toLocaleString() %> </td>
                     <td style="text-align: center;"><%=orderDetails[i].orderID %></td> 
                     <td style="text-align: center;"><%=orderDetails[i].totalOrderValue %></td>
-                    <td style="text-align: center;"><%=orderDetails[i].status %></td>
+                    <!-- <td style="text-align: center;"><%#=orderDetails[i].status %></td> -->
+                    <td style="text-align: center;">
+                    <select name="cars" id="cars">
+                    <option value="volvo" selected>Placed</option>
+                    <option value="saab" >Shipped</option>
+                    <option value="opel">Out for Delivery</option>
+                    <option value="audi">Delivered</option>
+                    </select>
+                    </td>
                     <td style="text-align: center;"><%=orderDetails[i].paymentMethod %></td>
                     <!-- <td style="text-align:center;" class="description" title="<%#=p.description %>"><%#=p.description %></td> -->
                     <td style="text-align: center;">
                       <form action="#" method="post">
                         <input type="hidden" value="<%#=p.name%>" name="oldName">
                         <input type="hidden" value="<%#=p.category %>" name="oldCategory">
-                         <input type="hidden" value="<#%=p.rate %>" name="oldRate">
+                         <input type="hidden" value="<%#=p.rate %>" name="oldRate">
                         <input type="hidden" value="<%#=p.stock %>" name="oldStock"> 
-                        <input  style="overflow: hidden;" type="hidden" value="<%#=p.description %>" name="oldDesc"> 
-                        <button class="btn btn-success" type="submit">Edit</button>
+                        <input  style="overflow: hidden;" type="hidden" value="<%#=p.description %>" name="oldDesc">
+                        <a style="color:cadetblue;" href="/admin/orderDetails?id=<%=orderDetails[i].orderID %>">Details..</a> 
+                        <!-- <button class="btn btn-success" type="submit">Edit</button> -->
                         
                       </form>
                     <!-- </td>

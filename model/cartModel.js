@@ -27,6 +27,11 @@ const cartData = new mongoose.Schema({
         type: Number,
         trim: true,
       },
+
+      product_rate: {
+        type: Number,
+        trim: true,
+      },
     },
   ],
 });

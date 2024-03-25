@@ -220,6 +220,7 @@
             <h4 class="font-weight-semi-bold mb-4">New Shipping Address</h4>
 
             <form action="/saveNewAddressfromCheckout" method="post">
+            <!-- <form method="post"> -->
               <div class="row">
                 <div class="col-md-6 form-group">
                   <label>Full name<span style="color: red">*</span></label>
@@ -321,7 +322,8 @@
       <div class="col-lg-8">
         <div class="mb-4">
           <!-- let form starts here -->
-          <form action="/orderProduct" method="post">
+          <!-- <form action="/test" method="post"> -->
+          <form method="post">
           <div class="col-xxl">
             <h4 class="font-weight-semi-bold mb-4" style="padding-top: 50px">
               Select a delivery address from below
@@ -374,33 +376,63 @@
                           <label class="custom-control-label" for="razorpay">Razorpay</label>
                         </div>
                       </div>
+
+                      <div class="form-group">
+                        <div class="custom-control custom-radio">
+                          <input
+                            type="radio"
+                            class="custom-control-input"
+                            id="wallet"
+                            name="payment"
+                            value="wallet"
+                          />
+                          <label class="custom-control-label" for="wallet">Wallet</label>
+                          <br>
+                          <span>abcd</span>
+                        </div>
+                      </div>
                       
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
-                      <button  type="submit" class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Place Order</button>
+                      <button type="submit" onclick="pay()" class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Place Order</button>
                     </div>
                   </div>
             <!-- Payment button  ends -->
             </div>
           </form>
             <!-- let form ends here -->
+            <!-- <script>
+            function payment(value){
+      var pay=document.querySelector('input[name="payment"]:checked');
+      console.log("PAY is: ", pay);
+      console.log(value);
+      console.log("************************");
+      }
+            </script> -->
           </div>
         </div>
         <div class="col-lg-4">
-        <form class="mb-5" action="/applycoupon" method="post">
+        <!-- <form class="mb-5" action="/applycoupon" method="post"> -->
                   <div class="input-group">
                     <input
                       type="text"
                       class="form-control p-4"
                       placeholder="Coupon Code"
-                      name="coupon"
-                      required
+                      couponName="coupon"
+                      id="coupon"
+                      value=""
+                      
                     />
                     <div class="input-group-append">
-                    <button class="btn btn-primary" type="button">Apply Coupon</button>
+                    <button type="button" class="btn btn-primary" id="applyCouponBtn" onclick="coupon(`1`)">Apply</button>
+                    <p></p>
+                    <button type="button" style="display: none;"  class="btn btn-primary"id="remove-button" onclick="coupon(`0`)">Remove</button>
                     </div>
+                    
                   </div>
-                </form>
+                  <span class="text-danger" style="display: inline-block; padding: 10px; " id="couponMessage"></span>
+                  <br><br><br><br>
+                <!-- </form> -->
           <div class="card border-secondary mb-5">
             <div class="card-header bg-secondary border-0">
               <h4 class="font-weight-semi-bold m-0">Order Total</h4>
@@ -425,6 +457,12 @@
                 <h6 class="font-weight-medium">Subtotal</h6>
                 <h6 class="font-weight-medium">₹<%=totalAmount%></h6>
               </div>
+              
+              <div class="d-flex justify-content-between">
+                <h6 class="font-weight-medium">Discount (if any):</h6>
+                <h6 class="font-weight-medium" id="discount"></h6>
+              </div>
+              <br>
               <div class="d-flex justify-content-between">
                 <h6 class="font-weight-medium">Shipping</h6>
                 <%# if(totalAmount < 200000){ %>
@@ -434,12 +472,7 @@
                 <%# } %>
                 
               </div>
-              <div class="d-flex justify-content-between">
-                <h6 class="font-weight-medium">Discount (if any)</h6>
-                <h6 class="font-weight-medium" id="discount"></h6>
-                
-                
-              </div>
+              
             </div>
             <div class="card-footer border-secondary bg-transparent">
               <div class="d-flex justify-content-between mt-2">
@@ -603,6 +636,7 @@
     <script src="../user/lib/easing/easing.min.js"></script>
     <script src="../user/lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <!-- Contact Javascript File -->
     <script src="../user/mail/jqBootstrapValidation.min.js"></script>
@@ -612,17 +646,179 @@
     <script src="../user/js/main.js"></script>
 
     <script>
-      var option = document.getElementById("cod");
-
-      if (!option[0].checked) {
-        alert("Please Select Your Gender");
-        return false;
-      }
 
       function addressSaved() {
         console.log("address saved");
         window.alert("Your address is saved.");
       }
+
+      // coupon //
+      function coupon(value){
+        var couponText = document.getElementById("coupon").value;
+        var couponError = document.getElementById("couponMessage");
+        var discount = document.getElementById("discount");
+        var cartTotal = document.getElementById("cartTotalValue");
+        console.log("hii apply coupon clicked");
+        console.log("value of button:" ,value)
+        //console.log(typeof(value));
+        console.log("value entered in text box:" ,couponText);
+        if(value == 1){
+        let a = document.getElementById('applyCouponBtn');
+        let b= document.getElementById('remove-button');
+        fetch(`/applyCoupon`,{
+          method:"POST",
+          headers: {
+                    'Content-Type': 'application/json',
+                },
+                  body: JSON.stringify({
+                    name: couponText,
+                    value: value,
+                    }),
+                    }).then(response => {
+                    console.log(response);
+                    console.log("jggjtyhkjkhhqqqw");
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                    }).then(data=>{
+                        couponError.innerText = data.message;
+                        discount.innerText = 
+data.discount;
+                        cartTotal.innerText = data.total_cart_value;
+                    //window.location.reload();
+       
+                    if (data.buttonChange===0){
+                      let a =document.getElementById('remove-button');
+                    let b= document.getElementById('applyCouponBtn');
+                      a.style.display="none";
+                    b.style.display="inline-block";
+                    }else{
+                    let b= document.getElementById('applyCouponBtn');
+                    b.style.display="none";
+                    let a =document.getElementById('remove-button');
+                    a.style.display="inline-block";
+                    
+                    inputElement.value="";
+                    console.log("Hello2");
+                    
+                    } })
+                }
+
+          if(value == 0){
+
+              console.log("USER TRYING TO REMOVE COUPON ");
+            let a = document.getElementById('remove-button');
+            let b = document.getElementById('applyCouponBtn');
+            fetch(`/removeCoupon`,{
+            method:"POST",
+            headers: {
+                    'Content-Type': 'application/json',
+                },
+                  body: JSON.stringify({
+                    name: couponText,
+                    value: value,
+                    }),
+          }).then(response => {
+                    console.log(response);
+                    console.log("response from remove coupon");
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                    }).then(data=>{
+                        couponError.innerText = data.message;
+                        discount.innerText = data.discount;
+                        cartTotal.innerText = data.total_cart_value;
+
+                  if (data.buttonChange===0){
+                      let a = document.getElementById('remove-button');
+                      let b = document.getElementById('applyCouponBtn');
+                      a.style.display="none";
+                      b.style.display="inline-block";
+                    }
+
+
+
+          })
+
+         }
+      }
+      // coupon end //
+      //
+
+      setTimeout(()=>{
+        document.getElementById("couponMessage").textContent = errorMessage;
+        let msg11 = document.getElementById("couponMessage");
+        msg11.textContent = ""; 
+      }, 2000)
+
+
+      function payment(){
+      var pay=document.querySelector('input[name="payment"]:checked');
+      console.log("PAY is: ", pay);
+      console.log("************************");
+      }
+
+
+
+      //
+
+//     $(document).ready(function(){
+// 	$('#razorpay').submit(function(e){
+// 		e.preventDefault();
+
+    
+
+// 		var formData = $(this).serialize();
+
+// 		$.ajax({
+// 			url:"/createOrder",
+// 			type:"POST",
+// 			data: formData,
+// 			success:function(res){
+// 				if(res.success){
+// 					var options = {
+// 						"key": ""+res.key_id+"",
+// 						"amount": ""+res.amount+"",
+// 						"currency": "INR",
+// 						"name": ""+res.product_name+"",
+// 						// "description": ""+res.description+"",
+// 						// "image": "https://dummyimage.com/600x400/000/fff",
+// 						"order_id": ""+res.order_id+"",
+// 						"handler": function (response){
+// 							alert("Payment Succeeded");
+// 							// window.open("/","_self")
+// 						},
+// 						// "prefill": {
+// 						// 	"contact":""+res.contact+"",
+// 						// 	"name": ""+res.name+"",
+// 						// 	"email": ""+res.email+""
+// 						// },
+// 						// "notes" : {
+// 						// 	"description":""+res.description+""
+// 						// },
+// 						"theme": {
+// 							"color": "#2300a3"
+// 						}
+// 					};
+// 					var razorpayObject = new Razorpay(options);
+// 					razorpayObject.on('payment.failed', function (response){
+// 							alert("Payment Failed");
+// 					});
+// 					razorpayObject.open();
+// 				}
+// 				else{
+// 					alert(res.msg);
+// 				}
+// 			}
+// 		})
+
+// 	});
+// });
+
+
+
     </script>
   </body>
 </html>

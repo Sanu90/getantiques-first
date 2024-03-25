@@ -1,63 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Order History</title>
-    <style>
-      /* Basic styling for demonstration purposes */
-      body {
-        font-family: Arial, sans-serif;
-        margin: 0;
-        padding: 20px;
-      }
-      .order {
-        border: 1px solid #ccc;
-        padding: 20px;
-        margin-bottom: 20px;
-      }
-      .order-header {
-        font-weight: bold;
-        margin-bottom: 10px;
-      }
-      .product {
-        margin-bottom: 10px;
-      }
-    </style>
-  </head>
   <body>
-    <h1>Order History</h1>
-
-    <!-- Sample order history -->
-    <div class="order">
-      <div class="order-header">Order #123456</div>
-      <div class="product">
-        <div>Product: Product Name 1</div>
-        <div>Price: $10.00</div>
-        <div>Quantity: 2</div>
-      </div>
-      <div class="product">
-        <div>Product: Product Name 2</div>
-        <div>Price: $15.00</div>
-        <div>Quantity: 1</div>
-      </div>
-    </div>
-
-    <!-- Add more products under the same order ID -->
-    <div class="order">
-      <div class="order-header">Order #789012</div>
-      <div class="product">
-        <div>Product: Product Name 3</div>
-        <div>Price: $20.00</div>
-        <div>Quantity: 1</div>
-      </div>
-      <div class="product">
-        <div>Product: Product Name 4</div>
-        <div>Price: $25.00</div>
-        <div>Quantity: 3</div>
-      </div>
-    </div>
-
-    <!-- Add more orders as needed -->
+    <h1 style="color: green">GeeksforGeeks</h1>
+    <input type="checkbox" name="laptop" value="HP" />HP laptop<br />
+    <input type="checkbox" name="laptop" value="DELL" />DELL laptop<br />
+    <input type="checkbox" name="laptop" value="MAC" />MAC laptop<br />
+    <input type="checkbox" name="laptop" value="ASUS" />ASUS laptop<br />
+    <button onclick="getValue()">Get Value</button>
+    <script>
+      function getValue() {
+        let checkboxes = document.getElementsByName("laptop");
+        let result = "";
+        for (var i = 0; i < checkboxes.length; i++) {
+          if (checkboxes[i].checked) {
+            result += checkboxes[i].value + " " + " Laptop, ";
+          }
+        }
+        document.write("<p> You have selected : " + result + "</p>");
+      }
+    </script>
   </body>
 </html>

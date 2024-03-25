@@ -6,6 +6,7 @@ const orderController = require("../controller/orderController");
 const userCheck = require("../middleware/userAuth");
 const cartController = require("../controller/cartController");
 const wishlistController = require("../controller/wishlistController");
+const couponController = require("../controller//couponController");
 
 router.get("/", userController.indexPage);
 router.get("/login", userController.login);
@@ -91,7 +92,6 @@ router
     orderController.userEachOrderData
   );
 
-
 router.post("/home", userController.validateUser);
 router.get("/product/:id", userController.productView);
 
@@ -138,9 +138,23 @@ router.post(
   wishlistController.clearWishlist
 );
 
+router.post("/applyCoupon", userCheck.isUser, couponController.userApplyCoupon);
+router.post(
+  "/removeCoupon",
+  userCheck.isUser,
+  couponController.userRemoveCoupon
+);
+router.post(
+  "/createOrder",
+  userCheck.isUser,
+  orderController.createOnlineOrder
+);
+
 router.get("/checkout", userCheck.isUser, cartController.checkout);
 
 router.post("/orderProduct", userCheck.isUser, orderController.orderProduct);
+
+router.post("/test", orderController.test);
 
 router.get(
   "/showAddressInCheckout",
@@ -154,6 +168,6 @@ router.post("/search", userController.search);
 
 router.get("/logout", userController.logout);
 
-router.get("/test", userController.test);
+// router.get("/test", userController.test);
 
 module.exports = router;

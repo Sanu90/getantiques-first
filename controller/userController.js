@@ -132,6 +132,7 @@ const authOTP = async (req, res) => {
           mobile: req.session.userDetails.mobile,
           isAdmin: 0,
           hide: 0,
+          wallet: 0,
         });
         await registeredUser.save();
         console.log("--------------------------");

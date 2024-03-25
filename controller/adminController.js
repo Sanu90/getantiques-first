@@ -73,15 +73,18 @@ const admintoDash = async (req, res) => {
 
 const adminShowUsers = async (req, res) => {
   try {
+    console.log("ADMIN: USERS");
     var users = await userModel
       .find({ isAdmin: 0 })
       .sort({ username: -1 }); /*   */
     if (req.session.userData) {
       users = req.session.userData;
     }
+    console.log("************");
+    console.log(users[0].hide, users[1].hide);
+    console.log("************");
 
     res.render("admin_showUsers", { name: req.session.adminName, users });
-    console.log("ADMIN: USERS");
   } catch (error) {
     console.log("Error while Admin showing user data: " + error);
   }

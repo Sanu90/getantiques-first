@@ -138,11 +138,11 @@
           <% for(let i=0;i<eachOrderDetails.products.length;i++){ %>
             <tr>
               <td style="padding-top: 50px;"><%=i+1 %></td>
-              <td style="text-align:center; padding-top: 50px;">Product Name</td>
-              <td style="text-align: center; padding-bottom: 30px;"><img src="/upload/1706774786849-Wooden Carved Buddha Statue.jpg" style="padding:15%;" height="100px" width="100px" >  </td>
-              <td style="text-align:center; padding-top: 50px;">₹5400</td>
+              <td style="text-align:center; padding-top: 50px;"><%=aaaaa[i].name %></td>
+              <td style="text-align: center; padding-bottom: 30px;"><img src="<%=aaaaa[i].image[0] %>" style="padding:15%;" height="100px" width="100px" >  </td>
+              <td style="text-align:center; padding-top: 50px;">₹<%=aaaaa[i].rate %></td>
               <td style="text-align:center; padding-top: 50px;"><%=eachOrderDetails.products[i].product_quantity %></td>
-              <td style="text-align:center; padding-top: 50px;">₹121212</td>
+              <td style="text-align:center; padding-top: 50px;">₹ <%=aaaaa[i].rate*eachOrderDetails.products[i].product_quantity %></td>
               <td style="text-align:center; padding-top: 50px;"><%=eachOrderDetails.status %></td>
               <td style="text-align:center; padding-top: 50px;">
                       <form action="/account/order/<%#=orderHistory[i].orderID %>" method="post">

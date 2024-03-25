@@ -23,6 +23,12 @@ router.get(
 
 router.get("/order", adminMiddleware.isAdmin, orderController.orderPage);
 
+router.get(
+  "/orderDetails",
+  adminMiddleware.isAdmin,
+  orderController.adminOrderDetails
+);
+
 router.post(
   "/category",
   adminMiddleware.isAdmin,

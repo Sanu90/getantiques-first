@@ -206,80 +206,22 @@
           <div class="border-bottom mb-4 pb-4">
             <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
             <form>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  checked
-                  id="price-all"
-                />
-                <label class="custom-control-label" for="price-all"
-                  >All Price</label
-                >
-                <!-- <span class="badge border font-weight-normal">1000</span> -->
+              <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <input type="checkbox" class="custom-control-input" checked id="price-all"/>
+                <label class="custom-control-label" for="price-all">All Price</label>
               </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-1"
-                />
-                <label class="custom-control-label" for="price-1"
-                  >₹100 - ₹5000</label
-                >
+              <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <input type="checkbox" class="custom-control-input" id="price-1"/>
+                <label class="custom-control-label" for="price-1">₹1000 - ₹10000</label>
               </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-2"
-                />
-                <label class="custom-control-label" for="price-2"
-                  >₹5001 - ₹10000</label
-                >
+              <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <input type="checkbox" class="custom-control-input" id="price-2"/>
+                <label class="custom-control-label" for="price-2">₹10001 - ₹50000</label>
               </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-3"
-                />
-                <label class="custom-control-label" for="price-3"
-                  >₹10001 - ₹20000</label
-                >
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-4"
-                />
-                <label class="custom-control-label" for="price-4"
-                  >₹20001 - ₹50000</label
-                >
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-5"
-                />
-                <label class="custom-control-label" for="price-5"
-                  >₹50001 - ₹100000</label
-                >
-              </div>
+              <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <input type="checkbox" class="custom-control-input" id="price-3"/>
+                <label class="custom-control-label" for="price-3">₹50001 - ₹100000</label>
+              </div> 
             </form>
           </div>
           <!-- Price End -->
@@ -582,6 +524,48 @@
             }
           });
       }
+
+    
+    // Function to fetch filtered products based on selected price ranges
+    function filterProducts() {
+      const selectedRanges = [];
+
+      // Get the checked status of each checkbox
+      const priceAll = document.getElementById('price-all').checked;
+      const price1 = document.getElementById('price-1').checked;
+      const price2 = document.getElementById('price-2').checked;
+      const price3 = document.getElementById('price-3').checked;
+      // Add more price range checkboxes as needed
+
+      // Check each checkbox and add the corresponding price range to the array
+      if (priceAll) selectedRanges.push('all');
+      if (price1) selectedRanges.push('1');
+      if (price2) selectedRanges.push('2');
+      if (price3) selectedRanges.push('3');
+      // Add more conditions for other price range checkboxes
+
+      // Make a fetch request to the server to fetch filtered products
+      fetch(`/products/filter?priceRanges=${selectedRanges.join(',')}`)
+        .then(response => response.json())
+        .then(products => {
+          // Handle the response (e.g., update the product list)
+          console.log(products);
+        })
+        .catch(error => console.error('Error filtering products:', error));
+    }
+
+    // Add event listeners to checkboxes to trigger filterProducts function on click
+    document.getElementById('price-all').addEventListener('click', filterProducts);
+    document.getElementById('price-1').addEventListener('click', filterProducts);
+    document.getElementById('price-2').addEventListener('click', filterProducts);
+    // Add more event listeners for other price range checkboxes
+
+    // Initially fetch products when the page loads
+    filterProducts();
+  
+
+
+
     </script>
   </body>
 </html>

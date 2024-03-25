@@ -254,27 +254,27 @@
                       <%# if(cartProducts[i].productQuantity = 1){ %>
                       <!-- <button class="btn btn-sm btn-primary btn-minus" disabled> -->
                       <%# } else {%>
-                      <button class="btn btn-sm btn-primary btn-minus" <%= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = minus("<%= cartProducts[i].productId %>")
-                      >
+                      <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "add(`<%= cartProducts[i].productId %>`,-1)">
+                      
                       <%# } %>
                      
                         <i class="fa fa-minus"></i>
                       </button>
                     </div>
                     <input
-                      type="text"
+                      type="text" id="quantity"
                       class="form-control form-control-sm bg-secondary text-center"
                       value="<%=cartProducts[i].productQuantity%>"
                     />
                     
                     <div class="input-group-btn">
-                      <button class="btn btn-sm btn-primary btn-plus" <%= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = add("<%= cartProducts[i].productId %>")>
+                      <button class="btn btn-sm btn-primary btn-plus" id="addButton"  <%= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = "add(`<%= cartProducts[i].productId %>`,1)">
                         <i class="fa fa-plus"></i>
                       </button>
                     </div>
                   </div>
                 </td>
-                <td class="align-middle" id="<%= cartProducts[i].productId %>">₹<%=cartProducts[i].productPrice * cartProducts[i].productQuantity %></td>
+                <td class="align-middle" id="<%= cartProducts[i].productId %>+hai">₹<%=cartProducts[i].productPrice * cartProducts[i].productQuantity %></td>
                 <td class="align-middle">
                 <button class="btn btn-sm btn-primary btn-delete" data-product-id="<%= cartProducts[i].productId %>">
                 <i class="fa fa-times"></i>
@@ -304,11 +304,11 @@
             <div class="card-header bg-secondary border-0">
               <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
             </div>
-            <div class="card-body">
+            <!-- <div class="card-body">
               <div class="d-flex justify-content-between mb-3 pt-1">
                 <h6 class="font-weight-medium">Subtotal</h6>
-                <h6 class="font-weight-medium">₹<%=total %></h6>
-              </div>
+                <h6 class="font-weight-medium">₹<%#=total %></h6>
+              </div> -->
               <!-- <div class="d-flex justify-content-between">
                 <h6 class="font-weight-medium">Shipping</h6>
                 <h6 class="font-weight-medium">$10</h6>
@@ -517,6 +517,7 @@ document.addEventListener("DOMContentLoaded", function() {
                     return response.json();
                 }).then(data=>{
                   if(data.success){
+                    window.alert(data.message);
                     window.location.reload();
                   }
                 })
@@ -528,44 +529,51 @@ document.addEventListener("DOMContentLoaded", function() {
 
 //reduce the product count in the cart //
 
-function minus(id){
-  let a=document.getElementById(id);
-  let b=document.getElementById(total)
-   console.log("minus", id);
-  fetch(`/minusCartvalue`,{
-            method:'post',
-            headers: {
-                    'Content-Type': 'application/json',
-                },
-                  body: JSON.stringify({
-                    productId: id,
-                    }),
+// function minus(id){
+//   let a=document.getElementById(id);
+//   let b=document.getElementById(total)
+//   let c=document.getElementById(quantity);
+//    console.log("minus", id);
+//   fetch(`/minusCartvalue`,{
+//             method:'post',
+//             headers: {
+//                     'Content-Type': 'application/json',
+//                 },
+//                   body: JSON.stringify({
+//                     productId: id,
+//                     }),
                     
-          }).then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                }).then(data=>{
-                  if(data.productCount==1){
-                      window.location.reload();
-                    }
-                  console.log("json.productTotalValue ..." , data.productTotalValue);                  
-                    a.innerText = "₹"+data.productTotalValue;
-                   //window.location.reload(); 
-                  console.log("hhfgyfyyfyfyff");
-                })
+//           }).then(response => {
+//                     if (!response.ok) {
+//                         throw new Error('Network response was not ok');
+//                     }
+//                     return response.json();
+//                 }).then(data=>{
+                  
+//                   if(data.productCount==1){
+                    
+//                       // window.location.reload();
+//                     }
+//                     console.log(data)
+//                     console.log('hello --------------')
+//                     document.getElementById('productTotal').innerHTML = "hello"
+//                   console.log("json.productTotalValue ..." , data.productTotalValue);                  
+//                     a.innerText = "₹"+data.productTotalValue;
+//                    //window.location.reload(); 
+//                   console.log("hhfgyfyyfyfyff");
+//                 })
          
-}
+// }
 
 
 
-//add the product count in the cart //
+//control the product count in the cart //
 
-function add(id){
+function add(id,val){
     let a=document.getElementById(id);
     let b=document.getElementById(total)
-     console.log("add  " ,id);
+    let quantity = Number(document.getElementById('quantity').value)
+     console.log("add ------------------ " ,quantity);
   fetch(`/addCartvalue`,{
             method:'post',
             headers: {
@@ -573,6 +581,8 @@ function add(id){
                 },
                   body: JSON.stringify({
                     productId: id,
+                    value :val,
+                    quantity:quantity
                     }),
                     
           }).then(response => {
@@ -581,10 +591,13 @@ function add(id){
                     }
                     return response.json();
                 }).then(data=>{
-                    if(data.productCount==2 || 5){
-                      window.location.reload();
-                    }
+                    // if(data.productCount==2 || 5){
+                    //   window.location.reload();
+                    // }
                     // window.location.reload();
+                    console.log(data.productPrice,'----------------------')
+                    console.log(data,'********************')
+                    document.getElementById(`${id}+hai`).innerText = "₹"+ data.productPrice
                     console.log("json.productTotalValue ..." , data.productTotalValue);                  
                     a.innerText = "₹"+data.productTotalValue;
                    //window.location.reload();  

@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="/admin/assets/imgs/theme/logo.png"
+    />
+    <!-- Template CSS -->
+    <link
+      href="/admin/assets/css/main.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="/admin/assets/css/style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+      <div class="aside-top">
+        <a href="index.html" class="brand-wrap">
+          <img
+            src="/admin/assets/imgs/theme/logo.png"
+            class="logo"
+            alt="getantiques"
+          />
+        </a>
+        <div>
+          <button class="btn btn-icon btn-aside-minimize">
+            <i class="text-muted material-icons md-menu_open"></i>
+          </button>
+        </div>
+      </div>
+
+<nav>
+  <ul class="menu-aside">
+    <li class="menu-item">
+      <a class="menu-link" href="/admin/dashboard">
+        <i class="icon material-icons md-home"></i>
+        <span class="text">Dashboard</span>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a class="menu-link" href="/admin/category">
+        <i class="icon material-icons md-shopping_bag"></i>
+        <span class="text">Categories</span>
+      </a>
+    </li>
+    <li class="menu-item ">
+      <a class="menu-link" href="/admin/user">
+        <i class="icon material-icons md-store"></i>
+        <span class="text">Users</span>
+      </a>
+    </li>
+    <li class="menu-item ">
+      <a class="menu-link" href="/admin/product">
+        <i class="icon material-icons md-add_box"></i>
+        <span class="text">Products</span>
+      </a>
+    </li>
+    <li class="menu-item active">
+      <a class="menu-link" href="/admin/order">
+        <i class="icon material-icons md-store"></i>
+        <span class="text">Orders</span>
+      </a>
+    </li>
+     <!-- WILL ADD IT IN COMING WEEK  -->
+    
+    <li class="menu-item">
+          <a class="menu-link" href="/admin/coupon">
+            <i class="icon material-icons md-article"></i>
+            <span class="text">Coupons</span>
+          </a>
+        </li>
+  <br />
+  <br />
+</nav>
+</aside>
+    <main class="main-wrap">
+      <header class="main-header navbar">
+        <div class="col-search">
+          <!-- <form class="searchform">
+            <div class="input-group">
+              <input
+                list="search_terms"
+                type="text"
+                class="form-control"
+                placeholder="Search term"
+              />
+              <button class="btn btn-light bg" type="button">
+
+                <i class="material-icons md-search"></i>
+              </button>
+            
+            </div>
+            <datalist id="search_terms">
+              
+            </datalist>
+          </form> -->
+        </div>
+        <div class="col-nav" onload="timeCount();">
+          <p id="p1">
+            
+          </p>
+      
+  </div>
+        <div class="col-nav">
+          
+          <p>
+            
+            Welcome back, <%=name %> </p>
+      
+  </div>
+
+
+        <div class="col-nav">
+              <li class="dropdown nav-item">
+                <button class="btn btn-link" type="submit"> <a href="/admin/signout" ><i class="material-icons md-exit_to_app"></i>Logout</a></button>
+            
+              </li>
+          </ul>
+      </div>
+
+      </header>
+      <section class="content-main">
+        <div class="content-header">
+          <div>
+            <h2 class="content-title card-title">Order Details</h2>
+            <p>Fetch the details of the current orders here.</p>
+          </div>
+        </div>
+        
+        <!-- card-header end// -->
+        <div class="container mt-5 p-5">
+            <div class="row">
+                  <div class="container mt-5">
+                  <%# for(i of eachOrderDetails){ %>
+                      <div class="row">
+                          <div class="col-md-6">
+                          <h2 style="color: red;">OrderId : <%=eachOrderDetails.orderID %> </h2>
+                                <br>
+                                <p style="font-size: large;">Product Name : <%= productData[0].name %></p><br>
+                                <p style="font-size: large;">User : <%=eachOrderDetails.user %></p><br>
+                                <p style="font-size: large;">Quantity : <%=eachOrderDetails.products[0].product_quantity %></p><br>
+                                <p style="font-size: large;">Price : <%= productData[0].rate_after_discount %></p><br>
+                                <p style="font-size: large;">Address : <%=eachOrderDetails.address.customerName%>, <%=eachOrderDetails.address.houseName%>, <%=eachOrderDetails.address.street%>, <%=eachOrderDetails.address.city%>, <%=eachOrderDetails.address.state%></p><br>
+                                <p style="font-size: large;">Paid By : <%=eachOrderDetails.paymentMethod%></p><br>
+                                <p style="font-size: large; color: brown;">Status : <%=eachOrderDetails.status%></p><br>
+                                <%# if (){ %>
+                                <button class="btn btn-danger">Cancel</button>
+                                
+                            </div>
+
+                          <div class="col-md-6">
+                                <img src="<%= productData[0].image[0] %>" style="height: 250px; width: 250px;" class="img-fluid" alt="Product Image">
+                            </div>
+                        </div>
+                        <%# } %>
+                    </div>
+              </div>
+          </div>
+     
+        <!-- row.// -->
+        <!-- <div class="pagination-area mt-15 mb-50">
+          <nav aria-label="Page navigation example">
+            <ul class="pagination justify-content-start">
+              <li class="page-item active">
+                <a class="page-link" href="#">01</a>
+              </li>
+               <li class="page-item"><a class="page-link" href="#">02</a></li>
+              <li class="page-item"><a class="page-link" href="#">03</a></li>
+              <li class="page-item">
+                <a class="page-link dot" href="#">...</a>
+              </li>
+              <li class="page-item"><a class="page-link" href="#">16</a></li> 
+              <li class="page-item">
+                <a class="page-link" href="#"
+                  ><i class="material-icons md-chevron_right"></i
+                ></a>
+              </li>
+            </ul>
+          </nav>
+        </div> -->
+      </section>
+      <!-- content-main end// -->
+    <%- include ('partialsAdminFooter') %>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+  </body>
+</html>

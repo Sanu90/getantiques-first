@@ -132,10 +132,148 @@ const deleteCoupon = async (req, res) => {
   }
 };
 
+const userApplyCoupon = async (req, res) => {
+  try {
+    //const date = new Date();
+    const shipping_charges = 1000;
+    const cart_amount = req.session.cartTotal + shipping_charges;
+    const total_cart_value = cart_amount + shipping_charges;
+    console.log(" USER APPLYING A COUPON IN CHECKOUT PAGE ");
+    console.log("date is:", date);
+    // req.body(from fetch api) is consoled  //
+    console.log(req.body.name);
+    console.log(req.body.value);
+    // //
+    const couponFound = await couponModel.find({
+      name: req.body.name,
+    }); // to check whether such a coupon is available in DB //
+    console.log("Is this coupon available now?", couponFound);
+
+    if (couponFound.length == 0) {
+      console.log("USER ENTERED A WRONG COUPON");
+      res.json({
+        message: "Invalid coupon entered",
+        discount: "",
+        total_cart_value: cart_amount,
+        buttonChange: 0,
+      });
+    } else {
+      console.log("USER ENTERED A CORRECT COUPON");
+      const couponUsed = await userModel.find({
+        username: req.session.name,
+        coupon: { $in: `${req.body.name}` },
+      }); // to check whether the user has already used this coupon //
+      console.log("Does user already used this?", couponUsed);
+      if (couponUsed.length == 1) {
+        console.log("USER HAS ALREADY USED THIS COUPON EARLIER");
+        // const cart_amount = req.session.cartTotal + shipping_charges;
+        res.json({
+          message: "You have already used this coupon",
+          total_cart_value: cart_amount,
+          discount: "",
+          buttonChange: 0,
+        });
+      } else if (couponUsed.length == 0) {
+        //const couponFound = await couponModel.find({ name: req.body.name }); // to check whether such a coupon is available in DB //
+        console.log("USER HAS NOT USED THIS COUPON BEFORE");
+        console.log(
+          "Minimum cart value to apply this coupon   ",
+          couponFound[0].minimum_cart_value
+        );
+        console.log("Cart total is: ", req.session.cartTotal);
+        if (req.session.cartTotal < couponFound[0].minimum_cart_value) {
+          res.json({
+            message:
+              "Minimum cart value should be " +
+              `${couponFound[0].minimum_cart_value}` +
+              " for this coupon",
+            total_cart_value: cart_amount,
+            discount: "",
+            buttonChange: 0,
+          });
+        } else if (req.session.cartTotal >= couponFound[0].minimum_cart_value) {
+          await userModel.updateOne(
+            { username: req.session.name },
+            { $push: { coupon: couponFound[0].name } }
+          );
+          const discount = couponFound[0].discount;
+          console.log("Discount amount is: ", discount);
+          console.log("Cart total is: ", req.session.cartTotal);
+
+          const cart_amount =
+            req.session.cartTotal + shipping_charges - discount;
+          console.log(
+            "Updated Cart value after discount from coupon is: ",
+            cart_amount
+          );
+
+          req.session.cart_Value_after_coupon = cart_amount
+
+          // const total_cart_value = cart_amount + shipping_charges;
+          console.log(
+            "Cart value including shipping charges: ",
+            total_cart_value
+          );
+          res.header("Content-Type", "application/json").json({
+            message: "Coupon applied",
+            total_cart_value: cart_amount,
+            discount: discount,
+            buttonChange: 1,
+          });
+        }
+      }
+    }
+  } catch (error) {
+    console.log(
+      "Error happened while userApplyCoupon in couponController:",
+      error
+    );
+  }
+};
+
+const userRemoveCoupon = async (req, res) => {
+  try {
+    console.log(" USER REMOVING THE APPLIED COUPON ");
+    console.log(req.body.name);
+    console.log(req.body.value);
+    console.log(req.session.name);
+    const couponFound = await couponModel.find({
+      name: req.body.name,
+    });
+    console.log(couponFound);
+    const removeCoupon = await userModel.updateOne(
+      {
+        username: req.session.name,
+      },
+      { $pull: { coupon: req.body.name } }
+    );
+    console.log(removeCoupon);
+    const discount = couponFound[0].discount;
+    const cart_value = req.session.cart_Value_after_coupon + discount;
+
+    console.log("The total cart value after removing coupon: ", cart_value);
+
+    res.header("Content-Type", "application/json").json({
+            message: "Coupon removed",
+            total_cart_value: cart_value,
+            discount: "",
+            buttonChange: 0,
+          });
+
+
+
+
+  } catch (error) {
+    console.log("Error happened while userRemoveCoupon in couponController");
+  }
+};
+
 module.exports = {
   coupon,
   addCoupon,
   couponEdit,
   saveEditCoupon,
   deleteCoupon,
+  userApplyCoupon,
+  userRemoveCoupon,
 };

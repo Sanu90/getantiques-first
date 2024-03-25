@@ -50,6 +50,14 @@ const userData = new mongoose.Schema({
     required: false,
     trim: true,
   },
+  coupon: {
+    type: Array,
+    trim: true,
+  },
+  wallet: {
+    type: Number,
+    trim: true,
+  },
 });
 
 const Users = mongoose.model("user", userData);

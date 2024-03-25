@@ -66,13 +66,27 @@ const addToCart = async (req, res) => {
       "item.product": product_id,
     });
 
+    const productDetails = await productModel.findOne({ _id: product_id });
+    console.log(
+      productDetails,
+      "-----------------------------------------------------------------"
+    );
+
     console.log("Existing cart item: ", existingCartItem);
 
     if (!existingCartItem) {
       // If the product doesn't exist, add it to the cart
       await cartModel.updateOne(
         { user: userID },
-        { $push: { item: { product: product_id, product_quantity: 1 } } },
+        {
+          $push: {
+            item: {
+              product: product_id,
+              product_quantity: 1,
+              product_rate: productDetails.rate_after_discount,
+            },
+          },
+        },
         { upsert: true }
       );
     } else {
@@ -217,6 +231,11 @@ const checkout = async (req, res) => {
 
     req.session.totalCheckoutCharge = totalCheckoutCharge;
 
+    console.log(
+      "req.session.cart_Value_after_coupon  is:",
+      req.session.cart_Value_after_coupon
+    );
+
     const checkoutPageValues = await cartModel.aggregate([
       {
         $match: { user: new ObjectId(userID) },
@@ -299,14 +318,14 @@ const minusCartvalue = async (req, res) => {
         $project: {
           _id: 0,
           productCount: "$item.product_quantity",
-          productPrice: { $arrayElemAt: ["$product.rate", 0] },
+          productPrice: { $arrayElemAt: ["$product.rate_after_discount", 0] },
         },
       },
-      {
-        $addFields: {
-          totalPrice: { $multiply: ["$productCount", "$productPrice"] }, // Calculate total price
-        },
-      },
+      // {
+      //   $addFields: {
+      //     totalPrice: { $multiply: ["$productCount", "$productPrice"] }, // Calculate total price
+      //   },
+      // },
     ]);
 
     console.log(
@@ -333,14 +352,111 @@ const minusCartvalue = async (req, res) => {
 
 const addCartvalue = async (req, res) => {
   try {
+    console.log(req.body);
     console.log("Cart value increasing by user");
     const userID = req.session.userID;
     const product_id = req.body.productId;
+    const quantity = req.body.quantity;
     console.log("User increased the count of the product id: ", product_id);
-    await cartModel.updateOne(
-      { user: userID, "item.product": product_id },
-      { $inc: { "item.$.product_quantity": 1 } }
-    );
+    if ((quantity > 1) & (quantity < 5)) {
+      console.log(quantity);
+      console.log("-----------------********--------------------------");
+      await cartModel.updateOne(
+        { user: userID, "item.product": product_id },
+        { $inc: { "item.$.product_quantity": req.body.value } }
+      );
+    }
+
+    //---------------------------------------------------------------------------------------------------
+
+    // let aggregation_totalPrice = await cartModel.aggregate([
+    //   {
+    //     $match: { user: new ObjectId(userID) },
+    //   },
+    //   {
+    //     $unwind: "$item",
+    //   },
+    //   {
+    //     $match: { "item.product": new ObjectId(product_id) }, // Match the product ID
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "products", // Collection name of products
+    //       localField: "item.product",
+    //       foreignField: "_id",
+    //       as: "product",
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 0,
+    //       productCount: "$item.product_quantity",
+    //       productPrice: { $arrayElemAt: ["$product.rate_after_discount", 0] },
+    //     },
+    //   },
+    //   {
+    //     $addFields: {
+    //       totalPrice: { $multiply: ["$productCount", "$productPrice"] }, // Calculate total price
+    //     },
+    //   },
+    // ]);
+
+    //---------------------------------------------------------------------------------------------------
+
+    // let aggregation_totalPrice = await cartModel.aggregate([
+    //   {
+    //     $match: { user: new ObjectId(userID) },
+    //   },
+    //   {
+    //     $unwind: "$item",
+    //   },
+    //   {
+    //     $lookup: {
+    //       from: "products",
+    //       localField: "item.product",
+    //       foreignField: "_id",
+    //       as: "product",
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       productName: { $arrayElemAt: ["$product.name", 0] },
+    //       productCount: "$item.product_quantity",
+    //       productRate: { $arrayElemAt: ["$product.rate_after_discount", 0] },
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: "$productName",
+    //       totalCount: { $sum: "$productCount" },
+    //       totalRate: { $sum: { $multiply: ["$productCount", "$productRate"] } },
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 0,
+    //       productName: "$_id",
+    //       totalCount: 1,
+    //       totalRate: 1,
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: null,
+    //       products: { $push: "$$ROOT" },
+    //       totalCartSum: { $sum: "$totalRate" },
+    //     },
+    //   },
+    //   {
+    //     $project: {
+    //       _id: 0,
+    //       products: 1,
+    //       totalCartSum: 1,
+    //     },
+    //   },
+    // ]);
+
+    //test
 
     let aggregation_totalPrice = await cartModel.aggregate([
       {
@@ -350,44 +466,28 @@ const addCartvalue = async (req, res) => {
         $unwind: "$item",
       },
       {
-        $match: { "item.product": new ObjectId(product_id) }, // Match the product ID
-      },
-      {
-        $lookup: {
-          from: "products", // Collection name of products
-          localField: "item.product",
-          foreignField: "_id",
-          as: "product",
-        },
-      },
-      {
-        $project: {
-          _id: 0,
-          productCount: "$item.product_quantity",
-          productPrice: { $arrayElemAt: ["$product.rate", 0] },
-        },
-      },
-      {
-        $addFields: {
-          totalPrice: { $multiply: ["$productCount", "$productPrice"] }, // Calculate total price
-        },
+        $match: { "item.product": new ObjectId(product_id) },
       },
     ]);
+
+    //end
 
     console.log(
       "aggregation result for getting total price: ",
       aggregation_totalPrice
     );
-    productTotalValue = aggregation_totalPrice[0].totalPrice;
-    productCount = aggregation_totalPrice[0].productCount;
-    console.log("total price of the product is: ", productTotalValue);
-
+    // total_product_count_in_cart = aggregation_totalPrice[0].products.length;
+    // productTotalValue = aggregation_totalPrice[0].products[0];
+    // productCount = aggregation_totalPrice[0].productCount;
+    // console.log("total price of the product is: ", productTotalValue);
+    productPrice =
+      aggregation_totalPrice[0].item.product_quantity *
+      aggregation_totalPrice[0].item.product_rate;
     res.header("Content-Type", "application/json").json({
-      productTotalValue: productTotalValue,
-      productCount: productCount,
+      // productTotalValue: productTotalValue,
+      // productCount: productCount,
+      productPrice: productPrice,
     });
-
-    //console.log(abcd[0]);
   } catch (error) {
     console.log("error occurred while addCartvalue in cartController", error);
   }
