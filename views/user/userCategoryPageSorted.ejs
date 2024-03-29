@@ -205,24 +205,32 @@
           <!-- Price Start -->
           <div class="border-bottom mb-4 pb-4">
             <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
-            <form>
-              <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                <input type="checkbox" class="custom-control-input" checked id="price-all"/>
-                <label class="custom-control-label" for="price-all">All Price</label>
+            <!-- <form action="/Ucategory/filter" method="post"> -->
+              <div
+                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <!-- <input type="checkbox" class="custom-control-input" id="price-all" checked/>
+                <label class="custom-control-label" for="price-all">All Price</label> -->
+                <button type="button" onclick="filter(this.value)" value="0" id="all">All Price</button>
+              </div>
+              
+              <div
+                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <!-- <input type="checkbox" class="custom-control-input" id="price-1"/>
+                <label class="custom-control-label" for="price-1">₹1000 - ₹10000</label> -->
+                <button type="button" id="1000" onclick="filter(this.value)" value="1">₹1000 - ₹10000</button>
+              </div>
+              <div
+                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <!-- <input type="checkbox" class="custom-control-input" id="price-2"/>
+                <label class="custom-control-label" for="price-2">₹10001 - ₹50000</label> -->
+                <button type="button" id="10001" value="2" onclick="filter(this.value)">₹10001 - ₹50000</button>
               </div>
               <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                <input type="checkbox" class="custom-control-input" id="price-1"/>
-                <label class="custom-control-label" for="price-1">₹1000 - ₹10000</label>
-              </div>
-              <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                <input type="checkbox" class="custom-control-input" id="price-2"/>
-                <label class="custom-control-label" for="price-2">₹10001 - ₹50000</label>
-              </div>
-              <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
-                <input type="checkbox" class="custom-control-input" id="price-3"/>
-                <label class="custom-control-label" for="price-3">₹50001 - ₹100000</label>
-              </div> 
-            </form>
+                <!-- <input type="checkbox" class="custom-control-input" id="price-3"/>
+                <label class="custom-control-label" for="price-3">₹50001 - ₹100000</label  > -->
+                <button type="button" id="50001" onclick="filter(this.value)" value="3">₹50001 - ₹100000</button>
+              </div>  
+            <!-- </form> -->
           </div>
           <!-- Price End -->
         </div>
@@ -527,41 +535,56 @@
 
     
     // Function to fetch filtered products based on selected price ranges
-    function filterProducts() {
-      const selectedRanges = [];
+    // function filterProducts() {
+    //   const selectedRanges = [];
 
-      // Get the checked status of each checkbox
-      const priceAll = document.getElementById('price-all').checked;
-      const price1 = document.getElementById('price-1').checked;
-      const price2 = document.getElementById('price-2').checked;
-      const price3 = document.getElementById('price-3').checked;
-      // Add more price range checkboxes as needed
+    //   // Get the checked status of each checkbox
+    //   const priceAll = document.getElementById('price-all').checked;
+    //   const price1 = document.getElementById('price-1').checked;
+    //   const price2 = document.getElementById('price-2').checked;
+    //   const price3 = document.getElementById('price-3').checked;
+    //   // Add more price range checkboxes as needed
 
-      // Check each checkbox and add the corresponding price range to the array
-      if (priceAll) selectedRanges.push('all');
-      if (price1) selectedRanges.push('1');
-      if (price2) selectedRanges.push('2');
-      if (price3) selectedRanges.push('3');
-      // Add more conditions for other price range checkboxes
+    //   // Check each checkbox and add the corresponding price range to the array
+    //   if (priceAll) selectedRanges.push('all');
+    //   if (price1) selectedRanges.push('1');
+    //   if (price2) selectedRanges.push('2');
+    //   if (price3) selectedRanges.push('3');
+    //   // Add more conditions for other price range checkboxes
 
-      // Make a fetch request to the server to fetch filtered products
-      fetch(`/products/filter?priceRanges=${selectedRanges.join(',')}`)
-        .then(response => response.json())
-        .then(products => {
-          // Handle the response (e.g., update the product list)
-          console.log(products);
-        })
-        .catch(error => console.error('Error filtering products:', error));
-    }
+    //   // Make a fetch request to the server to fetch filtered products
+    //   fetch(`/products/filter?priceRanges=${selectedRanges.join(',')}`)
+    //     .then(response => response.json())
+    //     .then(products => {
+    //       // Handle the response (e.g., update the product list)
+    //       console.log(products);
+    //     })
+    //     .catch(error => console.error('Error filtering products:', error));
+    // }
 
-    // Add event listeners to checkboxes to trigger filterProducts function on click
-    document.getElementById('price-all').addEventListener('click', filterProducts);
-    document.getElementById('price-1').addEventListener('click', filterProducts);
-    document.getElementById('price-2').addEventListener('click', filterProducts);
-    // Add more event listeners for other price range checkboxes
+    // // Add event listeners to checkboxes to trigger filterProducts function on click
+    // document.getElementById('price-all').addEventListener('click', filterProducts);
+    // document.getElementById('price-1').addEventListener('click', filterProducts);
+    // document.getElementById('price-2').addEventListener('click', filterProducts);
+    // // Add more event listeners for other price range checkboxes
 
-    // Initially fetch products when the page loads
-    filterProducts();
+    // // Initially fetch products when the page loads
+    // filterProducts();
+
+
+    function filter(buttonValue){
+  console.log("Filtering ");
+  console.log("Button value is: ",buttonValue );
+  if(buttonValue==1){
+    window.location.href = "/Ucategory/filter/1";
+  } else if (buttonValue==2) {
+    window.location.href = "/Ucategory/filter/2"; // 
+  } else if (buttonValue==3) {
+    window.location.href = "/Ucategory/filter/3"; // 
+  } else if (buttonValue==0) {
+    window.location.href = "/Ucategory/filter/0";
+  } 
+}
   
 
 

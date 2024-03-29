@@ -124,6 +124,14 @@ const authOTP = async (req, res) => {
           req.session.userDetails.password,
           10
         );
+
+        // IIFE for referral code//
+        let referral_Code;
+        (function () {
+          referral_Code = Math.random().toString(36).slice(5);
+        })();
+        console.log("REFERRAL CODE IS:", referral_Code);
+
         console.log(req.session.userDetails);
         const registeredUser = new userModel({
           username: req.session.userDetails.username,
@@ -133,6 +141,7 @@ const authOTP = async (req, res) => {
           isAdmin: 0,
           hide: 0,
           wallet: 0,
+          referralCode: referral_Code,
         });
         await registeredUser.save();
         console.log("--------------------------");
@@ -413,6 +422,18 @@ const productView = async (req, res) => {
   }
 };
 
+const wallet = async (req, res) => {
+  try {
+    const userName = req.session.name;
+    const userData = await userModel.findOne({ username: userName });
+    console.log("User Data is:", userData);
+    console.log("user entered wallet");
+    res.render("wallet", { user: userName, userData });
+  } catch (error) {
+    console.log("Error while displaying wallet ", error);
+  }
+};
+
 const userProductView = async (req, res) => {
   try {
     console.log("userProductView");
@@ -627,7 +648,17 @@ const searchInCategory = async (req, res) => {
     console.log("searchInCategory");
     console.log(req.params);
   } catch (error) {
-    console.log("Error while searchInCategory :" + error);
+    console.log("Error while searchInCategory in usercontroller  :" + error);
+  }
+};
+
+const filterProducts = async (req, res) => {
+  try {
+    console.log("filterProducts");
+    const { ButtonID } = req.body;
+    console.log(ButtonID);
+  } catch (error) {
+    console.log("Error while filterProducts in usercontroller ", error);
   }
 };
 
@@ -876,4 +907,6 @@ module.exports = {
   editProfile,
   security,
   setNewPassword,
+  filterProducts,
+  wallet,
 };

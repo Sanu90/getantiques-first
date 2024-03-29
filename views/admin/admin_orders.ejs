@@ -124,7 +124,7 @@
                     <th style="color:tomato;font-size:small; text-align: center; ">User Name</th>
                     <th style="color:tomato;font-size:small; text-align: center; ">Date of Order</th>
                     <th style="color:tomato;font-size:small; text-align: center; ">Order ID</th>
-                    <th style="color:tomato;font-size:small; text-align: center; ">Total Price</th>
+                    <th style="color:tomato;font-size:small; text-align: center; ">Total Price<sup>*</sup></th>
                     <th style="color:tomato;font-size:small; text-align: center; ">Status</th>
                     <th style="color:tomato;font-size:small; text-align: center; ">Payment</th>
                     <!-- <th style="color:tomato;font-size:small; text-align: center; width: 250px;">Description</th>
@@ -133,56 +133,56 @@
                   </tr>
                    <% for(let i=0;i<orderDetails.length;i++) { %>
                   <tr>
-                    <!-- <td style="text-align: center;"><img src="<%#=p.image[0]%>" style="padding:15%;" height="100px" width="100px" >  </td> -->
                     <td style="text-align: center;"><%=orderDetails[i].user %></td>
-                    <!-- <td style="text-align: center;"><%#=orderDetails[i].date.toDateString() %> </td> -->
                     <td style="text-align: center;"><%=orderDetails[i].date.toLocaleString() %> </td>
                     <td style="text-align: center;"><%=orderDetails[i].orderID %></td> 
                     <td style="text-align: center;"><%=orderDetails[i].totalOrderValue %></td>
-                    <!-- <td style="text-align: center;"><%#=orderDetails[i].status %></td> -->
+                    <form action="/admin/updateOrderStatus" method="post">
+                    <input type="hidden" value="<%=orderDetails[i].orderID %>" name="orderID">
                     <td style="text-align: center;">
-                    <select name="cars" id="cars">
-                    <option value="volvo" selected>Placed</option>
-                    <option value="saab" >Shipped</option>
-                    <option value="opel">Out for Delivery</option>
-                    <option value="audi">Delivered</option>
+                    <% if(orderDetails[i].status == 'Placed'){%>
+                    <select name="status" id="orderStatus">
+                    <option value="Placed"  selected>Placed</option>
+                    <option value="Shipped"  >Shipped</option>
+                    <option value="Out for Delivery" >Out for Delivery</option>
+                    <option value="Delivered" >Delivered</option>
                     </select>
+                    <% } else if(orderDetails[i].status == 'Shipped'){ %>
+                    <select name="status" id="orderStatus">
+                    <option value="Shipped" selected  >Shipped</option>
+                    <option value="Out for Delivery" >Out for Delivery</option>
+                    <option value="Delivered" >Delivered</option>
+                    </select>
+                    <% } else if(orderDetails[i].status == 'Out for Delivery'){ %>
+                    <select name="status" id="orderStatus">
+                    <option value="Out for Delivery" selected >Out for Delivery</option>
+                    <option value="Delivered" >Delivered</option>
+                    </select>
+                    <% } else if(orderDetails[i].status == 'Delivered'){ %>
+                    <select name="status" id="orderStatus">
+                    <option value="Delivered" selected >Delivered</option>
+                    </select>
+                    <% } else if(orderDetails[i].status == 'Cancelled'){ %>
+                    <select name="status" id="orderStatus">
+                    <option value="Cancelled" selected disabled>Cancelled</option>
+                    </select>
+                    <% } else if(orderDetails[i].status == 'Failed'){%>
+                    <select name="status" id="orderStatus">
+                    <option value="Cancelled" selected disabled>Payment Failed</option>
+                    </select>
+                    <% } %>
+                    <% if((orderDetails[i].status == 'Placed')||(orderDetails[i].status == 'Shipped')||(orderDetails[i].status == 'Out for Delivery')){ %>
+                    <button type="submit" style="background-color: #007bff; color: #ffffff;">Update</button>
+                    <% } else if((orderDetails[i].status == 'Delivered') || (orderDetails[i].status == 'Cancelled')) { %>
+                    <button type="submit" style="background-color: #007bff; color: #ffffff;" hidden>Update</button>
+                    <% } %>
                     </td>
+                    </form>
                     <td style="text-align: center;"><%=orderDetails[i].paymentMethod %></td>
-                    <!-- <td style="text-align:center;" class="description" title="<%#=p.description %>"><%#=p.description %></td> -->
-                    <td style="text-align: center;">
-                      <form action="#" method="post">
-                        <input type="hidden" value="<%#=p.name%>" name="oldName">
-                        <input type="hidden" value="<%#=p.category %>" name="oldCategory">
-                         <input type="hidden" value="<%#=p.rate %>" name="oldRate">
-                        <input type="hidden" value="<%#=p.stock %>" name="oldStock"> 
-                        <input  style="overflow: hidden;" type="hidden" value="<%#=p.description %>" name="oldDesc">
-                        <a style="color:cadetblue;" href="/admin/orderDetails?id=<%=orderDetails[i].orderID %>">Details..</a> 
-                        <!-- <button class="btn btn-success" type="submit">Edit</button> -->
+                    <td style="text-align: center;"><a style="color:cadetblue;" href="/admin/orderDetails?id=<%=orderDetails[i].orderID %>">Details..</a> 
                         
-                      </form>
-                    <!-- </td>
-                    <td style="text-align: center;">
-                    <%# if(!p.hide){ %>
-                    <button
-                    style="background-color:coral;"
-                      type="button"
-                      id="<%#=p._id %>"
-                      onclick="toggleFunction('<%#=p._id %>')"
-                    >
-                    Hide
-                  </button>
-                  <%# }else{ %>
-                  <button
-                    style="background-color:green;"
-                      type="button"
-                      id="<%#=p._id %>"
-                      onclick="toggleFunction('<%#=p._id %>')"
-                    >
-                    Show
-                  </button>
-                  <%#} %>
-                    </td>   -->
+                     </td>
+                  </form>
                   </tr>
                   <% } %>
                   
@@ -192,55 +192,66 @@
           </div>
         </div>
       </div>
-        <!-- row.// -->
-        <!-- <div class="pagination-area mt-15 mb-50">
-          <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
-              <li class="page-item active">
-                <a class="page-link" href="#">01</a>
+        <div class="pagination-area mt-15 mb-50">
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-center">
+            <% for(let page = 1; page <= totalPages; page++){ %>
+              <li class="page-item <%= currentPage === page ? 'active' : '' %>">
+                <a class="page-link btn-primary" href="?page=<%=page%>"><%=page%></a>
               </li>
-               <li class="page-item"><a class="page-link" href="#">02</a></li>
-              <li class="page-item"><a class="page-link" href="#">03</a></li>
-              <li class="page-item">
-                <a class="page-link dot" href="#">...</a>
-              </li>
-              <li class="page-item"><a class="page-link" href="#">16</a></li> 
-              <li class="page-item">
-                <a class="page-link" href="#"
-                  ><i class="material-icons md-chevron_right"></i
-                ></a>
-              </li>
-            </ul>
-          </nav>
-        </div> -->
+            <% } %>
+          </ul>
+        </nav>
+      </div>
+      <p style="padding-left: 300px; color: red; font-size: small;"><sup></sup>Total Price is including the delivery charges Rs1000</p>
       </section>
       <!-- content-main end// -->
     <%- include ('partialsAdminFooter') %>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    <script>
-      // Function to be executed when the toggle button is clicked
 
-      function toggleFunction(a) {
-        console.log(a);
-        console.log(a,'last');
-        $.ajax({
-          url:"/admin/productHide",
-          data:{
-            id:a,
-          },
-          method:"post",
-          dataType:'json',
-          success:function(res){
-            if(res){
-              window.location.reload();
-              console.log(res)
-            }else{
-              console.log('error')
-            }
-          }
-        })
-      }
+    <script>
+
+
+
+
+    // ----------------------//
+        // const statusDropdown = document.querySelectorAll('orderStatus');
+        // const orderID = document.getElementById("orderId");
+
+        // console.log(orderID);
+
+        // statusDropdowns.forEach(dropdown => {
+        //     dropdown.addEventListener('change', function() {
+        //         const selectedStatus = dropdown.value;
+        //         const orderId = dropdown.parentNode.querySelector('span').textContent.split(':')[1].trim();
+
+        // dropdown.addEventListener('change', function() {
+        //     const selectedValue = dropdown.value;
+
+            // Make a fetch call to your backend endpoint
+        //     fetch('/admin/updateOrderStatus', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json'
+        //         },
+        //         body: JSON.stringify({ value: selectedValue })
+        //     })
+        //     .then(response => {
+        //         if (!response.ok) {
+        //             throw new Error('Network response was not ok');
+        //         }
+        //         // Handle success
+        //         console.log('Value saved successfully.');
+        //     })
+        //     .catch(error => {
+        //         // Handle error
+        //         console.error('There was a problem saving the value:', error);
+        //     });
+        // });
+        // })
     </script>
+
+
   </body>
 </html>

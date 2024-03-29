@@ -134,12 +134,12 @@ const deleteCoupon = async (req, res) => {
 
 const userApplyCoupon = async (req, res) => {
   try {
-    //const date = new Date();
+    const date = new Date();
     const shipping_charges = 1000;
     const cart_amount = req.session.cartTotal + shipping_charges;
     const total_cart_value = cart_amount + shipping_charges;
     console.log(" USER APPLYING A COUPON IN CHECKOUT PAGE ");
-    console.log("date is:", date);
+    console.log("today's date is:", date);
     // req.body(from fetch api) is consoled  //
     console.log(req.body.name);
     console.log(req.body.value);
@@ -159,6 +159,19 @@ const userApplyCoupon = async (req, res) => {
       });
     } else {
       console.log("USER ENTERED A CORRECT COUPON");
+
+      // ********************** //
+      if (couponFound[0].expiry < date) {
+        console.log("Coupon Expired");
+        res.json({
+          message: "This coupon is expired",
+          total_cart_value: cart_amount,
+          discount: "",
+          buttonChange: 0,
+        });
+      }
+      // ********************** //
+
       const couponUsed = await userModel.find({
         username: req.session.name,
         coupon: { $in: `${req.body.name}` },
@@ -194,7 +207,7 @@ const userApplyCoupon = async (req, res) => {
         } else if (req.session.cartTotal >= couponFound[0].minimum_cart_value) {
           await userModel.updateOne(
             { username: req.session.name },
-            { $push: { coupon: couponFound[0].name } }
+            { $push: { coupon: couponFound.name } }
           );
           const discount = couponFound[0].discount;
           console.log("Discount amount is: ", discount);
@@ -207,7 +220,7 @@ const userApplyCoupon = async (req, res) => {
             cart_amount
           );
 
-          req.session.cart_Value_after_coupon = cart_amount
+          req.session.cart_Value_after_coupon = cart_amount;
 
           // const total_cart_value = cart_amount + shipping_charges;
           console.log(
@@ -254,15 +267,11 @@ const userRemoveCoupon = async (req, res) => {
     console.log("The total cart value after removing coupon: ", cart_value);
 
     res.header("Content-Type", "application/json").json({
-            message: "Coupon removed",
-            total_cart_value: cart_value,
-            discount: "",
-            buttonChange: 0,
-          });
-
-
-
-
+      message: "Coupon removed",
+      total_cart_value: cart_value,
+      discount: "",
+      buttonChange: 0,
+    });
   } catch (error) {
     console.log("Error happened while userRemoveCoupon in couponController");
   }

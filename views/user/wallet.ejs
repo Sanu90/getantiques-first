@@ -89,7 +89,7 @@
           <p class="m-0 px-2">-</p>
           <p class="m-0"><a href="/account">Account</a></p>
           <p class="m-0 px-2">-</p>
-          <p class="m-0">Order History</p>
+          <p class="m-0">Wallet</p>
         </div>
       </div>
     </div>
@@ -97,83 +97,48 @@
 
     <!-- Container Cards Start -->
     <!-- <div class="w-25" style="margin-left: 40%"> -->
-    <% if(orderHistory.length==0){ %>
-    <div class="container">
-    <p style="font-size: large; color:tomato;">Your Order history is empty.</p>
-    <br>
-    <p style="font-size: large; color:tomato;">Enjoy your shopping experience by clicking below button. </p><br>
-    <button type="button"
-          class="btn btn-outline-primary"
-          onclick="location.href='/home'"
-        >
-          Keep Shopping
-        </button>
-    </div>
-    <% }else{ %>
 
-   <% if(message){ %>
-   <div class="container" style="text-align: center;">
-    <p style="align-content: center; color: red;" id="messagePara"><%=message%></p>
-  </div>
-    <% } %>
     <div class="container">
-      <div class="card" style="cursor: default;" >
-        <table class="table">
+      <p style="font-size: large; color: black">Total Amount in Wallet:</p>
+
+      <p style="font-size: large; color: black">
+        Get credited with ₹200 when your friend uses your referral code:
+        <span style="color: rgb(212, 70, 70)"><%=userData.referralCode %></span>
+      </p>
+      <br />
+      <h5>Wallet Transaction</h5>
+    </div>
+
+    <div class="container" style="text-align: center">
+      <!-- <p style="align-content: center; color: red" id="messagePara">
+        <%#=message%>
+      </p> -->
+    </div>
+
+    <div class="container mt-5">
+      <div class="border p-3" style="width: 700px">
+        <table class="table table-striped-columns">
           <thead>
             <tr>
-              <th scope="col">#</th>
-              <th scope="col">ID</th>
-              <th scope="col" style="width: 150px;" >Date, Time</th>
-              <th scope="col">Product count</th>
-              <th scope="col">Total</th>
-              <th scope="col">Payment Mode</th>
-              <th scope="col">Payment Status</th>
-              <th scope="col">Details</th>
+              <th>#</th>
+              <th>Date</th>
+              <th>Description</th>
+              <th>Amount</th>
             </tr>
           </thead>
           <tbody>
-          <% for(let i=0;i<orderHistory.length;i++){ %>
             <tr>
-              <td><%=i+1 %></td>
-              <% if(orderHistory[i].status === "Cancelled"){ %>
-              <td><del style="color: red;"><%=orderHistory[i].orderID %></del></td>
-              <% } else { %>
-              <td><%=orderHistory[i].orderID %></td>
-              <% } %>
-              <td><%=orderHistory[i].date.toLocaleString() %></td>
-              <td style="text-align: center;"><%=orderHistory[i].products.length %></td>
-              <td>₹<%=orderHistory[i].totalOrderValue %></td>
-              <td><%=orderHistory[i].paymentMethod %></td>
-              <td><%=orderHistory[i].paymentStatus %></td>
-              <td style="text-align: left;">
-                      <form action="/account/order/<%=orderHistory[i].orderID %>" method="post">
-                        <!-- <input type="hidden" value="<%#=p.name%>" name="oldName">  -->
-                        <button class="btn btn-success" type="submit">More..</button>
-                      </form>
+              <td>1</td>
+              <td>2024-03-27</td>
+              <td>Deposit</td>
+              <td>$100</td>
             </tr>
-            <%} %>
           </tbody>
         </table>
-        
       </div>
     </div>
-    <% } %>
-    <div class="container-fluid"><br /><br /><br /><br /><br /><br /></div>
 
-    <!-- <a href="#" class="btn btn-primary back-to-top">
-        <i class="fa fa-angle-double-up"></i>
-      </a> -->
-    <!-- </div> -->
-    <!-- Container Cards End -->
-    <!-- <div class="container">
-      <div class="card">
-        <a href="#">
-          <img src="../user/img/purchase.png" alt="Card Image" />
-          <h2>Orders</h2>
-          <p>All about your orders</p>
-        </a>
-      </div>
-    </div> -->
+    <div class="container-fluid"><br /><br /><br /><br /><br /><br /></div>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-secondary text-dark mt-5 pt-5">
@@ -213,12 +178,10 @@
     <!-- Template Javascript -->
     <!-- <script src="../user/js/main.js"></script> -->
     <script>
-    setTimeout(()=>{
+      setTimeout(() => {
         let a = document.getElementById("messagePara");
-        a.style.display="none";
-    },2500)
-    
-    
+        a.style.display = "none";
+      }, 2500);
     </script>
   </body>
 </html>

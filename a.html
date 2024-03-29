@@ -3,31 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Document</title>
-    <style>
-      .float-container {
-        border: 3px solid #fff;
-        padding: 20px;
-      }
-
-      .float-child {
-        width: 50%;
-        float: left;
-        padding: 20px;
-        border: 2px solid red;
-      }
-    </style>
+    <title>Image Cropping with Cropper.js and Multer</title>
+    <!-- Include Cropper.js -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css"
+      rel="stylesheet"
+    />
   </head>
-
   <body>
-    <div class="float-container">
-      <div class="float-child">
-        <div class="green">Float Column 11</div>
-      </div>
-
-      <div class="float-child">
-        <div class="blue">Float Column 21</div>
-      </div>
+    <!-- HTML structure -->
+    <input type="file" id="inputFile" />
+    <div>
+      <img id="image" src="#" alt="Image to crop" />
     </div>
+    <button id="cropButton">Crop Image</button>
+
+    <!-- Include Cropper.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+    <script>
+      // JavaScript code to initialize Cropper.js
+      document.addEventListener("DOMContentLoaded", function () {
+        const inputFile = document.getElementById("inputFile");
+        const image = document.getElementById("image");
+        const cropper = new Cropper(image, {
+          aspectRatio: 16 / 9, // Set the aspect ratio as needed
+          crop: function (event) {
+            // Optional: Function to handle cropping event
+          },
+        });
+
+        // Add event listener to input file
+        inputFile.addEventListener("change", function (event) {
+          const file = event.target.files[0];
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            image.src = e.target.result;
+            cropper.replace(e.target.result);
+          };
+          reader.readAsDataURL(file);
+        });
+
+        // Add event listener to crop button
+        const cropButton = document.getElementById("cropButton");
+        cropButton.addEventListener("click", function () {
+          // Get the cropped canvas
+          const canvas = cropper.getCroppedCanvas();
+          // Convert the canvas to a blob or data URL
+          canvas.toBlob(function (blob) {
+            // Create a FormData object to send the cropped image to the server
+            const formData = new FormData();
+            formData.append("croppedImage", blob, "croppedImage.jpg");
+
+            // Send the cropped image data to the server using AJAX
+            fetch("/upload", {
+              method: "POST",
+              body: formData,
+            })
+              .then((response) => {
+                // Handle response from server
+                console.log("Image uploaded successfully");
+              })
+              .catch((error) => {
+                console.error("Error uploading image:", error);
+              });
+          }, "image/jpeg");
+        });
+      });
+    </script>
   </body>
 </html>

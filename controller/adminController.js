@@ -4,6 +4,8 @@ const catModel = require("../model/categoryModel");
 const prodModel = require("../model/productModel");
 const orderModel = require("../model/orderModel");
 const bcrypt = require("bcrypt");
+const puppeteer = require("puppeteer");
+const fs = require("fs");
 
 const adminLoginPage = (req, res) => {
   try {
@@ -57,12 +59,43 @@ const admintoDash = async (req, res) => {
       sum_of_revenue = sum_of_revenue + orderData[i].totalOrderValue;
     }
     console.log("Total revenue from orders made is:", sum_of_revenue);
+
+    const orderPlacedCount = await orderModel
+      .find({ status: "Placed" })
+      .countDocuments();
+    console.log("Order count of Placed is: ", orderPlacedCount);
+
+    const orderCancelledCount = await orderModel
+      .find({ status: "Cancelled" })
+      .countDocuments();
+    console.log("Order count of Cancelled is: ", orderCancelledCount);
+
+    const orderOFDCount = await orderModel
+      .find({ status: "Out for Delivery" })
+      .countDocuments();
+    console.log("Order count of Out for Delivery is: ", orderOFDCount);
+
+    const orderDeliveredCount = await orderModel
+      .find({ status: "Delivered" })
+      .countDocuments();
+    console.log("Order count of Delivered is: ", orderDeliveredCount);
+
+    const orderShippedCount = await orderModel
+      .find({ status: "Shipped" })
+      .countDocuments();
+    console.log("Order count of Shipped is: ", orderShippedCount);
+
     res.render("admin_dashboard", {
       name: req.session.adminName,
       orderData,
       sum_of_revenue,
       productData,
       categoryData,
+      orderPlacedCount,
+      orderCancelledCount,
+      orderOFDCount,
+      orderDeliveredCount,
+      orderShippedCount,
     });
     console.log("Name is:" + req.session.adminName);
     console.log("ADMIN: DASHBOARD");
@@ -175,6 +208,169 @@ const adminSignout = (req, res) => {
   }
 };
 
+const salesReport = async (req, res) => {
+  try {
+    console.log("***salesReport***");
+    const { startDate, endDate } = req.body;
+    console.log("Start Date is:", startDate);
+    console.log("End Date is:", endDate);
+
+    const Product = await orderModel.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$product",
+          totalOrders: { $sum: 1 },
+        },
+      },
+    ]);
+    console.log("Product details:", Product);
+
+    const status = await orderModel.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    const htmlContent = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Sales Report</title>
+                    <style>
+                        body {
+                            margin-left: 20px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2 align="center"> Sales Report</h2>
+                    Start Date: ${startDate}<br>
+                    End Date: ${endDate}<br> 
+                    <center>
+                    <h3>Total Sales</h3>
+                        <table style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Product</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Total Orders</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Product.map(
+                                  (item, index) => `
+                                    <tr>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          index + 1
+                                        }</td>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          item._id
+                                        }</td>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          item.totalOrders
+                                        }</td>
+                                    </tr>`
+                                )}
+                                    
+                            </tbody>
+                        </table>
+                    </center>
+                    <center>
+                    <h3>Order Status</h3>
+                        <table style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Status</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Total Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${status.map(
+                                  (item, index) => `
+                                    <tr>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          index + 1
+                                        }</td>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          item._id
+                                        }</td>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          item.count
+                                        }</td>
+                                    </tr>`
+                                )}
+                                    
+                            </tbody>
+                        </table>
+                    </center>
+                    
+                </body>
+                </html>
+            `;
+
+    const browser = await puppeteer.launch({
+      // executablePath: "/usr/bin/chromium-browser",
+    });
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+
+    const pdfBuffer = await page.pdf();
+
+    await browser.close();
+
+    res.setHeader("Content-Length", pdfBuffer.length);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", "attachment; filename=sales.pdf");
+    res.status(200).end(pdfBuffer);
+  } catch (error) {
+    console.log(
+      "Error happened between salesReport in adminController ",
+      error
+    );
+  }
+};
+
+const updateOrderStatus = async (req, res) => {
+  try {
+    console.log("ADMIN updating updateOrderStatus");
+    const { orderID, status } = req.body;
+    console.log(orderID);
+    console.log(status);
+    await orderModel.updateOne(
+      { orderID: orderID },
+      { $set: { status: status } }
+    );
+    res.redirect("/admin/order");
+  } catch (error) {
+    console.log(
+      "Error happened while updateOrderStatus in adminController: ",
+      error
+    );
+  }
+};
+
 module.exports = {
   adminLoginPage,
   adminDashboard,
@@ -185,4 +381,6 @@ module.exports = {
   searchCat,
   searchUser,
   searchProduct,
+  salesReport,
+  updateOrderStatus,
 };

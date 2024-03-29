@@ -103,6 +103,20 @@
           <span id="pass-error"></span>
         </div>
 
+        <!-- Referral input -->
+        <div class="form-outline mb-4">
+        <label class="form-label" for="form2Example2">Referral code</label>
+          <input
+            type="text"
+            id="form2Example2"
+            class="form-control"
+            name="referralcode" placeholder="Enter a Referral code if you have" maxlength="6" onkeyup="validateReferral()"/>
+          
+          
+          
+          <span id="pass-error"></span>
+        </div>
+
         <!-- Submit button -->
         <button onclick="return validateForm()" type="submit" class="btn btn-primary btn-block mb-4">
           Continue

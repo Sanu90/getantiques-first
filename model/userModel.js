@@ -40,11 +40,6 @@ const userData = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  // gender: {
-  //   type: String,
-  //   required: false,
-  //   trim: true,
-  // },
   dob: {
     type: Date,
     required: false,
@@ -56,6 +51,10 @@ const userData = new mongoose.Schema({
   },
   wallet: {
     type: Number,
+    trim: true,
+  },
+  referralCode: {
+    type: String,
     trim: true,
   },
 });

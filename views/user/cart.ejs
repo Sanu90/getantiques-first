@@ -254,7 +254,8 @@
                       <%# if(cartProducts[i].productQuantity = 1){ %>
                       <!-- <button class="btn btn-sm btn-primary btn-minus" disabled> -->
                       <%# } else {%>
-                      <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "add(`<%= cartProducts[i].productId %>`,-1)">
+                      <!-- <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%#= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "add(`<#%= cartProducts[i].productId %>`,-1)"> -->
+                      <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%#= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "add(`<%= cartProducts[i].productId %>`,-1)">
                       
                       <%# } %>
                      
@@ -268,7 +269,9 @@
                     />
                     
                     <div class="input-group-btn">
-                      <button class="btn btn-sm btn-primary btn-plus" id="addButton"  <%= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = "add(`<%= cartProducts[i].productId %>`,1)">
+                      <!-- <button class="btn btn-sm btn-primary btn-plus" id="addButton"  <%#= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = "add(`<%= cartProducts[i].productId %>`,1)"> -->
+                        <button class="btn btn-sm btn-primary btn-plus" id="addButton"  <%#= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = "add(`<%= cartProducts[i].productId %>`,1)">
+                      
                         <i class="fa fa-plus"></i>
                       </button>
                     </div>
@@ -317,7 +320,7 @@
             <div class="card-footer border-secondary bg-transparent">
               <div class="d-flex justify-content-between mt-2">
                 <h5 class="font-weight-bold">Total</h5>
-                <h5 class="font-weight-bold" id="total">₹<%=total %></h5>
+                <p class="font-weight-bold" id="total">₹<%=total %></p>
               </div>
               <a href="/checkout" style="text-decoration: none;" ><button class="btn btn-block btn-primary my-3 py-3" type="submit">
                 Proceed To Checkout
@@ -574,7 +577,7 @@ function add(id,val){
     let b=document.getElementById(total)
     let quantity = Number(document.getElementById('quantity').value)
      console.log("add ------------------ " ,quantity);
-  fetch(`/addCartvalue`,{
+      fetch(`/addCartvalue`,{
             method:'post',
             headers: {
                     'Content-Type': 'application/json',
@@ -591,15 +594,24 @@ function add(id,val){
                     }
                     return response.json();
                 }).then(data=>{
+                  let quantity = document.getElementById('quantity').value
+                  console.log(quantity,'quantityquantityquantityquantity')
+                    // if(quantity){
+                    //   document.getElementById('minusButton').style
+                    // }
                     // if(data.productCount==2 || 5){
                     //   window.location.reload();
                     // }
                     // window.location.reload();
                     console.log(data.productPrice,'----------------------')
                     console.log(data,'********************')
+                    let b=document.getElementById('total')
+                    console.log(b,'bbbbbbbbb')
+                    b.innerText = "₹"+data.totalPriceSum
                     document.getElementById(`${id}+hai`).innerText = "₹"+ data.productPrice
                     console.log("json.productTotalValue ..." , data.productTotalValue);                  
                     a.innerText = "₹"+data.productTotalValue;
+                    
                    //window.location.reload();  
                   console.log("hhfgyfyyfyfyff");
                 })

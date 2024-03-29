@@ -131,7 +131,7 @@
               <th scope="col" style="width: 150px; text-align:center;" >Quantity</th>
               <th scope="col" style="text-align:center;">Total</th>
               <th scope="col" style="width: 180px; text-align:center;">Status</th>
-              <th scope="col" style="text-align:center;">cancel</th>
+              <!-- <th scope="col" style="text-align:center;">cancel</th> -->
                </tr>
           </thead>
           <tbody>
@@ -147,7 +147,13 @@
               <td style="text-align:center; padding-top: 50px;">
                       <form action="/account/order/<%#=orderHistory[i].orderID %>" method="post">
                         <!-- <input type="hidden" value="<%#=p.name%>" name="oldName">  -->
-                        <button class="cancelButton" type="submit">Cancel</button>
+                        <% if (eachOrderDetails.status == "Delivered"){ %> 
+                        <button class="btn btn-primary btn-sm" type="button">Return</button>
+                          <% } else if(eachOrderDetails.status == "Cancelled"){ %>
+                          <button class="btn btn-primary btn-sm" type="button" hidden>Cancel</button>
+                          <% } else { %>
+                        <a href="/cancel/<%=eachOrderDetails.orderID %>"><button class="btn btn-primary btn-sm" type="button">Cancel</button></a>
+                        <% } %>
                       </form>
             </tr>
             <%} %>
@@ -212,5 +218,29 @@
 
     <!-- Template Javascript -->
     <!-- <script src="../user/js/main.js"></script> -->
+    <script>
+//     function confirmAction() {
+//     const reason = window.prompt("Please enter the reason for cancelling:"); // Display a prompt dialog to get the reason
+
+//     // Check if the user entered a reason
+//     if (reason !== null) {
+        
+//         const confirmed = window.confirm("Are you sure you want to perform this action?\nReason: " + reason); // Display a confirmation dialog
+        
+//         // Check if the user clicked OK in the confirmation dialog
+//         if (confirmed) {
+//             alert("Action confirmed!");
+//             // Perform your action here
+//         } else {
+//             alert("Action canceled!");
+//             // Handle cancelation or do nothing
+//         }
+//     } else {
+//         alert("Action canceled!");
+//         // Handle cancelation or do nothing
+//     }
+// }
+    
+    </script>
   </body>
 </html>

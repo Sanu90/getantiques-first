@@ -323,7 +323,7 @@
         <div class="mb-4">
           <!-- let form starts here -->
           <!-- <form action="/test" method="post"> -->
-          <form method="post">
+          <!-- <form action= "/orderProduct" method="post"> -->
           <div class="col-xxl">
             <h4 class="font-weight-semi-bold mb-4" style="padding-top: 50px">
               Select a delivery address from below
@@ -376,21 +376,38 @@
                           <label class="custom-control-label" for="razorpay">Razorpay</label>
                         </div>
                       </div>
-
+                      
                       <div class="form-group">
                         <div class="custom-control custom-radio">
+                        <% if(userWallet.wallet < totalCheckoutCharge || userWallet.wallet==null){ %>
                           <input
                             type="radio"
                             class="custom-control-input"
                             id="wallet"
                             name="payment"
-                            value="wallet"
+                            value="wallet" disabled 
                           />
                           <label class="custom-control-label" for="wallet">Wallet</label>
-                          <br>
-                          <span>abcd</span>
+                          
+                          <span style="font-size: small;">(₹<%=userWallet.wallet%>)</span><br>
+                          <span style="font-size: small; color: red;" >Your wallet balance is low</span>
+                        
+                          <%  } else if(userWallet.wallet >= totalCheckoutCharge){%>
+                          <input
+                            type="radio"
+                            class="custom-control-input"
+                            id="wallet"
+                            name="payment"
+                            value="wallet" 
+                          />
+                          
+                          <label class="custom-control-label" for="wallet">Wallet</label>
+                          
+                          <span style="font-size: small;">(₹<%=userWallet.wallet%>)</span>
+                          <% } %>
                         </div>
                       </div>
+                      
                       
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
@@ -399,7 +416,7 @@
                   </div>
             <!-- Payment button  ends -->
             </div>
-          </form>
+          <!-- </form> -->
             <!-- let form ends here -->
             <!-- <script>
             function payment(value){
@@ -683,8 +700,7 @@
                     return response.json();
                     }).then(data=>{
                         couponError.innerText = data.message;
-                        discount.innerText = 
-data.discount;
+                        discount.innerText = "-" +data.discount;
                         cartTotal.innerText = data.total_cart_value;
                     //window.location.reload();
        
@@ -738,8 +754,6 @@ data.discount;
                       b.style.display="inline-block";
                     }
 
-
-
           })
 
          }
@@ -754,10 +768,99 @@ data.discount;
       }, 2000)
 
 
-      function payment(){
-      var pay=document.querySelector('input[name="payment"]:checked');
-      console.log("PAY is: ", pay);
+      function pay(){
+        const selectedAddress = document.querySelector('input[name="address"]:checked').value;
+      const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
+      console.log("PAY is invoked");
       console.log("************************");
+      console.log("Address is:" ,selectedAddress);
+      console.log("payment is:" ,selectedPayment);
+      if(selectedPayment=="Cash on Delivery"){
+        console.log("Hello COD");
+        fetch(`/cash-on-delivery`,{
+          method: "POST",
+          headers:{
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            addressID: selectedAddress,
+            payment: selectedPayment
+          })
+        }).then(response=>{
+          console.log(response);
+          if(!response.ok){
+            throw new Error("Error happened in getting response for COD purchase response")
+          }
+          return response.json();
+        }).then(data=>{
+          console.log(data.message);
+          console.log("check check check for response on COD");
+          window.location.href="/orderPlaced"
+        })
+
+
+
+      }else if(selectedPayment=="Online"){
+        var cartTotal = document.getElementById("cartTotalValue").value;
+        console.log(cartTotal);
+        console.log("Hello Razorpay");
+        		$.ajax({
+			url:"/pay-by-razorpay",
+			type:"POST",
+			data: {addressID: selectedAddress,
+            payment: selectedPayment,
+            amount: cartTotal,
+      },
+			success:function(res){
+				if(res.success){
+					var options = {
+						"key": ""+res.key_id+"",
+						"amount": ""+res.amount+"",
+						"currency": "INR",
+						"name": "getantiques",
+						// "description": ""+res.description+"",
+						// "image": "https://dummyimage.com/600x400/000/fff",
+						"order_id": ""+res.order_id+"",
+						"handler": function (response){
+              console.log("address id is: ", selectedAddress);
+							 //alert("Payment Succeeded");
+							 window.open(`/cash-on-delivery?addressID=${selectedAddress}&payment=${selectedPayment}`,"_self")
+						},
+						// "prefill": {
+						// 	"contact":""+res.contact+"",
+						// 	"name": ""+res.name+"",
+						// 	"email": ""+res.email+""
+						// },
+						// "notes" : {
+						// 	"description":""+res.description+""
+						// },
+						"theme": {
+							"color": "#2300a3"
+						}
+					};
+					var razorpayObject = new Razorpay(options);
+					razorpayObject.on('payment.failed', function (response){
+							alert("Payment Failed");
+              console.log("Is this hitting?????--------------->failed");
+                  window.open(`/razorpay-PaymentFailed?addressID=${selectedAddress}&payment=${selectedPayment}&status=failed`,"_self")
+              // window.open(`/razorpay-PaymentFailed`,"_self")
+					});
+					razorpayObject.open();
+				}
+				else{
+					 alert(res.msg);
+           console.log("Razorpay Payment is success");
+
+          // window.location.href=`/cash-on-delivery?addressID =${selectedAddress}&payment=${selectedPayment}`
+          
+				}
+			}
+		})
+
+      }else if(selectedPayment=="wallet"){
+        console.log("Hello Wallet");
+      }
+
       }
 
 

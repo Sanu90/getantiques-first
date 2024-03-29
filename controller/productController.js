@@ -56,6 +56,7 @@ const addProduct = async (req, res) => {
     console.log(req.body);
     console.log(req.files);
     const imageData = req.files;
+    console.log(imageData.length + " images uploaded by admin.");
     for (let i = 0; i < imageData.length; i++) {
       imagePath[i] = imageData[i].path
         .replace(/\\/g, "/")
@@ -326,6 +327,158 @@ const categoryProductSort = async (req, res) => {
   }
 };
 
+const categoryProductFilter = async (req, res) => {
+  try {
+    console.log("categoryProductFilter");
+    const number = req.params.num;
+    const catName = req.session.categoryName;
+    console.log(number);
+    console.log(catName);
+    const userName = req.session.name;
+    const category = await categoryModel.find({});
+
+    const cartProducts = await cartModel.find({ user: req.session.userID });
+    console.log("cartProducts is:", cartProducts);
+    var cartCount = 0;
+    if (cartProducts.length > 0) {
+      cartCount = cartProducts[0].item.length;
+      console.log("cartCount is:", cartCount);
+    } else {
+      console.log("hey cart is empty");
+      //cartCount = 0;
+    }
+
+    if (number == 1) {
+      let left = 1000;
+      let right = 10000;
+      const catProd = await productModel.aggregate([
+        {
+          $match: {
+            category: catName,
+            $and: [
+              { rate_after_discount: { $gte: 1000 } },
+              { rate_after_discount: { $lte: 10000 } },
+            ],
+          },
+        },
+      ]);
+      console.log("DATA IF 1 is pressed:", catProd);
+
+      const offerCategories = await categoryModel.findOne(
+        { name: catName },
+        { offer: 1 }
+      );
+      console.log("offerCategories", offerCategories);
+
+      res.render("userCategoryPageSorted", {
+        catProd,
+        user: userName,
+        category,
+        catName,
+        cartCount,
+        offerCategories,
+      });
+    } else if (number == 2) {
+      let left = 10001;
+      let right = 50000;
+      const catProd = await productModel.aggregate([
+        {
+          $match: {
+            category: catName,
+            $and: [
+              { rate_after_discount: { $gte: 10001 } },
+              { rate_after_discount: { $lte: 50000 } },
+            ],
+          },
+        },
+      ]);
+      console.log("DATA IF 2 is pressed:", catProd);
+
+      const offerCategories = await categoryModel.findOne(
+        { name: catName },
+        { offer: 1 }
+      );
+      console.log("offerCategories", offerCategories);
+
+      res.render("userCategoryPageSorted", {
+        catProd,
+        user: userName,
+        category,
+        catName,
+        cartCount,
+        offerCategories,
+      });
+    } else if (number == 3) {
+      let left = 50001;
+      let right = 100000;
+      const catProd = await productModel.aggregate([
+        {
+          $match: {
+            category: catName,
+            $and: [
+              { rate_after_discount: { $gte: 50001 } },
+              { rate_after_discount: { $lte: 100000 } },
+            ],
+          },
+        },
+      ]);
+      console.log("DATA IF 3 is pressed:", catProd);
+
+      const offerCategories = await categoryModel.findOne(
+        { name: catName },
+        { offer: 1 }
+      );
+
+      console.log("offerCategories", offerCategories);
+
+      res.render("userCategoryPageSorted", {
+        catProd,
+        user: userName,
+        category,
+        catName,
+        cartCount,
+        offerCategories,
+      });
+    } else if (number == 0) {
+      // let left = 1;
+      // let right = 100000;
+      const catProd = await productModel.aggregate([
+        {
+          $match: {
+            category: catName,
+            $and: [
+              { rate_after_discount: { $gte: 1 } },
+              { rate_after_discount: { $lte: 100000 } },
+            ],
+          },
+        },
+      ]);
+      console.log("DATA IF 3 is pressed:", catProd);
+
+      const offerCategories = await categoryModel.findOne(
+        { name: catName },
+        { offer: 1 }
+      );
+
+      console.log("offerCategories", offerCategories);
+
+      res.render("userCategoryPageSorted", {
+        catProd,
+        user: userName,
+        category,
+        catName,
+        cartCount,
+        offerCategories,
+      });
+    }
+  } catch (error) {
+    console.log(
+      "Error while categoryProductFilter in productController",
+      error
+    );
+  }
+};
+
 module.exports = {
   adminProduct,
   newProductPage,
@@ -335,4 +488,5 @@ module.exports = {
   productHide,
   categoryProductSort,
   addProductImages,
+  categoryProductFilter,
 };

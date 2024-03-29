@@ -195,60 +195,32 @@
           <!-- Price Start -->
           <div class="border-bottom mb-4 pb-4">
             <h5 class="font-weight-semi-bold mb-4">Filter by price</h5>
-            <form action="/Ucategory/filter" method="post">
+            <!-- <form action="/Ucategory/filter" method="post"> -->
               <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  checked
-                  id="price-all"
-                />
-                <label class="custom-control-label" for="price-all"
-                  >All Price</label
-                >
-                <!-- <span class="badge border font-weight-normal">1000</span> -->
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-1"
-                />
-                <label class="custom-control-label" for="price-1"
-                  >₹1000 - ₹10000</label
-                >
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-2"
-                />
-                <label class="custom-control-label" for="price-2"
-                  >₹10001 - ₹50000</label
-                >
-              </div>
-              <div
-                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3"
-              >
-                <input
-                  type="checkbox"
-                  class="custom-control-input"
-                  id="price-3"
-                />
-                <label class="custom-control-label" for="price-3"
-                  >₹50001 - ₹100000</label
-                >
+                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <!-- <input type="checkbox" class="custom-control-input" id="price-all" checked/>
+                <label class="custom-control-label" for="price-all">All Price</label> -->
+                <button type="button" onclick="filter(this.value)" value="0" id="all">All Price</button>
               </div>
               
-              
-            </form>
+              <div
+                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <!-- <input type="checkbox" class="custom-control-input" id="price-1"/>
+                <label class="custom-control-label" for="price-1">₹1000 - ₹10000</label> -->
+                <button type="button" id="1000" onclick="filter(this.value)" value="1">₹1000 - ₹10000</button>
+              </div>
+              <div
+                class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <!-- <input type="checkbox" class="custom-control-input" id="price-2"/>
+                <label class="custom-control-label" for="price-2">₹10001 - ₹50000</label> -->
+                <button type="button" id="10001" value="2" onclick="filter(this.value)">₹10001 - ₹50000</button>
+              </div>
+              <div class="custom-control custom-checkbox d-flex align-items-center justify-content-between mb-3">
+                <!-- <input type="checkbox" class="custom-control-input" id="price-3"/>
+                <label class="custom-control-label" for="price-3">₹50001 - ₹100000</label  > -->
+                <button type="button" id="50001" onclick="filter(this.value)" value="3">₹50001 - ₹100000</button>
+              </div>  
+            <!-- </form> -->
           </div>
           <!-- Price End -->
         </div>
@@ -604,6 +576,22 @@
             }
           });
       }
+
+function filter(buttonValue){
+  console.log("Filtering ");
+  console.log("Button value is: ",buttonValue );
+  if(buttonValue==1){
+    window.location.href = "/Ucategory/filter/1";
+  } else if (buttonValue==2) {
+    window.location.href = "/Ucategory/filter/2"; // 
+  } else if (buttonValue==3) {
+    window.location.href = "/Ucategory/filter/3"; // 
+  } else if (buttonValue==0) {
+    window.location.href = "/Ucategory/filter/0";
+    
+  } 
+}
+
     </script>
   </body>
 </html>

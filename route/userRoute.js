@@ -25,6 +25,7 @@ router.post("/shop", userCheck.isUser, userController.shop);
 router.get("/browse", userCheck.isUser, userController.browse);
 router.get("/account", userCheck.isUser, userController.account);
 router.get("/account/profile", userCheck.isUser, userController.profile);
+router.get("/account/wallet", userCheck.isUser, userController.wallet);
 router
   .post("/account/editProfile", userCheck.isUser, userController.editProfile)
   .get(
@@ -92,6 +93,8 @@ router
     orderController.userEachOrderData
   );
 
+router.get("/account/order/:id");
+
 router.post("/home", userController.validateUser);
 router.get("/product/:id", userController.productView);
 
@@ -121,6 +124,8 @@ router.get(
   userCheck.isUser,
   productController.categoryProductSort
 );
+
+router.get("/Ucategory/filter/:num", productController.categoryProductFilter);
 router.get("/cart", userCheck.isUser, cartController.cartPage);
 router.post("/removeCart", userCheck.isUser, cartController.removeCart);
 router.post("/minusCartvalue", userCheck.isUser, cartController.minusCartvalue);
@@ -144,15 +149,38 @@ router.post(
   userCheck.isUser,
   couponController.userRemoveCoupon
 );
-router.post(
-  "/createOrder",
-  userCheck.isUser,
-  orderController.createOnlineOrder
-);
 
 router.get("/checkout", userCheck.isUser, cartController.checkout);
 
-router.post("/orderProduct", userCheck.isUser, orderController.orderProduct);
+router.post(
+  "/cash-on-delivery",
+  userCheck.isUser,
+  orderController.cashOnDelivery
+);
+
+router.get(
+  "/cash-on-delivery",
+  userCheck.isUser,
+  orderController.cashOnDelivery
+);
+
+router.post(
+  "/pay-by-razorpay",
+  userCheck.isUser,
+  orderController.payByRazorpay
+);
+
+router.get(
+  "/razorpay-PaymentFailed",
+  userCheck.isUser,
+  orderController.razorpayPaymentFailed
+);
+
+router.get("/orderPlaced", userCheck.isUser, orderController.orderPlaced);
+
+router.get("/cancel/:id", userCheck.isUser, orderController.cancelOrder);
+
+router.post("/filterProducts", userCheck.isUser, userController.filterProducts);
 
 router.post("/test", orderController.test);
 

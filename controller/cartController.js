@@ -272,6 +272,12 @@ const checkout = async (req, res) => {
       checkoutPageValues[0].productName,
       checkoutPageValues[0].productPrice * checkoutPageValues[0].productQuantity
     );
+    const userWallet = await userModel.findOne(
+      { username: req.session.name },
+      { _id: 0, wallet: 1 }
+    );
+    console.log("USERWALLET", userWallet);
+
     res.render("checkout", {
       user: req.session.name,
       category,
@@ -280,6 +286,7 @@ const checkout = async (req, res) => {
       address,
       totalCheckoutCharge,
       shippingCharges,
+      userWallet,
     });
   } catch (error) {
     console.log("Error occurred while checkout", error);
@@ -358,7 +365,7 @@ const addCartvalue = async (req, res) => {
     const product_id = req.body.productId;
     const quantity = req.body.quantity;
     console.log("User increased the count of the product id: ", product_id);
-    if ((quantity > 1) & (quantity < 5)) {
+    if ((quantity >= 1) & (quantity <= 5)) {
       console.log(quantity);
       console.log("-----------------********--------------------------");
       await cartModel.updateOne(
@@ -470,6 +477,36 @@ const addCartvalue = async (req, res) => {
       },
     ]);
 
+    let totalPrice = await cartModel.aggregate([
+      {
+        $match: { user: new ObjectId(userID) },
+      },
+      {
+        $unwind: "$item",
+      },
+      {
+        $group: {
+          _id: "$item.product",
+          totalRate: {
+            $sum: {
+              $multiply: ["$item.product_quantity", "$item.product_rate"],
+            },
+          },
+        },
+      },
+    ]);
+
+    let totalPriceSum = 0;
+
+    totalPrice.forEach((item) => {
+      totalPriceSum += item.totalRate;
+    });
+
+    console.log(
+      totalPrice,
+      "quantityquantityquantityquantityquantityquantityquantityquantity-----------   "
+    );
+
     //end
 
     console.log(
@@ -487,6 +524,7 @@ const addCartvalue = async (req, res) => {
       // productTotalValue: productTotalValue,
       // productCount: productCount,
       productPrice: productPrice,
+      totalPriceSum: totalPriceSum,
     });
   } catch (error) {
     console.log("error occurred while addCartvalue in cartController", error);

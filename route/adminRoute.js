@@ -129,6 +129,18 @@ router.post(
   couponController.deleteCoupon
 );
 
+router.post(
+  "/salesReport",
+  adminMiddleware.isAdmin,
+  adminController.salesReport
+);
+
+router.post(
+  "/updateOrderStatus",
+  adminMiddleware.isAdmin,
+  adminController.updateOrderStatus
+);
+
 router.get(
   "/signout",
   adminController.adminSignout,
