@@ -3,6 +3,7 @@ const productModel = require("../model/productModel");
 const categoryModel = require("../model/categoryModel");
 const cartModel = require("../model/cartModel");
 const addressModel = require("../model/userAddressModel");
+const walletModel = require("../model/walletModel");
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Types;
 
@@ -163,6 +164,7 @@ const cartPage = async (req, res) => {
     }
     req.session.cartTotal = total;
     console.log("Total amount is:", total);
+    console.log("req.session.cartTotal is: ", req.session.cartTotal);
     console.log("**************************");
     res.render("cart", {
       user: userName,
@@ -258,6 +260,9 @@ const checkout = async (req, res) => {
           productName: { $arrayElemAt: ["$product.name", 0] },
           productImage: { $arrayElemAt: ["$product.image", 0] },
           productPrice: { $arrayElemAt: ["$product.rate", 0] },
+          productDiscountPrice: {
+            $arrayElemAt: ["$product.rate_after_discount", 0],
+          },
           productQuantity: "$item.product_quantity",
         },
       },
@@ -272,11 +277,16 @@ const checkout = async (req, res) => {
       checkoutPageValues[0].productName,
       checkoutPageValues[0].productPrice * checkoutPageValues[0].productQuantity
     );
-    const userWallet = await userModel.findOne(
+    const user_ID = await userModel.findOne(
       { username: req.session.name },
-      { _id: 0, wallet: 1 }
+      { _id: 1 }
     );
-    console.log("USERWALLET", userWallet);
+    console.log("USER ID is: ", user_ID);
+    console.log("---------------------------------------");
+    const wallet = await walletModel.findOne({ userId: user_ID });
+    console.log("User wallet details is: ", wallet);
+
+    console.log("Cart total is: (Subtotal) ", req.session.cartTotal);
 
     res.render("checkout", {
       user: req.session.name,
@@ -286,7 +296,7 @@ const checkout = async (req, res) => {
       address,
       totalCheckoutCharge,
       shippingCharges,
-      userWallet,
+      wallet,
     });
   } catch (error) {
     console.log("Error occurred while checkout", error);

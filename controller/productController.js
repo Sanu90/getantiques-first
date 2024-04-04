@@ -107,6 +107,15 @@ const editProduct = async (req, res) => {
     console.log("11111111111");
     console.log(oldCategory);
     console.log("********************");
+
+    let category_offer = await categoryModel.findOne(
+      { name: oldCategory },
+      { _id: 0, offer: 1 }
+    );
+    console.log("---------------------");
+    console.log("Category details are: ", category_offer);
+    console.log(category_offer.offer);
+    console.log("---------------------");
     imagePath = allOldData.image;
     console.log("IMAGEPATH is: ", imagePath);
     console.log("********************");
@@ -120,6 +129,7 @@ const editProduct = async (req, res) => {
       category,
       allOldData,
       totalImages,
+      category_offer,
     });
   } catch (err) {
     console.log(err.message);

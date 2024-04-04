@@ -53,7 +53,10 @@
       <span id="submit-error"></span><br><p>
                <% if(error){ %>
             <p id="alreadyUser" style="color: red;"><%=error%></p> 
-              <%} %>
+            <% } %>
+              <%#}else if(invalidReferral){ %>
+              <!-- <p id="alreadyUser" style="color: red;"><%#=invalidReferral%></p> -->
+              <%#}%>
       </p>
       <form action="/otp" method="post">
         <!-- Username input -->
@@ -110,7 +113,7 @@
             type="text"
             id="form2Example2"
             class="form-control"
-            name="referralcode" placeholder="Enter a Referral code if you have" maxlength="6" onkeyup="validateReferral()"/>
+            name="referralcode" placeholder="Enter a Referral code if you have" maxlength="9" onkeyup="validateReferral()"/>
           
           
           

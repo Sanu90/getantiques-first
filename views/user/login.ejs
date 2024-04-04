@@ -79,7 +79,8 @@
     <br><br>
         <% if(error){ %>
         <p style="color: red;" id="errMsg"><%=error%></p>
-        <%}else if (success){%>
+        <%} %>
+        <% if((!error) && (success)) {%>
         <p id="successID" style="display:block; color: brown;"><%=success%></p>
         <%}%>
       <form action="/home" method="post">

@@ -24,7 +24,7 @@ app.use(
     },
   })
 );
-app.use(paginate.middleware(3, 10));
+//app.use(paginate.middleware(3, 10));
 
 app.use(flash());
 app.use((req, res, next) => {

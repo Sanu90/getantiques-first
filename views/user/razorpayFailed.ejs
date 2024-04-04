@@ -167,24 +167,24 @@
                   <p>Transaction failed due to some internal error.</p>
                   <div class="d-flex justify-content-center">
                     <button
-                      id="payment-button"
-                      data-order-id="{{ id }}"
-                      class="mb-0 mt-4 btn btn-danger"
+                      id="repayment-button"
+                      onclick="retry_Payment(`<%=orderID %>-<%=ab%>`)"
+                      class="m-2 mb-0 mt-4 btn btn-danger"
                     >
-                      Try Payment Again
+                      Retry Payment
                     </button>
                     <!-- {{#if discard}} -->
-                    <button
+                    <!-- <button
                       onclick="location.href='/discardRetryPayment?id={{ id }}'"
                       data-order-id="{{ id }}"
                       class="m-2 mb-0 mt-4 btn btn-danger"
                       disabled
                     >
                       Discard
-                    </button>
+                    </button> -->
                     <!-- {{else}} -->
                     <button
-                      onclick="location.href='/discardRetryPayment?id={{ id }}'"
+                      onclick=""
                       data-order-id="{{ id }}"
                       class="m-2 mb-0 mt-4 btn btn-danger"
                     >
@@ -337,6 +337,59 @@
     <!-- Template Javascript -->
     <script src="../user/js/main.js"></script>
 
-    <script></script>
+    <script>
+      function retry_Payment(id) {
+        console.log("RAZORPAY PAYMENT INVOKED AGAIN");
+        console.log("Order ID is ", id);
+        $.ajax({
+          url: "/reRazorpay",
+          type: "POST",
+          data: { orderID: id },
+          success: function (res) {
+            if (res.success) {
+              var options = {
+                key: "" + res.key_id + "",
+                amount: "" + res.amount + "",
+                currency: "INR",
+                name: "getantiques",
+                // "description": ""+res.description+"",
+                // "image": "https://dummyimage.com/600x400/000/fff",
+                order_id: "" + res.order_id + "",
+                handler: function (response) {
+                  console.log("order id is: ", id);
+                  //alert("Payment Succeeded");
+                  window.open(`/orderPlaced?statuss=success`, "_self");
+                  // window.open(
+                  //   `/cash-on-delivery?addressID=${selectedAddress}&payment=${selectedPayment}`,
+                  //   "_self"
+                  // );
+                },
+                theme: {
+                  color: "#2300a3",
+                },
+              };
+              var razorpayObject = new Razorpay(options);
+              razorpayObject.on("payment.failed", function (response) {
+                alert("TEST");
+                alert("Payment Failed");
+                console.log("Is this hitting?????--------------->failed");
+
+                // window.open(
+                //   `/razorpay-PaymentFailed?addressID=${selectedAddress}&payment=${selectedPayment}&status=failed`,
+                //   "_self"
+                // );
+                // window.open(`/razorpay-PaymentFailed`,"_self")
+              });
+              razorpayObject.open();
+            } else {
+              alert(res.msg);
+              console.log("Razorpay Payment is success");
+
+              // window.location.href=`/cash-on-delivery?addressID =${selectedAddress}&payment=${selectedPayment}`
+            }
+          },
+        });
+      }
+    </script>
   </body>
 </html>

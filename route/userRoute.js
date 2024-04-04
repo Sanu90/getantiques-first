@@ -168,21 +168,33 @@ router.post(
   "/pay-by-razorpay",
   userCheck.isUser,
   orderController.payByRazorpay
-);
+);  //pay by razorpay when razorpay button is selected in checkout page //
 
 router.get(
   "/razorpay-PaymentFailed",
   userCheck.isUser,
   orderController.razorpayPaymentFailed
+);   //payment failure when failed button is hit //
+
+router.post("/reRazorpay", userCheck.isUser, orderController.reRazorpay);
+
+router.post("/payby-Wallet", userCheck.isUser, orderController.payby_Wallet);
+
+router.post(
+  "/addressCheck",
+  userCheck.isUser,
+  orderController.addressCheckInCheckout
 );
 
 router.get("/orderPlaced", userCheck.isUser, orderController.orderPlaced);
+
+router.post("/cancelProduct", userCheck.isUser, orderController.cancelProduct);
 
 router.get("/cancel/:id", userCheck.isUser, orderController.cancelOrder);
 
 router.post("/filterProducts", userCheck.isUser, userController.filterProducts);
 
-router.post("/test", orderController.test);
+// router.post("/test", orderController.test);
 
 router.get(
   "/showAddressInCheckout",

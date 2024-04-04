@@ -97,7 +97,7 @@
 
     <!-- Container Cards Start -->
     <!-- <div class="w-25" style="margin-left: 40%"> -->
-    <% if(orderHistory.length==0){ %>
+    <% if(orders.length==0){ %>
     <div class="container">
     <p style="font-size: large; color:tomato;">Your Order history is empty.</p>
     <br>
@@ -121,7 +121,7 @@
         <table class="table">
           <thead>
             <tr>
-              <th scope="col">#</th>
+              <!-- <th scope="col">#</th> -->
               <th scope="col">ID</th>
               <th scope="col" style="width: 150px;" >Date, Time</th>
               <th scope="col">Product count</th>
@@ -132,21 +132,21 @@
             </tr>
           </thead>
           <tbody>
-          <% for(let i=0;i<orderHistory.length;i++){ %>
+          <% for(let i=0;i<orders.length;i++){ %>
             <tr>
-              <td><%=i+1 %></td>
-              <% if(orderHistory[i].status === "Cancelled"){ %>
-              <td><del style="color: red;"><%=orderHistory[i].orderID %></del></td>
+              <!-- <td><%#=i+1 %></td> -->
+              <% if(orders[i].status === "Cancelled"){ %>
+              <td><del style="color: red;"><%=orders[i].orderID %></del></td>
               <% } else { %>
-              <td><%=orderHistory[i].orderID %></td>
+              <td><%=orders[i].orderID %></td>
               <% } %>
-              <td><%=orderHistory[i].date.toLocaleString() %></td>
-              <td style="text-align: center;"><%=orderHistory[i].products.length %></td>
-              <td>₹<%=orderHistory[i].totalOrderValue %></td>
-              <td><%=orderHistory[i].paymentMethod %></td>
-              <td><%=orderHistory[i].paymentStatus %></td>
+              <td><%=orders[i].date.toLocaleString() %></td>
+              <td style="text-align: center;"><%=orders[i].products.length %></td>
+              <td>₹<%=orders[i].totalOrderValue %></td>
+              <td><%=orders[i].paymentMethod %></td>
+              <td><%=orders[i].paymentStatus %></td>
               <td style="text-align: left;">
-                      <form action="/account/order/<%=orderHistory[i].orderID %>" method="post">
+                      <form action="/account/order/<%=orders[i].orderID %>" method="post">
                         <!-- <input type="hidden" value="<%#=p.name%>" name="oldName">  -->
                         <button class="btn btn-success" type="submit">More..</button>
                       </form>
@@ -158,22 +158,27 @@
       </div>
     </div>
     <% } %>
-    <div class="container-fluid"><br /><br /><br /><br /><br /><br /></div>
+    <div class="container-fluid"><br /><br /></div>
 
-    <!-- <a href="#" class="btn btn-primary back-to-top">
-        <i class="fa fa-angle-double-up"></i>
-      </a> -->
-    <!-- </div> -->
-    <!-- Container Cards End -->
-    <!-- <div class="container">
-      <div class="card">
-        <a href="#">
-          <img src="../user/img/purchase.png" alt="Card Image" />
-          <h2>Orders</h2>
-          <p>All about your orders</p>
-        </a>
-      </div>
-    </div> -->
+    <div class="col-12 pb-1">
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-3">
+                  <% for(let page = 1; page <= totalPages; page++){ %>
+                  <li
+                    class="page-item <%= currentPage === page ? 'active' : '' %>"
+                  >
+                    <a
+                      class="page-item active"
+                      href="?page=<%=page%>"
+                      style="margin-right: 20px"
+                    >
+                      <%=page%>
+                    </a>
+                  </li>
+                  <%}%>
+                </ul>
+              </nav>
+            </div>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-secondary text-dark mt-5 pt-5">

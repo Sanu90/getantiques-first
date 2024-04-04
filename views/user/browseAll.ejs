@@ -334,10 +334,24 @@
                     class="btn btn-sm text-dark p-0"
                     ><i class="fas fa-eye text-primary mr-1"></i>View Detail</a
                   >
-                  <a href="" class="btn btn-sm text-dark p-0"
-                    ><i class="fas fa-shopping-cart text-primary mr-1"></i>Add
-                    To Cart</a
+                  <% if(product.stock>=1){ %>
+                  <button
+                    class="btn btn-sm text-dark p-1"
+                    onclick="addProductTocart('<%=product._id %>')"
                   >
+                    <i class="fas fa-shopping-cart text-primary mr-1"></i> Add
+                    To Cart
+                  </button>
+                  <% } else{%>
+                  <a
+                    class="text-danger"
+                    onclick="this.onclick=function(){return false}"
+                    style="pointer-events: none"
+                  >
+                    <i class="fas fa-shopping-cart text-primary mr-1"></i>
+                    Out of Stock</a
+                  >
+                  <% } %>
                 </div>
               </div>
             </div>
@@ -516,5 +530,28 @@
 
     <!-- Template Javascript -->
     <script src="../user/js/main.js"></script>
+    <script>
+      function addProductTocart(id) {
+        console.log(id);
+        fetch(`/cart/${id}`, {
+          method: "get",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        })
+          .then((response) => {
+            if (!response.ok) {
+              throw new Error("Network response was not ok");
+            }
+            return response.json();
+          })
+          .then((data) => {
+            if (data.success) {
+              window.alert(data.message);
+              window.location.reload();
+            }
+          });
+      }
+    </script>
   </body>
 </html>

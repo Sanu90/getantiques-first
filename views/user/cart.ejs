@@ -255,12 +255,14 @@
                       <!-- <button class="btn btn-sm btn-primary btn-minus" disabled> -->
                       <%# } else {%>
                       <!-- <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%#= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "add(`<#%= cartProducts[i].productId %>`,-1)"> -->
+                      
                       <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%#= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "add(`<%= cartProducts[i].productId %>`,-1)">
                       
                       <%# } %>
                      
                         <i class="fa fa-minus"></i>
                       </button>
+                      <!-- <input type="button" name="" min="1" placeholder="1" oninput="validity.valid||(value='');"> -->
                     </div>
                     <input
                       type="text" id="quantity"
@@ -283,6 +285,7 @@
                 <i class="fa fa-times"></i>
                 </button>
                 </td> 
+                
                   </tr>
                   <% } %>
                 </tbody>

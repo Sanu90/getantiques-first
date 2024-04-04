@@ -99,7 +99,10 @@
     <!-- <div class="w-25" style="margin-left: 40%"> -->
 
     <div class="container">
-      <p style="font-size: large; color: black">Total Amount in Wallet:</p>
+      <p style="font-size: large; color: black">
+        Total Amount in Wallet:
+        <span style="background-color: yellow">₹<%=walletData.wallet %></span>
+      </p>
 
       <p style="font-size: large; color: black">
         Get credited with ₹200 when your friend uses your referral code:
@@ -127,12 +130,14 @@
             </tr>
           </thead>
           <tbody>
+            <% let value=walletData.walletTransactions.map((element,index)=>{ %>
             <tr>
-              <td>1</td>
-              <td>2024-03-27</td>
-              <td>Deposit</td>
-              <td>$100</td>
+              <td><%=index+1%></td>
+              <td><%=element.date.toLocaleDateString()%></td>
+              <td><%=element.type%></td>
+              <td>₹<%=element.amount%></td>
             </tr>
+            <% }) %>
           </tbody>
         </table>
       </div>

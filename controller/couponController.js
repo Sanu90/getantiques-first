@@ -142,6 +142,7 @@ const userApplyCoupon = async (req, res) => {
     console.log("today's date is:", date);
     // req.body(from fetch api) is consoled  //
     console.log(req.body.name);
+    req.session.user_Applied_Coupon = req.body.name;
     console.log(req.body.value);
     // //
     const couponFound = await couponModel.find({
@@ -223,10 +224,10 @@ const userApplyCoupon = async (req, res) => {
           req.session.cart_Value_after_coupon = cart_amount;
 
           // const total_cart_value = cart_amount + shipping_charges;
-          console.log(
-            "Cart value including shipping charges: ",
-            total_cart_value
-          );
+          // console.log(
+          //   "Cart value including shipping charges: ",
+          //   total_cart_value
+          // );
           res.header("Content-Type", "application/json").json({
             message: "Coupon applied",
             total_cart_value: cart_amount,

@@ -4,6 +4,7 @@ const productModel = require("../model/productModel");
 const cartModel = require("../model/cartModel");
 const wishlistModel = require("../model/wishlistModel");
 const addressModel = require("../model/userAddressModel");
+const walletModel = require("../model/walletModel");
 const otpSend = require("../middleware/otp");
 const bcrypt = require("bcrypt");
 //const sendmail = require("../middleware/otp");
@@ -62,14 +63,37 @@ const register = (req, res) => {
 var OTP;
 const toVerifyOTP = async (req, res) => {
   try {
+    console.log("PAGE: toVerifyOTP");
     console.log(req.body);
     req.session.userDetails = req.body;
+    let referral_Code_Entered = req.body.referralcode;
     const checkName = req.body.username;
     const checkUser = await userModel.find({ username: checkName });
     console.log("CheckUser using name is: " + checkUser);
     const checkEmail = req.body.email;
     const checkUser1 = await userModel.find({ email: checkEmail });
     console.log("CheckUser using email is: " + checkUser1);
+
+    let checkReferralCode;
+    if (req.body.referralcode) {
+      checkReferralCode = await userModel.find({
+        referralCode: req.body.referralcode,
+      });
+      console.log("----------------------------------->>>>");
+      console.log(
+        "Checking whether the referral code is associated with any user: ",
+        checkReferralCode
+      );
+      if (checkReferralCode.length == 0) {
+        res.redirect("/register?error=Invalid Referral Code");
+      } else if (checkReferralCode.length == 1) {
+        console.log(
+          "User exists with a valid referral code. write logic to credit his wallet 200rs. but not here.. only when user authenticates OTP"
+        );
+      }
+    }
+
+    console.log("<<<<------------------------------------");
     // const checkEmail = req.body.email;
     //console.log("CheckUser Email: " + checkUser[0].email);
     if (checkUser.length == 1) {
@@ -90,7 +114,11 @@ const toVerifyOTP = async (req, res) => {
       // console.log("Timestamp for the OTP is: " + otpData[1]);
       req.session.otpTimestamp = otpData[1];
       message = req.session.otpError;
-      res.render("otp", { message });
+      console.log(
+        "Referral code entered by the user is: ",
+        referral_Code_Entered
+      );
+      res.render("otp", { message, referral_Code_Entered });
       // ---------------------------------->
       console.log("USER OTP PAGE");
     }
@@ -101,6 +129,9 @@ const toVerifyOTP = async (req, res) => {
 
 const authOTP = async (req, res) => {
   try {
+    console.log("OTP PAGE");
+    console.log(req.body);
+    console.log(req.body.referralcode);
     console.log("OTP entered is " + req.body.otp);
     var timestamp = new Date().getTime();
     var otpTimestamp2 = Math.floor(timestamp / 1000);
@@ -125,14 +156,18 @@ const authOTP = async (req, res) => {
           10
         );
 
-        // IIFE for referral code//
+        // IIFE, for generating 6 digit Referral code//
         let referral_Code;
         (function () {
           referral_Code = Math.random().toString(36).slice(5);
         })();
         console.log("REFERRAL CODE IS:", referral_Code);
+        // IIFE ends //
 
+
+        console.log("USER DETAILS STORED IN SESSION --->");
         console.log(req.session.userDetails);
+        console.log(" ---> ");
         const registeredUser = new userModel({
           username: req.session.userDetails.username,
           password: bcryptPass,
@@ -140,14 +175,76 @@ const authOTP = async (req, res) => {
           mobile: req.session.userDetails.mobile,
           isAdmin: 0,
           hide: 0,
-          wallet: 0,
           referralCode: referral_Code,
         });
         await registeredUser.save();
         console.log("--------------------------");
         console.log(req.session.userDetails.email);
         console.log("--------------------------");
-        console.log("User OTP successfully verified");
+        console.log("User verified OTP successfully...");
+
+        // create wallet for the registered user //
+        const registered_User_ID = await userModel.findOne(
+          {
+            username: req.session.userDetails.username,
+          },
+          { _id: 1 }
+        );
+
+        console.log("User ID of newly registered user : ", registered_User_ID);
+        await walletModel.create({
+          userId: registered_User_ID._id,
+        });
+          console.log("wallet created for the new user");
+        // end of creating wallet for registered user //
+
+        // For referral purpose //
+
+        let refer_Code = req.body.referralcode;
+
+        let refer_Code_Of = await userModel.findOne(
+          {
+            referralCode: refer_Code,
+          },
+          { _id: 1 }
+        );
+
+        console.log(
+          "This referral code is associated with this User ID ",
+          refer_Code_Of
+        );
+
+        // Find or create wallet for the referred user //
+        if (refer_Code_Of) {
+          let wallet = await walletModel.findOne({ userId: refer_Code_Of._id });
+          console.log("wallet-------------------------->>>>>", wallet);
+
+          if (!wallet) {
+            // If wallet does not exist, create a new wallet for the referred user.
+            wallet = new walletModel({
+              userId: refer_Code_Of._id,
+              wallet: 200, // Initial wallet balance for referral
+              walletTransactions: [
+                {
+                  date: new Date(),
+                  type: "Referral Bonus",
+                  amount: 200,
+                },
+              ],
+            });
+          } else {
+            // If wallet exists, update wallet balance and add transaction
+            wallet.wallet += 200; // Add 200 rupees to wallet balance
+            wallet.walletTransactions.push({
+              date: new Date(),
+              type: "Referral Bonus",
+              amount: 200,
+            });
+          }
+          await wallet.save();
+        }
+        //
+
         res.redirect("/login?success=Registered-Login now");
       } else {
         //message=req.session.message;
@@ -427,8 +524,12 @@ const wallet = async (req, res) => {
     const userName = req.session.name;
     const userData = await userModel.findOne({ username: userName });
     console.log("User Data is:", userData);
+    console.log("User ID is:-----------> ", userData._id);
+
+    const walletData = await walletModel.findOne({ userId: userData._id });
+    console.log("Wallet details of the user is: ", walletData);
     console.log("user entered wallet");
-    res.render("wallet", { user: userName, userData });
+    res.render("wallet", { user: userName, userData, walletData });
   } catch (error) {
     console.log("Error while displaying wallet ", error);
   }
@@ -859,8 +960,9 @@ const logout = (req, res) => {
   try {
     //await req.session.destroy();
     req.session.isUser = false;
-    req.session.logout = "You have logged out";
-    res.redirect("/login");
+    // req.session.logout = "You have logged out";
+    req.session.error = "You have logged out";
+    res.redirect(`/login`);
     console.log("Bye User");
   } catch (error) {
     console.log("Error during user signout ", +error);

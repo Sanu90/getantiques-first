@@ -32,6 +32,12 @@ const cartData = new mongoose.Schema({
         type: Number,
         trim: true,
       },
+
+      status: {
+        type: String,
+        trim: true,
+        default: "Placed"
+      },
     },
   ],
 });

@@ -185,7 +185,7 @@
                   required
                   
                 /><br>
-                <label for="username" style="font-size:large;">Update Discount %<sup style="line-height: 120%; color: red;">*</sup></label>
+                <label for="username" style="font-size:large;">Update Product Offer %<sup style="line-height: 120%; color: red;">*</sup></label>
                 <input
                   type="number"
                   class="form-control"
@@ -194,6 +194,18 @@
                   name="newDiscount"
                   value="<%=allOldData.discount %>"
                   required
+                  
+                /><br>
+
+                <label for="username" style="font-size:large;">Category Offer applied %<sup style="line-height: 120%; color: red;">*</sup></label>
+                <input
+                  type="number"
+                  class="form-control"
+                  id="catDiscount"
+                  min="0"
+                  name="catDiscount"
+                  value="<%=category_offer.offer %>"
+                  required disabled
                   
                 /><br>
                 <div class="form-group" style="padding-top:1%;">
@@ -344,12 +356,18 @@
 
       const productRateInput = document.getElementById("newProdRate");
     const productDiscountInput = document.getElementById("newDiscount");
+    const categoryDiscountInput = document.getElementById("catDiscount");
     const productDiscountedInput = document.getElementById("DiscountedPrice");
 
     function calculateDiscountedValue() {
             const productRate = parseFloat(productRateInput.value);
-            const discount = parseFloat(productDiscountInput.value);
-            const discountedValue = productRate - (productRate * (discount / 100));
+            const prodDiscount = parseFloat(productDiscountInput.value);
+            const catDiscount = parseFloat(categoryDiscountInput.value);
+            //const discountedValue = productRate - (productRate * (prodDiscount / 100));
+            const productDiscountValue = productRate - (productRate * (prodDiscount / 100));
+            const categoryDiscountValue = productRate - (productRate * (catDiscount / 100))
+
+              discountedValue = productDiscountValue > categoryDiscountValue ? categoryDiscountValue : productDiscountValue;
 
             // Update the discounted value input field
             productDiscountedInput.value = discountedValue; 
@@ -358,7 +376,7 @@
         // Add event listeners to the product rate and discount input fields
         productRateInput.addEventListener('input', calculateDiscountedValue);
         productDiscountInput.addEventListener('input', calculateDiscountedValue);
-
+        categoryDiscountInput.addEventListener("input",calculateDiscountedValue)
 
 
       </script>

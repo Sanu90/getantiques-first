@@ -84,14 +84,17 @@
             <span class="badge"><%#=cartCount%></span> </a
           ><br /> -->
           <div class="dropdown">
+          <p style="visibility: hidden;" id="userName"><%=user %></p>
             <button
               class="btn btn-secondary dropdown-toggle"
               type="button"
               data-bs-toggle="dropdown"
-              aria-expanded="false"
+              aria-expanded="false" 
             >
               <%=user %>
+              
             </button>
+            
             <ul class="dropdown-menu">
               <li>
                 <button class="dropdown-item" type="button">
@@ -311,7 +314,7 @@
                 class="btn btn-primary"
                 onclick="addressSaved()"
               >
-                Save
+                Save & use
               </button>
             </form>
           </div>
@@ -325,9 +328,11 @@
           <!-- <form action="/test" method="post"> -->
           <!-- <form action= "/orderProduct" method="post"> -->
           <div class="col-xxl">
+          <% if (address.length > 0){ %>
             <h4 class="font-weight-semi-bold mb-4" style="padding-top: 50px">
               Select a delivery address from below
             </h4>
+            <% } %>
             <% for(let i = 0; i < address.length; i++) { %>
             <div class="custom-control custom-radio" style="margin: 35px">
               <input type="radio" class="custom-control-input" name="address"
@@ -379,20 +384,20 @@
                       
                       <div class="form-group">
                         <div class="custom-control custom-radio">
-                        <% if(userWallet.wallet < totalCheckoutCharge || userWallet.wallet==null){ %>
+                        <% if(wallet.wallet < totalCheckoutCharge){ %>
                           <input
                             type="radio"
                             class="custom-control-input"
                             id="wallet"
                             name="payment"
-                            value="wallet" disabled 
+                            value="wallet" disabled
                           />
                           <label class="custom-control-label" for="wallet">Wallet</label>
                           
-                          <span style="font-size: small;">(₹<%=userWallet.wallet%>)</span><br>
+                          <span style="font-size: small;">(₹<%=wallet.wallet%>)</span><br>
                           <span style="font-size: small; color: red;" >Your wallet balance is low</span>
                         
-                          <%  } else if(userWallet.wallet >= totalCheckoutCharge){%>
+                          <%  } else if(wallet.wallet >= totalCheckoutCharge){%>
                           <input
                             type="radio"
                             class="custom-control-input"
@@ -403,7 +408,7 @@
                           
                           <label class="custom-control-label" for="wallet">Wallet</label>
                           
-                          <span style="font-size: small;">(₹<%=userWallet.wallet%>)</span>
+                          <span style="font-size: small;">(₹<%=wallet.wallet%>)</span>
                           <% } %>
                         </div>
                       </div>
@@ -411,21 +416,14 @@
                       
                     </div>
                     <div class="card-footer border-secondary bg-transparent">
-                      <button type="submit" onclick="pay()" class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Place Order</button>
+                      <button type="button" onclick="pay()" class="btn btn-lg btn-block btn-primary font-weight-bold my-3 py-3">Place Order</button>
                     </div>
                   </div>
             <!-- Payment button  ends -->
             </div>
           <!-- </form> -->
             <!-- let form ends here -->
-            <!-- <script>
-            function payment(value){
-      var pay=document.querySelector('input[name="payment"]:checked');
-      console.log("PAY is: ", pay);
-      console.log(value);
-      console.log("************************");
-      }
-            </script> -->
+            
           </div>
         </div>
         <div class="col-lg-4">
@@ -460,20 +458,20 @@
               <div class="d-flex justify-content-between">
                 <p><%=checkoutPageValues[i].productName %></p>
                 <p>&#215;<%=checkoutPageValues[i].productQuantity %></p>
-                <!-- <p>
-                  ₹&nbsp;&nbsp;&nbsp;<%#=checkoutPageValues[i].productPrice
-                  *checkoutPageValues[i].productQuantity %>
-                </p> -->
                 <p>
-                  ₹&nbsp;&nbsp;&nbsp;<%=totalAmount%>
+                  ₹&nbsp;&nbsp;&nbsp;<%=checkoutPageValues[i].productDiscountPrice
+                  *checkoutPageValues[i].productQuantity %>
                 </p>
+                <!-- <p>
+                  ₹&nbsp;&nbsp;&nbsp;<%#=totalAmount%>
+                </p> -->
               </div>
               <% } %>
               <hr class="mt-0" />
-              <div class="d-flex justify-content-between mb-3 pt-1">
+              <!-- <div class="d-flex justify-content-between mb-3 pt-1">
                 <h6 class="font-weight-medium">Subtotal</h6>
-                <h6 class="font-weight-medium">₹<%=totalAmount%></h6>
-              </div>
+                <h6 class="font-weight-medium">₹<%#=totalAmount%></h6>
+              </div> -->
               
               <div class="d-flex justify-content-between">
                 <h6 class="font-weight-medium">Discount (if any):</h6>
@@ -653,7 +651,7 @@
     <script src="../user/lib/easing/easing.min.js"></script>
     <script src="../user/lib/owlcarousel/owl.carousel.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
 
     <!-- Contact Javascript File -->
     <script src="../user/mail/jqBootstrapValidation.min.js"></script>
@@ -769,9 +767,37 @@
 
 
       function pay(){
-        const selectedAddress = document.querySelector('input[name="address"]:checked').value;
+        console.log("*****************************");
+        
+        // if(selectedAddress===null){
+        const userName = document.getElementById("userName").innerHTML;
+        console.log("userName is:" ,userName);
+       
+        fetch(`/addressCheck`,{
+          method: "POST",
+          headers:{
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            userName: userName,
+          })
+        }).then(response=>{
+          console.log(response);
+          if(!response.ok){
+            throw new Error("Error happened in validating address")
+          }
+          return response.json();
+        }).then(data=>{
+          console.log("response data is:" ,   data);
+            window.alert(data.message)
+        })
+        // }
+        
+         console.log("PAY is invoked");
+      const selectedAddress = document.querySelector('input[name="address"]:checked').value;
       const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
-      console.log("PAY is invoked");
+      const cartTotal = document.getElementById("cartTotalValue").innerText;
+    
       console.log("************************");
       console.log("Address is:" ,selectedAddress);
       console.log("payment is:" ,selectedPayment);
@@ -797,12 +823,9 @@
           console.log("check check check for response on COD");
           window.location.href="/orderPlaced"
         })
-
-
-
       }else if(selectedPayment=="Online"){
-        var cartTotal = document.getElementById("cartTotalValue").value;
-        console.log(cartTotal);
+        //var cartTotal = document.getElementById("cartTotalValue").innerText;
+        console.log("cartTotal is:" ,cartTotal);
         console.log("Hello Razorpay");
         		$.ajax({
 			url:"/pay-by-razorpay",
@@ -843,7 +866,7 @@
 							alert("Payment Failed");
               console.log("Is this hitting?????--------------->failed");
                   window.open(`/razorpay-PaymentFailed?addressID=${selectedAddress}&payment=${selectedPayment}&status=failed`,"_self")
-              // window.open(`/razorpay-PaymentFailed`,"_self")
+              
 					});
 					razorpayObject.open();
 				}
@@ -859,8 +882,29 @@
 
       }else if(selectedPayment=="wallet"){
         console.log("Hello Wallet");
+        fetch(`/payby-Wallet`,{
+          method: "POST",
+          headers:{
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            addressID: selectedAddress,
+            payment: selectedPayment,
+            amount: cartTotal,
+          })
+        })
+        .then(response=>{
+          console.log(response);
+          if(!response.ok){
+            throw new Error("Error happened in getting response for COD purchase response")
+          }
+          return response.json();
+        }).then(data=>{
+          console.log(data.message);
+          console.log("checking response on wallet");
+          window.location.href="/orderPlaced"
+        })
       }
-
       }
 
 
@@ -923,5 +967,6 @@
 
 
     </script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
   </body>
 </html>

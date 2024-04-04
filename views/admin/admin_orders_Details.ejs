@@ -158,11 +158,11 @@
                                 <p style="font-size: large;">Address : <%=eachOrderDetails.address.customerName%>, <%=eachOrderDetails.address.houseName%>, <%=eachOrderDetails.address.street%>, <%=eachOrderDetails.address.city%>, <%=eachOrderDetails.address.state%></p><br>
                                 <p style="font-size: large;">Paid By : <%=eachOrderDetails.paymentMethod%></p><br>
                                 <p style="font-size: large; color: brown;">Status : <%=eachOrderDetails.status%></p><br>
-                                <% if (eachOrderDetails.status == "Delivered" || eachOrderDetails.status == "Cancelled"){ %>
+                                <!-- <%# if (eachOrderDetails.status == "Delivered" || eachOrderDetails.status == "Cancelled"){ %>
                                 <button class="btn btn-danger" hidden>Cancel</button>
-                                <% }else{ %>
+                                <%# }else{ %>
                                 <button class="btn btn-danger">Cancel</button>
-                                <% } %>
+                                <%# } %> -->
                                 
                             </div>
 
