@@ -22,6 +22,10 @@ const cartData = new mongoose.Schema({
         ref: "product",
         trim: true,
       },
+      product_name: {
+        type: String,
+        trim: true,
+      },
 
       product_quantity: {
         type: Number,
@@ -33,10 +37,15 @@ const cartData = new mongoose.Schema({
         trim: true,
       },
 
+      product_rate_before_discount: {
+        type: Number,
+        trim: true,
+      },
+
       status: {
         type: String,
         trim: true,
-        default: "Placed"
+        default: "Placed",
       },
     },
   ],

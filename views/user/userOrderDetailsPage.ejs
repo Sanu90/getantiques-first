@@ -116,8 +116,12 @@
     <h3 style="margin-left: 10%;">Order # : <%=eachOrderDetails.orderID %></h3>
     <br><br>
     <h5 style="margin-left: 20%;">Shipping Details:</h5>
-    <h6 style="margin-left: 25%;">Address: <span style="font-size: small;"><%=eachOrderDetails.address.customerName %>, <%=eachOrderDetails.address.houseName %>, <%=eachOrderDetails.address.street %>, <%=eachOrderDetails.address.city %>, <%=eachOrderDetails.address.state %>, <%=eachOrderDetails.address.country %>-<%=eachOrderDetails.address.pincode %></span></h6>
+    <h6 style="margin-left: 25%;">Address: <span style="font-size: small;"><b><%=eachOrderDetails.address.customerName %></b>, <%=eachOrderDetails.address.houseName %>, <%=eachOrderDetails.address.street %>, <%=eachOrderDetails.address.city %>, <%=eachOrderDetails.address.state %>, <%=eachOrderDetails.address.country %>-<%=eachOrderDetails.address.pincode %></span></h6>
     <h6 style="margin-left: 25%;">Contact: <span style="font-size: small;"><%=eachOrderDetails.address.mobile %> </span></h6>
+    <h6 style="margin-left: 40%;"> <span style="font-size: small; color:violet;">A delivery charge of ₹1000 is charged on this order. </span></h6>
+    <% if(eachOrderDetails.discount) {%>
+    <h6 style="margin-left: 40%;"><span style="font-size: small;">You used a coupon worth ₹<%=eachOrderDetails.discount%>..</span></h6>
+    <% } %>
     <div class="container">
     
       <div class="card" style="cursor: default;" >
@@ -136,36 +140,28 @@
                </tr>
           </thead>
           <tbody>
-          <% for(let i=0;i<eachOrderDetails.products.length;i++){ %>
+          <% for(let i=0;i<orderData.length;i++){ %>
             <tr>
               <td style="padding-top: 50px;"><%=i+1 %></td>
-              <td style="text-align:center; padding-top: 50px;"><%=aaaaa[i].name %></td>
-              <td style="text-align: center; padding-bottom: 30px;"><img src="<%=aaaaa[i].image[0] %>" style="padding:15%;" height="100px" width="100px" >  </td>
-              <td style="text-align:center; padding-top: 50px;">₹<%=aaaaa[i].rate_after_discount %></td>
-              <td style="text-align:center; padding-top: 50px;"><%=eachOrderDetails.products[i].product_quantity %></td>
-              <td style="text-align:center; padding-top: 50px;">₹ <%=aaaaa[i].rate_after_discount*eachOrderDetails.products[i].product_quantity %></td>
-              <td style="text-align:center; padding-top: 50px;"><%=eachOrderDetails.status %></td>
+              <td style="text-align:center; padding-top: 50px;"><%=orderData[i].productName %></td>
+              <td style="text-align: center; padding-bottom: 30px;"><img src="<%=orderData[i].productImage %>" style="padding:15%;" height="100px" width="100px" >  </td>
+              <td style="text-align:center; padding-top: 50px;">₹<%=orderData[i].productPrice %></td>
+              <td style="text-align:center; padding-top: 50px;"><%=orderData[i].productCartQuantity %></td>
+              <td style="text-align:center; padding-top: 50px;">₹ <%=orderData[i].total %></td>
+              <% if(eachOrderDetails.paymentStatus === "Failed"){ %>
+              <td style="text-align:center; padding-top: 50px;">Failed</td>
+              <% } else if (eachOrderDetails.paymentStatus === "Success"){ %>
+                <td style="text-align:center; padding-top: 50px;"><%=orderData[i].productStatus %></td>
+                <% } %>
               <td style="text-align:center; padding-top: 50px;">
                       <form action="/account/order/<%#=orderHistory[i].orderID %>" method="post">
-                      <% if((eachOrderDetails.status === "Failed") || (eachOrderDetails.status === "Cancelled")){ %>
+                      <% if((orderData[i].productStatus === "Failed") || (orderData[i].productStatus === "Cancelled") || (eachOrderDetails.paymentStatus === "Failed")){ %>
                       <button class="btn btn-primary btn-sm" type="button" hidden>Cancel</button>
-                      <% }  else if(eachOrderDetails.status === 'Delivered'){ %>
+                      <% }  else if(orderData[i].productStatus === 'Delivered'){ %>
                       <button class="btn btn-primary btn-sm" type="button">Return</button>
-                      <% }else if(eachOrderDetails.status === "Placed" || "Shipped" || "Out for Delivery"){ %>
-                      <button class="btn btn-primary btn-warning-light" data-product-id="<%=aaaaa[i].name%>-<%=eachOrderDetails.orderID%>" type="button">Cancel</button>
+                      <% }else if(orderData[i].productStatus === "Placed" || "Shipped" || "Out for Delivery"){ %>
+                      <button class="btn btn-primary btn-warning-light" data-product-id="<%=eachOrderDetails.orderID %>-<%=orderData[i].productID%>" type="button">Cancel</button>
                       <% } %>
-                     
-                      
-                      
-                        <!------- <input type="hidden" value="<%#=p.name%>" name="oldName">  ------->
-                        <%# if (eachOrderDetails.status == "Delivered"){ %> 
-                        <!-- <button class="btn btn-primary btn-sm" type="button">Return</button> -->
-                          <%# } else if(eachOrderDetails.status == "Cancelled" || "Failed"){ %>
-                          <!-- <button class="btn btn-primary btn-sm" type="button" hidden>Cancel</button> -->
-                          <%# } else if (eachOrderDetails.status == "Placed"){ %>
-                        <!-- <button class="btn btn-primary btn-warning-light" data-product-id="<%#=aaaaa[i].name%>-<%#=eachOrderDetails.orderID%>" type="button">Cancel</button> -->
-                        <!-- <a href="/cancel/<%#=eachOrderDetails.orderID %>"><button class="btn btn-primary btn-sm" type="button">Cancel</button></a> -->
-                        <%# } %>
                       </form>
             </tr>
             <%} %>
@@ -240,10 +236,10 @@
       console.log("cancelData is: ", cancelData);
       
       let splitValues = cancelData.split("-");
-      let productName = splitValues[0];
-      let orderID = splitValues[1];
+      let orderID = splitValues[0];
+      let  productID = splitValues[1];
 
-      console.log("productName is ", productName);
+      console.log("productID is ", productID);
       console.log("orderID is ", orderID);
     
     Swal.fire({
@@ -262,18 +258,19 @@
                     'Content-Type': 'application/json',
                 },
                   body: JSON.stringify({
-                    // productId: productId,
-                    productName : productName,
+                    productId: productID,  
                     orderID: orderID
                     }),
           })  // fetch closed //
           .then(response => {
                     if (!response.ok) {
+                      console.log("is this working???");
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
                 }).then(data=>{
-                  if(data.success){
+                  if(data.message){
+                    console.log("ghjgkhkgjfhjhk");
                     window.alert(data.message);
                     window.location.reload();
                   }

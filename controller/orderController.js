@@ -25,23 +25,52 @@ const adminOrderDetails = async (req, res) => {
     const eachOrderDetails = await orderModel.findOne({ orderID: orderID });
     console.log("eachOrderDetails is:", eachOrderDetails);
     console.log(eachOrderDetails.products.length);
+    console.log(
+      "eachOrderDetails.paymentStatus is------------>",
+      eachOrderDetails.paymentStatus
+    );
 
-    var data;
-    for (let i = 0; i < eachOrderDetails.products.length; i++) {
-      console.log("###############");
-      console.log(eachOrderDetails.products[i].product);
-      data = eachOrderDetails.products[i].product;
-    }
-    console.log("data outside loop is", data);
+    let orderData = await orderModel.aggregate([
+      { $match: { orderID: orderID } },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails",
+      },
+      {
+        $project: {
+          _id: 0,
+          date: 1,
+          productName: "$productDetails.name",
+          productImage: { $arrayElemAt: ["$productDetails.image", 0] },
+          productPrice: "$productDetails.rate_after_discount",
+          productStatus: "$products.status",
+          productID: "$products.product",
+          productCartQuantity: "$products.product_quantity",
+          total: {
+            $multiply: [
+              "$productDetails.rate_after_discount",
+              "$products.product_quantity",
+            ],
+          },
+        },
+      },
+    ]);
+    console.log("ORDER DATA USING AGGREGATION FOR ADMIN IS:", orderData);
 
-    const productData = await productModel.find({ _id: data });
-    console.log("productData is :", productData);
-
-    // console.log("The details of order is: ", eachOrderDetails);
     res.render("admin_orders_Details", {
       name: req.session.adminName,
       eachOrderDetails,
-      productData,
+      orderData,
     });
   } catch (error) {
     console.log(
@@ -157,15 +186,21 @@ const cashOnDelivery = async (req, res) => {
     let addressID;
     let payment;
     console.log(req.query);
-    console.log(req.body);
+    console.log("req.body is ", req.body);
+    console.log(typeof req.body.amount);
+    console.log(typeof req.body.discount);
     // console.log(req.query.length);
     if (req.query.addressID) {
       addressID = req.query.addressID;
       payment = req.query.payment;
+      amount = req.session.amount_using_razorpay / 100;
+      discount = req.session.discount_using_razorpay;
       console.log("Its entering inside req.query");
     } else if (req.body.addressID) {
       addressID = req.body.addressID;
       payment = req.body.payment;
+      amount = req.body.amount;
+      discount = req.body.discount;
       console.log("Its entering inside req.body");
     }
     console.log("addressID is: ", addressID);
@@ -184,7 +219,7 @@ const cashOnDelivery = async (req, res) => {
     console.log("Usual Date is: ", Order_Date);
     console.log("%%&&%%&&%%&&%%&&%%&&%%&&%%&&%%&&");
 
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     let address = await addressModel.findOne(
       { _id: addressID },
       { _id: 0, user: 0 }
@@ -192,43 +227,68 @@ const cashOnDelivery = async (req, res) => {
     userOrderDetails = req.session.userCheckOutProductList;
     paymentMethod = payment;
 
-    // console.log("Values are:", req.body);
+    // // console.log("Values are:", req.body);
     console.log("______________________");
     console.log("Payment method is:", paymentMethod);
-    // console.log("Address ID for the order is: ", req.body.address);
+    // // console.log("Address ID for the order is: ", req.body.address);
     console.log("Address details are:", address);
     console.log("User name: " + username);
     console.log("Initial status when product is ordered :", status[0]);
-    console.log("Checkout value: " + req.session.totalCheckoutCharge);
+    // // console.log("Checkout value: " + req.session.totalCheckoutCharge);amount
+    // console.log("Checkout value before discount: ", amount);
+    // console.log(typeof amount)
+    // console.log(typeof req.body.discount);
+    // console.log("-------------------------<><><><<><<", req.body.discount);
+    let couponDiscount;
+    if (req.body.discount == 0 || req.session.discount_using_razorpay == 0) {
+      couponDiscount = 0;
+      //amount -= couponDiscount;
+    } else if (
+      req.body.discount > 0 ||
+      req.session.discount_using_razorpay > 0
+    ) {
+      couponDiscount = req.body.discount
+        ? req.body.discount
+        : req.session.discount_using_razorpay
+        ? req.session.discount_using_razorpay
+        : 0;
+    }
+    console.log("Discount amount is: ", couponDiscount);
+    console.log("Checkout value after discount: ", amount);
+    console.log(typeof amount);
+    console.log(typeof couponDiscount);
+
     console.log("Order ID:", orderID);
     console.log("Order date is:", Order_Date);
     console.log("User order product details:", userOrderDetails);
     console.log("CART VALUE IS----------------------------------->>>>>>>>>>:");
-    // console.log(cart[0].user);
+    // // // // console.log(cart[0].user);
     console.log(cart[0].item);
 
-    // adding a new field "status" in each product details when saving order //
-    // cart[0].item.forEach((value) => {
-    //   value.test = "Placed";
-    //   console.log(value);
-    // });
-    // console.log("product data to be saved in order collection", cart[0].item);
+    // // adding a new field "status" in each product details when saving order //
+    // // cart[0].item.forEach((value) => {
+    // //   value.test = "Placed";
+    // //   console.log(value);
+    // // });
+    // // console.log("product data to be saved in order collection", cart[0].item);
 
     console.log("------------------------------------------------<<<<<<<<<<<");
     console.log("USER details is:" + user);
     console.log("______________________");
-    let ab;
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    console.log(
-      "Cart value after using coupon is: ",
-      req.session.cart_Value_after_coupon
-    );
-    console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+
+    // //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+    // // let ab;
+    // console.log(
+    //   "Cart value after using coupon is: ",
+    //   req.session.cart_Value_after_coupon
+    // );
+
+    // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     console.log("address is:", address);
 
-    if (req.session.cart_Value_after_coupon) {
-      ab = req.session.cart_Value_after_coupon;
-    } else ab = req.session.totalCheckoutCharge;
+    // if (req.session.cart_Value_after_coupon) {
+    //   ab = req.session.cart_Value_after_coupon;
+    // } else ab = req.session.totalCheckoutCharge;
 
     let productOrderByUser = new orderModel({
       orderID: orderID,
@@ -236,10 +296,11 @@ const cashOnDelivery = async (req, res) => {
       date: Order_Date,
       products: cart[0].item,
       address: address,
-      totalOrderValue: ab,
+      totalOrderValue: amount,
       status: status[0],
       paymentMethod: payment,
       paymentStatus: "Success",
+      discount: couponDiscount,
     });
     req.session.user_name = username;
     req.session.order_ID = orderID;
@@ -249,6 +310,10 @@ const cashOnDelivery = async (req, res) => {
     await productOrderByUser.save();
     console.log("USER made a ORDER");
     await cartModel.updateOne({ user: userID }, { $set: { item: [] } });
+    await userModel.updateOne(
+      { username: username },
+      { $push: { coupon: req.session.couponUserUSed } }
+    );
     if (req.query.addressID) {
       res.redirect("/orderPlaced");
     } else if (req.body.addressID) {
@@ -265,18 +330,6 @@ const payby_Wallet = async (req, res) => {
   try {
     console.log("Wallet payment initiated");
 
-    if (req.session.user_Applied_Coupon) {
-      couponName = req.session.user_Applied_Coupon;
-      console.log(
-        "Coupon which user entered is:----------------->>>>>>>>>>())()()()()*() ",
-        couponName
-      );
-      await userModel.updateOne(
-        { username: username },
-        { $push: { coupon: couponName } }
-      );
-    }
-
     console.log(req.body);
     username = req.session.name;
     console.log(username);
@@ -290,6 +343,8 @@ const payby_Wallet = async (req, res) => {
     console.log(payment);
     amount = req.body.amount;
     console.log(amount);
+    discount = req.body.discount;
+    console.log(discount);
     initialStatus = "Placed";
     let a = orderIDGenerator();
     console.log("Order ID generated plus timestamp :", a);
@@ -312,7 +367,7 @@ const payby_Wallet = async (req, res) => {
 
     console.log("______________________");
     console.log("Payment method is:", paymentMethod);
-    // console.log("Address ID for the order is: ", req.body.address);
+    // // console.log("Address ID for the order is: ", req.body.address);
     console.log("Address details are:", address);
     console.log("User name: " + username);
     console.log("Initial status when product is ordered :", initialStatus);
@@ -321,25 +376,19 @@ const payby_Wallet = async (req, res) => {
     console.log("Order date is:", Order_Date);
     console.log("User order product details:", userOrderDetails);
     console.log("cart value:", cart);
+    console.log("Coupon discount :", discount);
 
     console.log(cart[0].item);
 
-    // adding a new field "status" in each product details when saving order //
-    // cart[0].item.forEach((item) => {
-    //   item.status = "Placed";
-    // });
-    // console.log("product data to be saved in order collection", cart[0].item);
-    // console.log("USER details is:" + user);
-
     console.log("______________________");
-    let ab;
-    console.log(
-      "Cart value after using coupon is: ",
-      req.session.cart_Value_after_coupon
-    );
-    if (req.session.cart_Value_after_coupon) {
-      ab = req.session.cart_Value_after_coupon;
-    } else ab = req.session.totalCheckoutCharge;
+    // let ab;
+    // console.log(
+    //   "Cart value after using coupon is: ",
+    //   req.session.cart_Value_after_coupon
+    // );
+    // if (req.session.cart_Value_after_coupon) {
+    //   ab = req.session.cart_Value_after_coupon;
+    // } else ab = req.session.totalCheckoutCharge;
 
     let productOrderByUserWallet = new orderModel({
       orderID: orderID,
@@ -347,10 +396,11 @@ const payby_Wallet = async (req, res) => {
       date: Order_Date,
       products: cart[0].item,
       address: address,
-      totalOrderValue: ab,
+      totalOrderValue: amount,
       status: initialStatus,
       paymentMethod: payment,
       paymentStatus: "Success",
+      discount: discount,
     });
     req.session.user_name = username;
     req.session.order_ID = orderID;
@@ -361,20 +411,25 @@ const payby_Wallet = async (req, res) => {
     console.log("USER made a ORDER by Wallet");
     await cartModel.updateOne({ user: userID }, { $set: { item: [] } });
 
-    console.log("Total amount is: ", ab);
+    // console.log("Total amount is: ", ab);
 
     const walletTransactions = {
       date: new Date(),
       type: "Debit",
-      amount: ab,
+      amount: amount,
     };
 
     await walletModel.updateOne(
       { userId: userID },
       {
-        $inc: { wallet: -ab },
+        $inc: { wallet: -amount },
         $push: { walletTransactions: walletTransactions },
       }
+    );
+
+    await userModel.updateOne(
+      { username: username },
+      { $push: { coupon: req.session.couponUserUSed } }
     );
 
     res.json({ message: "product ordered successfully via wallet payment" });
@@ -421,49 +476,61 @@ const orderPlaced = async (req, res) => {
 
 const userEachOrderData = async (req, res) => {
   try {
+    console.log("ORDER DETAILS PAGE");
     const id = req.params.id;
     console.log("ORDER ID is: ", id);
     username = req.session.name;
 
-    // const abcd = await orderModel.aggregate([
-    //   {
-    //     $match: { orderID: id },
-    //   },
-    //   { $unwind: "$products" },
-    //   {
-    //     $lookup: {
-    //       from: "product",
-    //       localField: "products.product",
-    //       foreignField: "_id",
-    //       as: "productDetails",
-    //     },
-    //   },
-    //   // { $unwind: "$productDetails" },
-    // ]);
-
-    // console.log("abcd is.....", abcd);
-    // console.log(abcd[0].products.product);
     const eachOrderDetails = await orderModel.findOne({ orderID: id });
-
     console.log("Each order Details:", eachOrderDetails);
     console.log(eachOrderDetails.products.length);
-    console.log(eachOrderDetails.status);
-    console.log("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 
-    var data;
-    for (let i = 0; i < eachOrderDetails.products.length; i++) {
-      console.log("###############");
-      // console.log(eachOrderDetails.products[i].product);
-      data = eachOrderDetails.products[i].product;
-    }
-    console.log("data outside loop is", data);
+    // const data = eachOrderDetails.products.map((Value) => {
+    //   console.log("Value is:", Value);
+    //   return Value;
+    // });
+    // console.log("DATA IS: ", data);
 
-    const aaaaa = await productModel.find({ _id: data });
-    console.log("aaaaa", aaaaa);
+    let orderData = await orderModel.aggregate([
+      { $match: { orderID: id } },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails",
+      },
+      {
+        $project: {
+          _id: 0,
+          date: 1,
+          productName: "$productDetails.name",
+          productImage: { $arrayElemAt: ["$productDetails.image", 0] },
+          productPrice: "$productDetails.rate_after_discount",
+          productStatus: "$products.status",
+          productID: "$products.product",
+          productCartQuantity: "$products.product_quantity",
+          total: {
+            $multiply: [
+              "$productDetails.rate_after_discount",
+              "$products.product_quantity",
+            ],
+          },
+        },
+      },
+    ]);
+    console.log("ORDER DATA USING AGGREGATION IS:", orderData);
 
     console.log("USER IN ORDER DETAILS PAGE");
 
-    res.render("userOrderDetailsPage", { eachOrderDetails, aaaaa });
+    res.render("userOrderDetailsPage", { orderData, eachOrderDetails });
   } catch (error) {
     console.log(
       "Error happened in userEachOrderData in ordercontroller",
@@ -477,27 +544,40 @@ const payByRazorpay = async (req, res) => {
     console.log("pay by razorpay");
     console.log(req.body);
     console.log(req.body.amount);
-    console.log(req.session.totalCheckoutCharge);
-    console.log(req.session.cart_Value_after_coupon);
-    let amount;
-    if (req.session.cart_Value_after_coupon == undefined) {
-      amount = req.session.totalCheckoutCharge * 100;
-    } else if (req.session.cart_Value_after_coupon) {
-      amount = req.session.cart_Value_after_coupon * 100;
+    console.log(req.body.discount);
+
+    // console.log(req.session.totalCheckoutCharge);
+    // console.log(req.session.cart_Value_after_coupon);
+    let amount = req.body.amount * 100;
+    if (req.body.discount == 0) {
+      req.session.discount_using_razorpay = 0;
+    } else if (req.body.discount > 0) {
+      req.session.discount_using_razorpay = req.body.discount;
     }
-    // const amount = req.session.cart_Value_after_coupon;
-    // if (req.session.cart_Value_after_coupon) {
+
+    console.log("The checkout amount is :", amount);
+    req.session.amount_using_razorpay = amount;
+    console.log(
+      "The coupon discount is: ",
+      req.session.discount_using_razorpay
+    );
+
+    // if (req.session.cart_Value_after_coupon == undefined) {
     //   amount = req.session.totalCheckoutCharge * 100;
-    // } else if (!req.session.cart_Value_after_coupon) {
-    //   amount = req.session.totalCheckoutCharge * 100;
+    // } else if (req.session.cart_Value_after_coupon) {
+    //   amount = req.session.cart_Value_after_coupon * 100;
     // }
+    // // const amount = req.session.cart_Value_after_coupon;
+    // // if (req.session.cart_Value_after_coupon) {
+    // //   amount = req.session.totalCheckoutCharge * 100;
+    // // } else if (!req.session.cart_Value_after_coupon) {
+    // //   amount = req.session.totalCheckoutCharge * 100;
+    // // }
     const options = {
       amount: amount,
       currency: "INR",
       receipt: "razorUser@gmail.com",
     };
-
-    //let a = orderIDGenerator();
 
     razorpayInstance.orders.create(options, (err, order) => {
       console.log(err);
@@ -509,9 +589,9 @@ const payByRazorpay = async (req, res) => {
           order_id: order.id,
           amount: amount,
           key_id: process.env.RAZORPAY_ID_KEY,
-          product_name: req.body.name,
-          description: req.body.description,
-          contact: "8567345632",
+          // product_name: req.body.name,
+          // description: req.body.description,
+          // contact: "8567345632",
           name: "getantiques",
           email: "getantiques@gmail.com",
         });
@@ -548,6 +628,9 @@ const razorpayPaymentFailed = async (req, res) => {
     console.log("Date is: ", date);
     let addressID = req.query.addressID;
     let payment = req.query.payment;
+    amount = req.session.amount_using_razorpay / 100;
+    discount = req.session.discount_using_razorpay;
+
     // console.log("address id is: ", addressID);
     // console.log("payment method is: ", payment);
     initialStatus = "Failed";
@@ -559,11 +642,13 @@ const razorpayPaymentFailed = async (req, res) => {
 
     console.log("______________________");
     console.log("Payment method is:", payment);
+    console.log("Discount is: ", discount);
+    console.log("Amount is: ", amount);
     console.log("Address ID for the order is: ", addressID);
     console.log("Address details :", address);
     console.log("User name: " + username);
     console.log("Status :", initialStatus);
-    console.log("Checkout value: " + req.session.totalCheckoutCharge);
+    // console.log("Checkout value: " + req.session.totalCheckoutCharge);
     console.log("Order ID:", orderID);
     console.log("Order date is:", date);
     console.log("User order product details:", userOrderDetails);
@@ -572,14 +657,14 @@ const razorpayPaymentFailed = async (req, res) => {
 
     console.log("______________________");
 
-    let ab;
-    console.log(
-      "Cart value after using coupon is: ",
-      req.session.cart_Value_after_coupon
-    );
-    if (req.session.cart_Value_after_coupon) {
-      ab = req.session.cart_Value_after_coupon;
-    } else ab = req.session.totalCheckoutCharge;
+    // let ab;
+    // console.log(
+    //   "Cart value after using coupon is: ",
+    //   req.session.cart_Value_after_coupon
+    // );
+    // if (req.session.cart_Value_after_coupon) {
+    //   ab = req.session.cart_Value_after_coupon;
+    // } else ab = req.session.totalCheckoutCharge;
 
     let productOrderByUser = new orderModel({
       orderID: orderID,
@@ -587,7 +672,8 @@ const razorpayPaymentFailed = async (req, res) => {
       date: date,
       products: cart[0].item,
       address: address,
-      totalOrderValue: ab,
+      discount: discount,
+      totalOrderValue: amount - 1000,
       status: initialStatus,
       paymentMethod: payment,
       paymentStatus: "Failed",
@@ -598,13 +684,28 @@ const razorpayPaymentFailed = async (req, res) => {
     req.session.initial_status = initialStatus;
     req.session.payment_mode = payment;
     await productOrderByUser.save();
+    let value = await orderModel.find({ orderID: orderID });
+    console.log(value);
+    console.log(value[0].products);
+    console.log("98977uhvhhggjkbiuihuiucvhkbvg");
+    value[0].products.forEach((update) => {
+      update.status = "Failed";
+    });
+
+    console.log(value[0].products);
+    console.log("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+    //cart[0].item.forEach((value) => {
+    // //   value.test = "Placed";
+    // //   console.log(value);
+    // // });
+
     console.log("ORDER SAVED WHILE PAYMENT FAILED");
 
     res.render("razorpayFailed", {
       user: req.session.name,
       orderID,
       date,
-      ab,
+      amount,
     });
   } catch (error) {
     console.log(
@@ -657,6 +758,19 @@ const reRazorpay = async (req, res) => {
   }
 };
 
+const discard_Online_Payment = async (req, res) => {
+  try {
+    console.log("Discard Razorpay failed transaction");
+    console.log(req.body);
+    console.log(req.session.user_Applied_Coupon);
+  } catch (error) {
+    console.log(
+      "error happened between discard_Online_Payment in orderController.",
+      error
+    );
+  }
+};
+
 // const test = async (req, res) => {
 //   console.log("Hey test payment");
 
@@ -672,8 +786,81 @@ const reRazorpay = async (req, res) => {
 
 const cancelProduct = async (req, res) => {
   try {
-    console.log("cancelProduct");
+    console.log("**************---Cancel Product---***************");
     console.log(req.body);
+    console.log("User name is: ", req.session.name);
+    let userID = await userModel.findOne(
+      { username: req.session.name },
+      { _id: 1 }
+    );
+    console.log("User ID is: ", userID._id);
+
+    let userWallet = await walletModel.findOne({ userId: userID._id });
+    console.log("User wallet details: ", userWallet);
+
+    // find the product price to credit to wallet//
+    let productPrice = await orderModel.aggregate([
+      {
+        $match: { orderID: req.body.orderID },
+      },
+      { $unwind: "$products" },
+      {
+        $match: { "products.product": new ObjectId(req.body.productId) },
+      },
+      {
+        $project: {
+          "products.product_rate": 1,
+          _id: 0,
+        },
+      },
+    ]);
+    console.log("Product price is: ", productPrice[0].products.product_rate);
+    // product price end //
+
+    let returnDetails = await orderModel.findOne(
+      { orderID: req.body.orderID },
+      {  _id: 0, paymentMethod: 1 }
+    );
+    console.log("Order Payment mode: ", returnDetails.paymentMethod);
+
+    if (
+      returnDetails.paymentMethod == "Online" ||
+      returnDetails.paymentMethod == "wallet"
+    ) {
+      console.log("Return money to wallet");
+
+      walletTransactions = {
+        date: new Date(),
+        type: `Credited for cancelling ${req.body.orderID}`,
+        amount: productPrice[0].products.product_rate,
+      };
+
+      let updateWallet = await walletModel.updateOne(
+        { userId: userID._id },
+        {
+          $inc: { wallet: +productPrice[0].products.product_rate },
+          $push: { walletTransactions: walletTransactions },
+        }
+      );
+
+      console.log(updateWallet);
+
+    } else {
+      console.log("No return of amount needed");
+    }
+
+    let orderUpdate = await orderModel.updateOne(
+      {
+        orderID: req.body.orderID,
+        "products.product": new ObjectId(req.body.productId),
+      },
+      {
+        $set: { "products.$.status": "Cancelled" },
+      }
+    );
+    console.log("Order Update is: ", orderUpdate);
+
+    res.json({ message: "This product is cancelled." });
   } catch (error) {
     console.log(
       "Error happened between cancelProduct in orderController",
@@ -757,6 +944,7 @@ module.exports = {
   payByRazorpay,
   razorpayPaymentFailed,
   reRazorpay,
+  discard_Online_Payment,
   adminOrderDetails,
   orderPlaced,
   cancelOrder,

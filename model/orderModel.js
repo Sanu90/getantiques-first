@@ -14,32 +14,27 @@ const orderData = new mongoose.Schema({
     required: true,
     trim: true,
   },
-  // user: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "user",
-  //   required: true,
-  //   trim: true,
-  // },
+
   user: {
     type: String,
     required: true,
     trim: true,
   },
 
-  date: {
-    type: Date,
+  products: {
+    type: Array,
+    required: true,
     trim: true,
   },
 
-  // product: {
-  //   type: mongoose.Schema.Types.ObjectId,
-  //   ref: "product",
-  //   required: true,
-  //   trim: true,
-  // },
+  totalOrderValue: {
+    type: Number,
+    required: true,
+    trim: true,
+  },
 
-  products: {
-    type: Array,
+  discount: {
+    type: Number,
     required: true,
     trim: true,
   },
@@ -50,15 +45,14 @@ const orderData = new mongoose.Schema({
     trim: true,
   },
 
-  // quantity: {
-  //   type: Number,
-  //   required: true,
-  //   trim: true,
-  // },
-
-  totalOrderValue: {
-    type: Number,
+  paymentMethod: {
+    type: String,
     required: true,
+    trim: true,
+  },
+
+  date: {
+    type: Date,
     trim: true,
   },
 
@@ -68,24 +62,19 @@ const orderData = new mongoose.Schema({
     trim: true,
   },
 
-  paymentMethod: {
+  paymentStatus: {
     type: String,
     required: true,
     trim: true,
   },
-  return: {
+
+  return_Reason: {
     type: String,
     trim: true,
   },
 
   cancel: {
     type: String,
-    trim: true,
-  },
-
-  paymentStatus: {
-    type: String,
-    required: true,
     trim: true,
   },
 });

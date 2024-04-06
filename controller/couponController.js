@@ -206,10 +206,14 @@ const userApplyCoupon = async (req, res) => {
             buttonChange: 0,
           });
         } else if (req.session.cartTotal >= couponFound[0].minimum_cart_value) {
-          await userModel.updateOne(
-            { username: req.session.name },
-            { $push: { coupon: couponFound.name } }
-          );
+          // await userModel.updateOne(
+          //   { username: req.session.name },
+          //   { $push: { coupon: couponFound[0].name } }
+          // );
+          console.log("111&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
+          console.log("Coupon when added is:", couponFound[0].name);
+          req.session.couponUserUSed = couponFound[0].name;
+          console.log("111&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
           const discount = couponFound[0].discount;
           console.log("Discount amount is: ", discount);
           console.log("Cart total is: ", req.session.cartTotal);

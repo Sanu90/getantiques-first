@@ -497,7 +497,7 @@
                   id="cartTotalValue"
                   name="cartTotalValue"
                 >
-                  ₹<%=totalCheckoutCharge%>
+                  <%=totalCheckoutCharge%>
                 </h5>
               </div>
             </div>
@@ -673,6 +673,7 @@
         var couponError = document.getElementById("couponMessage");
         var discount = document.getElementById("discount");
         var cartTotal = document.getElementById("cartTotalValue");
+        
         console.log("hii apply coupon clicked");
         console.log("value of button:" ,value)
         //console.log(typeof(value));
@@ -698,7 +699,7 @@
                     return response.json();
                     }).then(data=>{
                         couponError.innerText = data.message;
-                        discount.innerText = "-" +data.discount;
+                        discount.innerText = data.discount;
                         cartTotal.innerText = data.total_cart_value;
                     //window.location.reload();
        
@@ -796,11 +797,16 @@
          console.log("PAY is invoked");
       const selectedAddress = document.querySelector('input[name="address"]:checked').value;
       const selectedPayment = document.querySelector('input[name="payment"]:checked').value;
-      const cartTotal = document.getElementById("cartTotalValue").innerText;
+      const cartTotal = Number(document.getElementById("cartTotalValue").innerText);
+      const discount = Number (document.getElementById("discount").innerText);
     
       console.log("************************");
       console.log("Address is:" ,selectedAddress);
       console.log("payment is:" ,selectedPayment);
+      console.log("Amount is: ", cartTotal);
+      console.log(typeof cartTotal);
+      console.log("Discount applied is ", discount);
+      console.log(typeof discount);
       if(selectedPayment=="Cash on Delivery"){
         console.log("Hello COD");
         fetch(`/cash-on-delivery`,{
@@ -810,7 +816,9 @@
           },
           body: JSON.stringify({
             addressID: selectedAddress,
-            payment: selectedPayment
+            payment: selectedPayment, 
+            amount: cartTotal,
+            discount: discount,
           })
         }).then(response=>{
           console.log(response);
@@ -833,6 +841,7 @@
 			data: {addressID: selectedAddress,
             payment: selectedPayment,
             amount: cartTotal,
+            discount: discount,
       },
 			success:function(res){
 				if(res.success){
@@ -891,6 +900,7 @@
             addressID: selectedAddress,
             payment: selectedPayment,
             amount: cartTotal,
+            discount: discount,
           })
         })
         .then(response=>{

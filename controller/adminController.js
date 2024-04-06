@@ -6,6 +6,8 @@ const orderModel = require("../model/orderModel");
 const bcrypt = require("bcrypt");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const mongoose = require("mongoose");
+const { ObjectId } = mongoose.Types;
 
 const adminLoginPage = (req, res) => {
   try {
@@ -226,124 +228,124 @@ const salesReport = async (req, res) => {
       },
       {
         $group: {
-          _id: "$product",
+          _id: "$products.product_name",
           totalOrders: { $sum: 1 },
         },
       },
     ]);
     console.log("Product details:", Product);
 
-    const status = await orderModel.aggregate([
-      {
-        $match: {
-          date: {
-            $gte: new Date(startDate),
-            $lte: new Date(endDate),
-          },
-        },
-      },
-      {
-        $group: {
-          _id: "$status",
-          count: { $sum: 1 },
-        },
-      },
-    ]);
+    // const status = await orderModel.aggregate([
+    //   {
+    //     $match: {
+    //       date: {
+    //         $gte: new Date(startDate),
+    //         $lte: new Date(endDate),
+    //       },
+    //     },
+    //   },
+    //   {
+    //     $group: {
+    //       _id: "$status",
+    //       count: { $sum: 1 },
+    //     },
+    //   },
+    // ]);
 
-    const htmlContent = `
-                <!DOCTYPE html>
-                <html lang="en">
-                <head>
-                    <meta charset="UTF-8">
-                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-                    <title>Sales Report</title>
-                    <style>
-                        body {
-                            margin-left: 20px;
-                        }
-                    </style>
-                </head>
-                <body>
-                    <h2 align="center"> Sales Report</h2>
-                    Start Date: ${startDate}<br>
-                    End Date: ${endDate}<br> 
-                    <center>
-                    <h3>Total Sales</h3>
-                        <table style="border-collapse: collapse;">
-                            <thead>
-                                <tr>
-                                    <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Product</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Total Orders</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${Product.map(
-                                  (item, index) => `
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          index + 1
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item._id
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.totalOrders
-                                        }</td>
-                                    </tr>`
-                                )}
-                                    
-                            </tbody>
-                        </table>
-                    </center>
-                    <center>
-                    <h3>Order Status</h3>
-                        <table style="border-collapse: collapse;">
-                            <thead>
-                                <tr>
-                                    <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Status</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Total Count</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                ${status.map(
-                                  (item, index) => `
-                                    <tr>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          index + 1
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item._id
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.count
-                                        }</td>
-                                    </tr>`
-                                )}
-                                    
-                            </tbody>
-                        </table>
-                    </center>
-                    
-                </body>
-                </html>
-            `;
+    // const htmlContent = `
+    //             <!DOCTYPE html>
+    //             <html lang="en">
+    //             <head>
+    //                 <meta charset="UTF-8">
+    //                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    //                 <title>Sales Report</title>
+    //                 <style>
+    //                     body {
+    //                         margin-left: 20px;
+    //                     }
+    //                 </style>
+    //             </head>
+    //             <body>
+    //                 <h2 align="center"> Sales Report</h2>
+    //                 Start Date: ${startDate}<br>
+    //                 End Date: ${endDate}<br>
+    //                 <center>
+    //                 <h3>Total Sales</h3>
+    //                     <table style="border-collapse: collapse;">
+    //                         <thead>
+    //                             <tr>
+    //                                 <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
+    //                                 <th style="border: 1px solid #000; padding: 8px;">Product</th>
+    //                                 <th style="border: 1px solid #000; padding: 8px;">Total Orders</th>
+    //                             </tr>
+    //                         </thead>
+    //                         <tbody>
+    //                             ${Product.map(
+    //                               (item, index) => `
+    //                                 <tr>
+    //                                     <td style="border: 1px solid #000; padding: 8px;">${
+    //                                       index + 1
+    //                                     }</td>
+    //                                     <td style="border: 1px solid #000; padding: 8px;">${
+    //                                       item._id
+    //                                     }</td>
+    //                                     <td style="border: 1px solid #000; padding: 8px;">${
+    //                                       item.totalOrders
+    //                                     }</td>
+    //                                 </tr>`
+    //                             )}
 
-    const browser = await puppeteer.launch({
-      // executablePath: "/usr/bin/chromium-browser",
-    });
-    const page = await browser.newPage();
-    await page.setContent(htmlContent);
+    //                         </tbody>
+    //                     </table>
+    //                 </center>
+    //                 <center>
+    //                 <h3>Order Status</h3>
+    //                     <table style="border-collapse: collapse;">
+    //                         <thead>
+    //                             <tr>
+    //                                 <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
+    //                                 <th style="border: 1px solid #000; padding: 8px;">Status</th>
+    //                                 <th style="border: 1px solid #000; padding: 8px;">Total Count</th>
+    //                             </tr>
+    //                         </thead>
+    //                         <tbody>
+    //                             ${status.map(
+    //                               (item, index) => `
+    //                                 <tr>
+    //                                     <td style="border: 1px solid #000; padding: 8px;">${
+    //                                       index + 1
+    //                                     }</td>
+    //                                     <td style="border: 1px solid #000; padding: 8px;">${
+    //                                       item._id
+    //                                     }</td>
+    //                                     <td style="border: 1px solid #000; padding: 8px;">${
+    //                                       item.count
+    //                                     }</td>
+    //                                 </tr>`
+    //                             )}
 
-    const pdfBuffer = await page.pdf();
+    //                         </tbody>
+    //                     </table>
+    //                 </center>
 
-    await browser.close();
+    //             </body>
+    //             </html>
+    //         `;
 
-    res.setHeader("Content-Length", pdfBuffer.length);
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", "attachment; filename=sales.pdf");
-    res.status(200).end(pdfBuffer);
+    // const browser = await puppeteer.launch({
+    //   // executablePath: "/usr/bin/chromium-browser",
+    // });
+    // const page = await browser.newPage();
+    // await page.setContent(htmlContent);
+
+    // const pdfBuffer = await page.pdf();
+
+    // await browser.close();
+
+    // res.setHeader("Content-Length", pdfBuffer.length);
+    // res.setHeader("Content-Type", "application/pdf");
+    // res.setHeader("Content-Disposition", "attachment; filename=sales.pdf");
+    // res.status(200).end(pdfBuffer);
   } catch (error) {
     console.log(
       "Error happened between salesReport in adminController ",
@@ -355,14 +357,27 @@ const salesReport = async (req, res) => {
 const updateOrderStatus = async (req, res) => {
   try {
     console.log("ADMIN updating updateOrderStatus");
-    const { orderID, status } = req.body;
+    // console.log(req.body);
+    const { orderID, productID, status } = req.body;
     console.log(orderID);
+    console.log(productID);
     console.log(status);
     await orderModel.updateOne(
-      { orderID: orderID },
-      { $set: { status: status } }
+      {
+        orderID: orderID,
+        "products.product": new ObjectId(productID),
+      },
+      {
+        $set: { "products.$.status": status },
+      }
     );
-    res.redirect("/admin/order");
+
+    //console.log(productToBeUpdated);
+    // await orderModel.updateOne(
+    //   { orderID: orderID, "products.product": productID },
+    //   { $set: { status: status } }
+    // );
+    res.redirect(`/admin/orderDetails?id=${orderID}`);
   } catch (error) {
     console.log(
       "Error happened while updateOrderStatus in adminController: ",

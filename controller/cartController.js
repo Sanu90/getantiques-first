@@ -84,7 +84,9 @@ const addToCart = async (req, res) => {
             item: {
               product: product_id,
               product_quantity: 1,
+              product_name: productDetails.name,
               product_rate: productDetails.rate_after_discount,
+              product_rate_before_discount: productDetails.rate,
             },
           },
         },

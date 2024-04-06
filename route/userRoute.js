@@ -87,11 +87,7 @@ router.get(
 
 router
   .get("/account/order", userCheck.isUser, orderController.userOrder)
-  .post(
-    "/account/order/:id",
-    userCheck.isUser,
-    orderController.userEachOrderData
-  );
+  .post("/account/order/:id", orderController.userEachOrderData);
 
 router.get("/account/order/:id");
 
@@ -168,15 +164,21 @@ router.post(
   "/pay-by-razorpay",
   userCheck.isUser,
   orderController.payByRazorpay
-);  //pay by razorpay when razorpay button is selected in checkout page //
+); //pay by razorpay when razorpay button is selected in checkout page //
 
 router.get(
   "/razorpay-PaymentFailed",
   userCheck.isUser,
   orderController.razorpayPaymentFailed
-);   //payment failure when failed button is hit //
+); //payment failure when failed button is hit //
 
 router.post("/reRazorpay", userCheck.isUser, orderController.reRazorpay);
+
+router.post(
+  "/discard_Online_Payment",
+  userCheck.isUser,
+  orderController.discard_Online_Payment
+);
 
 router.post("/payby-Wallet", userCheck.isUser, orderController.payby_Wallet);
 

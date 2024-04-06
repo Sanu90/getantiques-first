@@ -121,64 +121,28 @@
               <div class="row">
                 <table class="table table-striped" width="50%>">
                   <tr>
+                  <th style="color:tomato;font-size:small; text-align: center; ">Order ID</th>
                     <th style="color:tomato;font-size:small; text-align: center; ">User Name</th>
                     <th style="color:tomato;font-size:small; text-align: center; ">Date of Order</th>
-                    <th style="color:tomato;font-size:small; text-align: center; ">Order ID</th>
+                    <th style="color:tomato;font-size:small; text-align: center; ">Product Count</th>
                     <th style="color:tomato;font-size:small; text-align: center; ">Total Price<sup>*</sup></th>
-                    <th style="color:tomato;font-size:small; text-align: center; ">Status</th>
+                    <!-- <th style="color:tomato;font-size:small; text-align: center; ">Status</th> -->
                     <th style="color:tomato;font-size:small; text-align: center; ">Payment</th>
-                    <!-- <th style="color:tomato;font-size:small; text-align: center; width: 250px;">Description</th>
-                   <th style="color:tomato;font-size:small; text-align: center; ">Edit</th>-->
+                     <th style="color:tomato;font-size:small; text-align: center; ">Payment Status</th>
+                   <!--<th style="color:tomato;font-size:small; text-align: center; ">Edit</th>-->
                     <th style="color:tomato;font-size:small; text-align: center; ">More</th> 
+                    
                   </tr>
                    <% for(let i=0;i<orderDetails.length;i++) { %>
                   <tr>
+                  <td style="text-align: center;"><%=orderDetails[i].orderID %></td>
                     <td style="text-align: center;"><%=orderDetails[i].user %></td>
                     <td style="text-align: center;"><%=orderDetails[i].date.toLocaleString() %> </td>
-                    <td style="text-align: center;"><%=orderDetails[i].orderID %></td> 
+                     <td style="text-align: center;"><%=orderDetails[i].products.length %> </td>
                     <td style="text-align: center;"><%=orderDetails[i].totalOrderValue %></td>
-                    <form action="/admin/updateOrderStatus" method="post">
-                    <input type="hidden" value="<%=orderDetails[i].orderID %>" name="orderID">
-                    <td style="text-align: center;">
-                    <% if(orderDetails[i].status == 'Placed'){%>
-                    <select name="status" id="orderStatus">
-                    <option value="Placed"  selected>Placed</option>
-                    <option value="Shipped"  >Shipped</option>
-                    <option value="Out for Delivery" >Out for Delivery</option>
-                    <option value="Delivered" >Delivered</option>
-                    </select>
-                    <% } else if(orderDetails[i].status == 'Shipped'){ %>
-                    <select name="status" id="orderStatus">
-                    <option value="Shipped" selected  >Shipped</option>
-                    <option value="Out for Delivery" >Out for Delivery</option>
-                    <option value="Delivered" >Delivered</option>
-                    </select>
-                    <% } else if(orderDetails[i].status == 'Out for Delivery'){ %>
-                    <select name="status" id="orderStatus">
-                    <option value="Out for Delivery" selected >Out for Delivery</option>
-                    <option value="Delivered" >Delivered</option>
-                    </select>
-                    <% } else if(orderDetails[i].status == 'Delivered'){ %>
-                    <select name="status" id="orderStatus">
-                    <option value="Delivered" selected >Delivered</option>
-                    </select>
-                    <% } else if(orderDetails[i].status == 'Cancelled'){ %>
-                    <select name="status" id="orderStatus">
-                    <option value="Cancelled" selected disabled>Cancelled</option>
-                    </select>
-                    <% } else if(orderDetails[i].status == 'Failed'){%>
-                    <select name="status" id="orderStatus">
-                    <option value="Cancelled" selected disabled>Payment Failed</option>
-                    </select>
-                    <% } %>
-                    <% if((orderDetails[i].status == 'Placed')||(orderDetails[i].status == 'Shipped')||(orderDetails[i].status == 'Out for Delivery')){ %>
-                    <button type="submit" style="background-color: #007bff; color: #ffffff;">Update</button>
-                    <% } else if((orderDetails[i].status == 'Delivered') || (orderDetails[i].status == 'Cancelled')) { %>
-                    <button type="submit" style="background-color: #007bff; color: #ffffff;" hidden>Update</button>
-                    <% } %>
-                    </td>
-                    </form>
+                    
                     <td style="text-align: center;"><%=orderDetails[i].paymentMethod %></td>
+                    <td style="text-align: center;"><%=orderDetails[i].paymentStatus %></td>
                     <td style="text-align: center;"><a style="color:cadetblue;" href="/admin/orderDetails?id=<%=orderDetails[i].orderID %>">Details..</a> 
                         
                      </td>

@@ -728,7 +728,7 @@ const browse = async (req, res) => {
       .limit(limit * 1)
       .skip((page - 1) * limit);
     const productCount = await productModel.find({}).countDocuments({});
-    const totalPages = productCount / limit;
+    const totalPages = Math.ceil(productCount / limit);
     console.log("PRODUCTS:" + products);
     //console.log(products);
     res.render("browseAll", {
