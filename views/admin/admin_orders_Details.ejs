@@ -132,7 +132,7 @@
         </div>
         
         <!-- card-header end// --><br>
-        <h5>ORDER # : <span style="color: red;"><%=eachOrderDetails.orderID %></span></h5><br>
+        <h5>ORDER # : <span style="color: red;" id="orderID"><%=eachOrderDetails.orderID %></span></h5><br>
         <h6>DATE OF ORDER : <span style="color: red;"><%=eachOrderDetails.date.toLocaleString() %></span></h6><br>
         <p>SHIPPING ADDRESS: <span style="color: red;"><%=eachOrderDetails.address.customerName %></span>, 
         <span style="color: red;"><%=eachOrderDetails.address.houseName %>, <%=eachOrderDetails.address.street %>,</span>
@@ -172,13 +172,22 @@
                     <input type="hidden" value="<%=eachOrderDetails.orderID  %>" name="orderID">
                     <input type="hidden" value="<%=orderData[i].productID %>" name="productID">
                     <td style="text-align: center;">
+                    
                     <% if(eachOrderDetails.paymentStatus == 'Failed'){%>
                     <select name="status" id="orderStatus">
                     <!-- <p>Payment Failed</p> -->
                     <option value="Payment Failed" selected disabled>Payment Failed</option>
                     </select>
+                    <% } else if(orderData[i].productStatus == 'Return Initiated'){%>
+                    <p>Return Initiated</p> <p> <span style="background-color: yellow;">Reason: <%=orderData[i].productReason%> </span></p>
                     
-                    <% } else if(orderData[i].productStatus == 'Placed'){%>
+                     <% } else if(orderData[i].productStatus == 'Return Accepted'){%>
+                    <p>Return Accepted</p> <p> <span style="background-color: yellow;">Reason: <%=orderData[i].productReason%> </span></p>
+                    
+                      <% } else if(orderData[i].productStatus == 'Return Rejected'){%>
+                    <p>Return Rejected</p> <p> <span style="background-color: yellow;">Reason: <%=orderData[i].productReason%> </span></p>
+                     
+                      <%} else if(orderData[i].productStatus == 'Placed'){%>
                     <select name="status" id="orderStatus">
                     <option value="Placed"  selected>Placed</option>
                     <option value="Shipped"  >Shipped</option>
@@ -212,7 +221,10 @@
                     <% } %>
                     </td>
                     </form>
-                    
+                    <% if(orderData[i].productStatus == 'Return Initiated'){%>
+                    <td style="text-align: center;"><button data-product-id="approve-<%=orderData[i].productName %>" class="btn btn-warning-light"><i class="fa fa-check"></i></button>&nbsp;
+                    <button data-product-id="reject-<%=orderData[i].productName %>" class="btn btn-warning-light"><i class="fa fa-times"></i></button></td>
+                    <% } %>
                   </tr>
                   <% } %>
                   
@@ -248,7 +260,93 @@
       <!-- content-main end// -->
     <%- include ('partialsAdminFooter') %>
 
+
+    <script>
+      // Get the buttons
+        document.addEventListener("DOMContentLoaded", function() {
+        const actionButtons = document.querySelectorAll(".btn-warning-light");
+        actionButtons.forEach(function(button) {
+          button.addEventListener("click", function() {
+            const action = button.dataset.productId;
+            //console.log("action button is: ", action);
+            const orderID = document.getElementById("orderID").innerHTML;
+            console.log(orderID); 
+            let splitValues = action.split("-");
+          let what2do = splitValues[0];
+          let  productName = splitValues[1];
+          console.log(what2do);
+          console.log(productName);
+          fetch(`/admin/approveReturnByAdmin`,{
+            method:'post',
+            headers: {
+                    'Content-Type': 'application/json',
+                },
+                  body: JSON.stringify({
+                    orderID: orderID,
+                    what2do: what2do,
+                    productName, productName
+                    }),
+          }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data=>{
+                  if(data){
+                    console.log(data.message);
+                    window.alert(data.message);
+                    window.location.reload();
+                  }
+                })
+          })
+        })
+        })
+          
+       
+
+
+
+
+      const approve = document.getElementById('approve');
+      const reject = document.getElementById('reject');
+      const orderID = document.getElementById('orderID').innerHTML;
+      const productName = document.getElementById('productName').innerHTML;
+
+      function handleClick(event) {
+      const buttonId = this.id;
+      console.log('Clicked button ID:', buttonId);
+      console.log(orderID);
+      console.log(productName);
+      fetch(`/admin/approveReturnByAdmin`,{
+        method:'post',
+        headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    buttonId: buttonId,
+                    orderID: orderID,
+                    }),
+      }).then(response=>{
+        if(!response.ok){
+          throw new Error('Network response was not ok');
+        }
+        return response.json();
+      }).then((data)=>{
+        console.log(data);
+      }).catch(error=>{
+        console.log('Fetch error:', error);
+      })
+      }
+      approve.addEventListener('click', handleClick);
+      reject.addEventListener('click', handleClick);
+      
+     
+      
+
+      
+    </script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+
     
   </body>
 </html>

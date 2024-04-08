@@ -125,9 +125,11 @@ router.post(
   couponController.deleteCoupon
 );
 
+router.post("/approveReturnByAdmin", adminController.approveReturnByAdmin);
+
 router.post(
   "/salesReport",
-  adminMiddleware.isAdmin,
+  // adminMiddleware.isAdmin,
   adminController.salesReport
 );
 

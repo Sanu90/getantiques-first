@@ -134,17 +134,24 @@ const deleteCoupon = async (req, res) => {
 
 const userApplyCoupon = async (req, res) => {
   try {
+    console.log("userApplyCoupon");
     const date = new Date();
     const shipping_charges = 1000;
-    const cart_amount = req.session.cartTotal + shipping_charges;
-    const total_cart_value = cart_amount + shipping_charges;
+    const cart_amount = req.session.ShoppingCartAmount + shipping_charges;
+    console.log(
+      "req.session.ShoppingCartAmount",
+      req.session.ShoppingCartAmount
+    );
+    console.log("cart_amount including delivery", cart_amount);
+    //-----------------------------------------------------------------------------//
+    //const total_cart_value = cart_amount + shipping_charges;
     console.log(" USER APPLYING A COUPON IN CHECKOUT PAGE ");
     console.log("today's date is:", date);
     // req.body(from fetch api) is consoled  //
     console.log(req.body.name);
     req.session.user_Applied_Coupon = req.body.name;
     console.log(req.body.value);
-    // //
+    // // //
     const couponFound = await couponModel.find({
       name: req.body.name,
     }); // to check whether such a coupon is available in DB //
@@ -160,8 +167,8 @@ const userApplyCoupon = async (req, res) => {
       });
     } else {
       console.log("USER ENTERED A CORRECT COUPON");
-
-      // ********************** //
+    
+    //   // ********************** //
       if (couponFound[0].expiry < date) {
         console.log("Coupon Expired");
         res.json({
@@ -171,7 +178,7 @@ const userApplyCoupon = async (req, res) => {
           buttonChange: 0,
         });
       }
-      // ********************** //
+    //   // ********************** //
 
       const couponUsed = await userModel.find({
         username: req.session.name,
@@ -194,8 +201,8 @@ const userApplyCoupon = async (req, res) => {
           "Minimum cart value to apply this coupon   ",
           couponFound[0].minimum_cart_value
         );
-        console.log("Cart total is: ", req.session.cartTotal);
-        if (req.session.cartTotal < couponFound[0].minimum_cart_value) {
+        console.log("Cart total is: ", req.session.ShoppingCartAmount);
+        if (req.session.ShoppingCartAmount < couponFound[0].minimum_cart_value) {
           res.json({
             message:
               "Minimum cart value should be " +
@@ -205,21 +212,21 @@ const userApplyCoupon = async (req, res) => {
             discount: "",
             buttonChange: 0,
           });
-        } else if (req.session.cartTotal >= couponFound[0].minimum_cart_value) {
-          // await userModel.updateOne(
-          //   { username: req.session.name },
-          //   { $push: { coupon: couponFound[0].name } }
-          // );
+        } else if (req.session.ShoppingCartAmount >= couponFound[0].minimum_cart_value) {
+    //       // await userModel.updateOne(
+    //       //   { username: req.session.name },
+    //       //   { $push: { coupon: couponFound[0].name } }
+    //       // );
           console.log("111&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
           console.log("Coupon when added is:", couponFound[0].name);
           req.session.couponUserUSed = couponFound[0].name;
           console.log("111&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
           const discount = couponFound[0].discount;
           console.log("Discount amount is: ", discount);
-          console.log("Cart total is: ", req.session.cartTotal);
+          console.log("Cart total is: ", req.session.ShoppingCartAmount);
 
           const cart_amount =
-            req.session.cartTotal + shipping_charges - discount;
+            req.session.ShoppingCartAmount + shipping_charges - discount;
           console.log(
             "Updated Cart value after discount from coupon is: ",
             cart_amount
@@ -227,11 +234,11 @@ const userApplyCoupon = async (req, res) => {
 
           req.session.cart_Value_after_coupon = cart_amount;
 
-          // const total_cart_value = cart_amount + shipping_charges;
-          // console.log(
-          //   "Cart value including shipping charges: ",
-          //   total_cart_value
-          // );
+    //       // const total_cart_value = cart_amount + shipping_charges;
+    //       // console.log(
+    //       //   "Cart value including shipping charges: ",
+    //       //   total_cart_value
+    //       // );
           res.header("Content-Type", "application/json").json({
             message: "Coupon applied",
             total_cart_value: cart_amount,

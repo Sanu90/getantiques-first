@@ -256,7 +256,7 @@
                       <%# } else {%>
                       <!-- <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%#= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "add(`<#%= cartProducts[i].productId %>`,-1)"> -->
                       
-                      <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%#= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "add(`<%= cartProducts[i].productId %>`,-1)">
+                      <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%#= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "update(`<%= cartProducts[i].productId %>`,-1)">
                       
                       <%# } %>
                      
@@ -272,7 +272,7 @@
                     
                     <div class="input-group-btn">
                       <!-- <button class="btn btn-sm btn-primary btn-plus" id="addButton"  <%#= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = "add(`<%= cartProducts[i].productId %>`,1)"> -->
-                        <button class="btn btn-sm btn-primary btn-plus" id="addButton"  <%#= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = "add(`<%= cartProducts[i].productId %>`,1)">
+                        <button class="btn btn-sm btn-primary btn-plus" id="addButton"  <%#= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = "update(`<%= cartProducts[i].productId %>`,1)">
                       
                         <i class="fa fa-plus"></i>
                       </button>
@@ -476,6 +476,7 @@ https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js
     <script src="../user/js/main.js"></script>
 
 <script>
+
 // Add event listener to all delete buttons - SWEET ALERT //
 document.addEventListener("DOMContentLoaded", function() {
   const deleteButtons = document.querySelectorAll(".btn-delete");
@@ -562,10 +563,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
 //control the product count in the cart //
 
-function add(id,val){
-    let a=document.getElementById(id);
-    let b=document.getElementById(total)
-    let quantity = Number(document.getElementById('quantity').value)
+function update(id,val){
+    console.log("Product id is:", id);
+    console.log("***********************************************");
+    const inputs = document.querySelectorAll('input'); 
+    inputs.forEach(input=>{
+      input.addEventListener('change', (event)=>{
+        console.log(`New value: ${event.target.value}`);
+        
+      })
+    }) 
+    console.log("***********************************************");
+
+    let quantity = Number(document.getElementById('quantity').value);
      console.log("add ------------------ " ,quantity);
       fetch(`/addCartvalue`,{
             method:'post',
@@ -584,6 +594,22 @@ function add(id,val){
                     }
                     return response.json();
                 }).then(data=>{
+                  if(data.value==1){
+                            console.log(data.message);
+                            let a = document.getElementById("quantity")
+                            a.value = data.proStock;
+                            Swal.fire({
+                                      icon: "error",
+                                      title: "Oops...",
+                                      text: "No more stocks available",
+                                      footer: 'getantiques'
+                                                });
+                           // window.alert(data.message)
+                            console.log(data.proStock);
+                            
+                  }
+                  else if(data.value==0)
+                  {
                   let quantity = document.getElementById('quantity').value
                   console.log(quantity,'quantityquantityquantityquantity')
                     // if(quantity){
@@ -596,14 +622,14 @@ function add(id,val){
                     console.log(data.productPrice,'----------------------')
                     console.log(data,'********************')
                     let b=document.getElementById('total')
-                    console.log(b,'bbbbbbbbb')
+                    //console.log(b,'bbbbbbbbb')
                     b.innerText = "₹"+data.totalPriceSum
                     document.getElementById(`${id}+hai`).innerText = "₹"+ data.productPrice
                     console.log("json.productTotalValue ..." , data.productTotalValue);                  
                     a.innerText = "₹"+data.productTotalValue;
-                    
+                    console.log("hhfgyfyyfyfyff");
                    //window.location.reload();  
-                  console.log("hhfgyfyyfyfyff");
+                  }
                 })
 }
 

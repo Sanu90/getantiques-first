@@ -468,20 +468,23 @@
               </div>
               <% } %>
               <hr class="mt-0" />
-              <!-- <div class="d-flex justify-content-between mb-3 pt-1">
+              <div class="d-flex justify-content-between mb-3 pt-1">
                 <h6 class="font-weight-medium">Subtotal</h6>
-                <h6 class="font-weight-medium">₹<%#=totalAmount%></h6>
-              </div> -->
+                <h6 class="font-weight-medium">₹<%=totalAmount%></h6>
+              </div>
               
               <div class="d-flex justify-content-between">
-                <h6 class="font-weight-medium">Discount (if any):</h6>
-                <h6 class="font-weight-medium" id="discount"></h6>
+              <h6 class="font-weight-medium">Shipping</h6>
+              <span> + </span>
+                <%# if(totalAmount < 200000){ %>
+                <h6 class="font-weight-medium">₹<%=shippingCharges %></h6>
+                
               </div>
               <br>
               <div class="d-flex justify-content-between">
-                <h6 class="font-weight-medium">Shipping</h6>
-                <%# if(totalAmount < 200000){ %>
-                <h6 class="font-weight-medium">₹<%=shippingCharges %></h6>
+                <h6 class="font-weight-medium">Discount (if any):</h6>
+                <span> - </span>
+                <h6 class="font-weight-medium" id="discount"></h6>
                 <%# }else{ %>
                 <!-- <h6 class="font-weight-medium">₹ 0</h6> -->
                 <%# } %>

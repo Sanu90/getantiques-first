@@ -54,6 +54,7 @@ const adminOrderDetails = async (req, res) => {
           productImage: { $arrayElemAt: ["$productDetails.image", 0] },
           productPrice: "$productDetails.rate_after_discount",
           productStatus: "$products.status",
+          productReason: "$products.reason",
           productID: "$products.product",
           productCartQuantity: "$products.product_quantity",
           total: {
@@ -230,7 +231,6 @@ const cashOnDelivery = async (req, res) => {
     // // console.log("Values are:", req.body);
     console.log("______________________");
     console.log("Payment method is:", paymentMethod);
-    // // console.log("Address ID for the order is: ", req.body.address);
     console.log("Address details are:", address);
     console.log("User name: " + username);
     console.log("Initial status when product is ordered :", status[0]);
@@ -262,7 +262,6 @@ const cashOnDelivery = async (req, res) => {
     console.log("Order date is:", Order_Date);
     console.log("User order product details:", userOrderDetails);
     console.log("CART VALUE IS----------------------------------->>>>>>>>>>:");
-    // // // // console.log(cart[0].user);
     console.log(cart[0].item);
 
     // // adding a new field "status" in each product details when saving order //
@@ -319,6 +318,48 @@ const cashOnDelivery = async (req, res) => {
     } else if (req.body.addressID) {
       res.json({ message: "product ordered successfully" });
     }
+
+    //----------------------------------------------
+    // Decrease the respective product stock when an order is made.
+    let dataForReducingStock = await orderModel.aggregate([
+      { $match: { orderID: orderID } },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails",
+      },
+      {
+        $project: {
+          _id: 0,
+          productName: "$products.product_name",
+          productID: "$products.product",
+          productCartQuantity: "$products.product_quantity",
+        },
+      },
+    ]);
+
+    console.log("dataForReducingStock is: ", dataForReducingStock);
+
+    dataForReducingStock.forEach(async (product) => {
+      const result = await productModel.updateOne(
+        {
+          _id: new ObjectId(product.productID),
+        },
+        {
+          $inc: { stock: -product.productCartQuantity },
+        }
+      );
+    });
+    //----------------------------------------------------------------
   } catch (error) {
     console.log(
       "Error while accessing orderProduct (ordercontroller) : " + error
@@ -771,18 +812,36 @@ const discard_Online_Payment = async (req, res) => {
   }
 };
 
-// const test = async (req, res) => {
-//   console.log("Hey test payment");
+const productReturn = async (req, res) => {
+  try {
+    console.log("**************---Product Return---***************");
+    console.log(req.body.reason);
+    console.log(req.params.id);
+    console.log(req.query.product);
 
-//   console.log(req.body);
-//   if (req.body.payment == "wallet") {
-//     console.log("Go to wallet payment");
-//   } else if (req.body.payment == "online") {
-//     console.log("Online Razorpay");
-//   } else if (req.body.payment == "Cash on Delivery") {
-//     console.log("COD");
-//   }
-// };
+    //-------------------------------------------------------------//
+
+    //-------------------------------------------------------------//
+
+    let productUpdate = await orderModel.updateOne(
+      {
+        orderID: req.params.id,
+        "products.product": new ObjectId(req.query.product),
+      },
+      {
+        $set: {
+          "products.$.status": "Return Initiated",
+          "products.$.reason": req.body.reason,
+        },
+      },
+      { upsert: true }
+    );
+    console.log("Order Update is: ", productUpdate);
+    res.redirect(`/account/order`);
+  } catch (error) {
+    console.log("Error happened while productReturn in orderController", error);
+  }
+};
 
 const cancelProduct = async (req, res) => {
   try {
@@ -819,7 +878,7 @@ const cancelProduct = async (req, res) => {
 
     let returnDetails = await orderModel.findOne(
       { orderID: req.body.orderID },
-      {  _id: 0, paymentMethod: 1 }
+      { _id: 0, paymentMethod: 1 }
     );
     console.log("Order Payment mode: ", returnDetails.paymentMethod);
 
@@ -844,7 +903,6 @@ const cancelProduct = async (req, res) => {
       );
 
       console.log(updateWallet);
-
     } else {
       console.log("No return of amount needed");
     }
@@ -859,6 +917,50 @@ const cancelProduct = async (req, res) => {
       }
     );
     console.log("Order Update is: ", orderUpdate);
+
+    //----------------------------------------------
+    // Increase the respective product stock when an order is made.
+    let dataForIncreasingStock = await orderModel.aggregate([
+      { $match: { orderID: req.body.orderID } },
+      {
+        $unwind: "$products",
+      },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.product",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      {
+        $unwind: "$productDetails",
+      },
+      {
+        $project: {
+          _id: 0,
+          productName: "$products.product_name",
+          productID: "$products.product",
+          productCartQuantity: "$products.product_quantity",
+        },
+      },
+    ]);
+
+    console.log("dataForIncreasingStock is: ", dataForIncreasingStock);
+
+    dataForIncreasingStock.forEach(async (product) => {
+      const result = await productModel.updateOne(
+        {
+          _id: new ObjectId(product.productID),
+        },
+        {
+          $inc: { stock: product.productCartQuantity },
+        }
+      );
+    });
+    //----------------------------------------------------------------
+ 
+
 
     res.json({ message: "This product is cancelled." });
   } catch (error) {
@@ -949,6 +1051,7 @@ module.exports = {
   orderPlaced,
   cancelOrder,
   cancelProduct,
+  productReturn,
   addressCheckInCheckout,
   payby_Wallet,
 };

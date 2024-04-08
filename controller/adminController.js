@@ -3,6 +3,7 @@ const userModel = require("../model/userModel");
 const catModel = require("../model/categoryModel");
 const prodModel = require("../model/productModel");
 const orderModel = require("../model/orderModel");
+const walletModel = require("../model/walletModel");
 const bcrypt = require("bcrypt");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
@@ -227,128 +228,322 @@ const salesReport = async (req, res) => {
         },
       },
       {
+        $unwind: "$products",
+      },
+      {
         $group: {
           _id: "$products.product_name",
           totalOrders: { $sum: 1 },
         },
       },
     ]);
-    console.log("Product details:", Product);
+    // console.log("Product details:", Product);
 
-    // const status = await orderModel.aggregate([
-    //   {
-    //     $match: {
-    //       date: {
-    //         $gte: new Date(startDate),
-    //         $lte: new Date(endDate),
-    //       },
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: "$status",
-    //       count: { $sum: 1 },
-    //     },
-    //   },
-    // ]);
+    const status = await orderModel.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          },
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "$products.status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
 
-    // const htmlContent = `
-    //             <!DOCTYPE html>
-    //             <html lang="en">
-    //             <head>
-    //                 <meta charset="UTF-8">
-    //                 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    //                 <title>Sales Report</title>
-    //                 <style>
-    //                     body {
-    //                         margin-left: 20px;
-    //                     }
-    //                 </style>
-    //             </head>
-    //             <body>
-    //                 <h2 align="center"> Sales Report</h2>
-    //                 Start Date: ${startDate}<br>
-    //                 End Date: ${endDate}<br>
-    //                 <center>
-    //                 <h3>Total Sales</h3>
-    //                     <table style="border-collapse: collapse;">
-    //                         <thead>
-    //                             <tr>
-    //                                 <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
-    //                                 <th style="border: 1px solid #000; padding: 8px;">Product</th>
-    //                                 <th style="border: 1px solid #000; padding: 8px;">Total Orders</th>
-    //                             </tr>
-    //                         </thead>
-    //                         <tbody>
-    //                             ${Product.map(
-    //                               (item, index) => `
-    //                                 <tr>
-    //                                     <td style="border: 1px solid #000; padding: 8px;">${
-    //                                       index + 1
-    //                                     }</td>
-    //                                     <td style="border: 1px solid #000; padding: 8px;">${
-    //                                       item._id
-    //                                     }</td>
-    //                                     <td style="border: 1px solid #000; padding: 8px;">${
-    //                                       item.totalOrders
-    //                                     }</td>
-    //                                 </tr>`
-    //                             )}
+    // console.log("Status is: ", status);
 
-    //                         </tbody>
-    //                     </table>
-    //                 </center>
-    //                 <center>
-    //                 <h3>Order Status</h3>
-    //                     <table style="border-collapse: collapse;">
-    //                         <thead>
-    //                             <tr>
-    //                                 <th style="border: 1px solid #000; padding: 8px;">Sl N0</th>
-    //                                 <th style="border: 1px solid #000; padding: 8px;">Status</th>
-    //                                 <th style="border: 1px solid #000; padding: 8px;">Total Count</th>
-    //                             </tr>
-    //                         </thead>
-    //                         <tbody>
-    //                             ${status.map(
-    //                               (item, index) => `
-    //                                 <tr>
-    //                                     <td style="border: 1px solid #000; padding: 8px;">${
-    //                                       index + 1
-    //                                     }</td>
-    //                                     <td style="border: 1px solid #000; padding: 8px;">${
-    //                                       item._id
-    //                                     }</td>
-    //                                     <td style="border: 1px solid #000; padding: 8px;">${
-    //                                       item.count
-    //                                     }</td>
-    //                                 </tr>`
-    //                             )}
+    const couponDiscounts = await orderModel.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          },
+          "products.status": {
+            $nin: ["Return Rejected", "Return Accepted", "Cancelled"],
+          },
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "",
+          couponDiscount: { $sum: "$discount" },
+        },
+      },
+    ]);
 
-    //                         </tbody>
-    //                     </table>
-    //                 </center>
+    //console.log("Total Coupon Deductions made: ", couponDiscounts);
 
-    //             </body>
-    //             </html>
-    //         `;
+    const revenue = await orderModel.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          },
+          "products.status": {
+            $nin: ["Failed", "Return Accepted", "Cancelled"],
+          },
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "",
+          revenue: { $sum: "$totalOrderValue" },
+        },
+      },
+    ]);
 
-    // const browser = await puppeteer.launch({
-    //   // executablePath: "/usr/bin/chromium-browser",
-    // });
-    // const page = await browser.newPage();
-    // await page.setContent(htmlContent);
+    //console.log("Total revenue is: ", revenue);
 
-    // const pdfBuffer = await page.pdf();
+    const total_offer_reductions = await orderModel.aggregate([
+      {
+        $match: {
+          date: {
+            $gte: new Date(startDate),
+            $lte: new Date(endDate),
+          },
+          "products.status": {
+            $nin: ["Failed", "Return Accepted", "Cancelled"],
+          },
+        },
+      },
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "",
+          prbd: { $sum: "$products.product_rate_before_discount" },
+          prad: { $sum: "$products.product_rate" },
+        },
+      },
+    ]);
 
-    // await browser.close();
+    let offer_discount =
+      total_offer_reductions[0].prbd - total_offer_reductions[0].prad;
 
-    // res.setHeader("Content-Length", pdfBuffer.length);
-    // res.setHeader("Content-Type", "application/pdf");
-    // res.setHeader("Content-Disposition", "attachment; filename=sales.pdf");
-    // res.status(200).end(pdfBuffer);
+    console.log("total_offer_reductions is ", offer_discount);
+
+    const htmlContent = `
+                <!DOCTYPE html>
+                <html lang="en">
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>Sales Report - getantiques</title>
+                    <style>
+                        body {
+                            margin-right: 20px;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <h2 align="center"> Sales Report  getantiques</h2>
+                    From: ${startDate}<br>
+                    To: ${endDate}<br>
+                    <center>
+                    <h3>Total Products Ordered</h3>
+                        <table style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="border: 1px solid #000; padding: 8px;">#</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Orders</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${Product.map(
+                                  (item, index) => `
+                                    <tr>
+                                        <td style="border: 1px solid #000; padding-left: 8px;">${
+                                          index + 1
+                                        }</td>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          item._id
+                                        }</td>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          item.totalOrders
+                                        }</td>
+                                    </tr>`
+                                )}
+
+                            </tbody>
+                        </table>
+                    </center>
+                    <br>
+                    <center>
+                    <h3>Order Status</h3>
+                        <table style="border-collapse: collapse;">
+                            <thead>
+                                <tr>
+                                    <th style="border: 1px solid #000; padding: 8px;">#</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Status</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Count</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${status.map(
+                                  (item, index) => `
+                                    <tr>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          index + 1
+                                        }</td>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          item._id
+                                        }</td>
+                                        <td style="border: 1px solid #000; padding: 8px;">${
+                                          item.count
+                                        }</td>
+                                    </tr>`
+                                )}
+
+                            </tbody>
+                        </table>
+                    </center>
+                    <br>
+                    <center>
+                    <h3>Total coupon deductions made: <span>₹ ${
+                      couponDiscounts[0].couponDiscount
+                    }</span></h3>
+                    <br>
+                     <h3>Total Offer discounts: <span>₹ ${offer_discount}</span></h3>
+                    <h3>Total Revenue generated: <span>₹ ${
+                      revenue[0].revenue
+                    }</span></h3>
+                    </center>
+                </body>
+                </html>
+            `;
+
+    const browser = await puppeteer.launch({
+      // executablePath: "/usr/bin/chromium-browser",
+    });
+    const page = await browser.newPage();
+    await page.setContent(htmlContent);
+
+    const pdfBuffer = await page.pdf();
+
+    await browser.close();
+
+    res.setHeader("Content-Length", pdfBuffer.length);
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      "attachment; filename=getantiques.pdf"
+    );
+    res.status(200).end(pdfBuffer);
   } catch (error) {
     console.log(
       "Error happened between salesReport in adminController ",
+      error
+    );
+  }
+};
+
+const approveReturnByAdmin = async (req, res) => {
+  try {
+    console.log("approveReturnByAdmin");
+    console.log(req.body.orderID);
+    console.log(req.body.what2do);
+    console.log(req.body.productName);
+    if (req.body.what2do == "approve") {
+      await orderModel.updateOne(
+        {
+          orderID: req.body.orderID,
+          "products.product_name": req.body.productName,
+        },
+        {
+          $set: { "products.$.status": "Return Accepted" },
+        }
+      );
+
+      //--------------------------------------------------------------//
+
+      const username = await orderModel.findOne(
+        { orderID: req.body.orderID },
+        { _id: 0, user: 1 }
+      );
+      console.log("User name is: ", username.user);
+      let userID = await userModel.findOne(
+        { username: username.user },
+        { _id: 1 }
+      );
+      console.log("User ID is: ", userID._id);
+
+      let userWallet = await walletModel.findOne({ userId: userID._id });
+      console.log("User wallet details: ", userWallet);
+
+      // find the product price to credit to wallet//
+      let productPrice = await orderModel.aggregate([
+        {
+          $match: { orderID: req.body.orderID },
+        },
+        { $unwind: "$products" },
+        {
+          $match: { "products.product_name": req.body.productName },
+        },
+        {
+          $project: {
+            "products.product_rate": 1,
+            _id: 0,
+          },
+        },
+      ]);
+      console.log("Product price is: ", productPrice[0].products.product_rate);
+      // product price end //
+
+      console.log("credit money to wallet when a product return is approved");
+
+      walletTransactions = {
+        date: new Date(),
+        type: `Credit for return ${req.body.orderID}`,
+        amount: productPrice[0].products.product_rate,
+      };
+
+      let updateWallet = await walletModel.updateOne(
+        { userId: userID._id },
+        {
+          $inc: { wallet: +productPrice[0].products.product_rate },
+          $push: { walletTransactions: walletTransactions },
+        }
+      );
+
+      console.log(updateWallet);
+
+      res.json({ message: "Return request accepted" });
+      //-------------------------------------------------------------------//
+    } else if (req.body.what2do == "reject") {
+      console.log("code to reject the request to return an product");
+      await orderModel.updateOne(
+        {
+          orderID: req.body.orderID,
+          "products.product_name": req.body.productName,
+        },
+        {
+          $set: { "products.$.status": "Return Rejected" },
+        }
+      );
+      res.json({ message: "Return request rejected" });
+    }
+  } catch (error) {
+    console.log(
+      "Error happened between approveReturnByAdmin in adminController",
       error
     );
   }
@@ -398,4 +593,5 @@ module.exports = {
   searchProduct,
   salesReport,
   updateOrderStatus,
+  approveReturnByAdmin,
 };

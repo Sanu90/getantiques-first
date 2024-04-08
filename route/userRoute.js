@@ -124,7 +124,7 @@ router.get(
 router.get("/Ucategory/filter/:num", productController.categoryProductFilter);
 router.get("/cart", userCheck.isUser, cartController.cartPage);
 router.post("/removeCart", userCheck.isUser, cartController.removeCart);
-router.post("/minusCartvalue", userCheck.isUser, cartController.minusCartvalue);
+// router.post("/minusCartvalue", userCheck.isUser, cartController.minusCartvalue);
 router.post("/addCartvalue", userCheck.isUser, cartController.addCartvalue);
 
 router.get("/wishlist", userCheck.isUser, wishlistController.wishlist);
@@ -146,7 +146,7 @@ router.post(
   couponController.userRemoveCoupon
 );
 
-router.get("/checkout", userCheck.isUser, cartController.checkout);
+router.get("/checkout", cartController.checkout);
 
 router.post(
   "/cash-on-delivery",
@@ -189,6 +189,12 @@ router.post(
 );
 
 router.get("/orderPlaced", userCheck.isUser, orderController.orderPlaced);
+
+router.post(
+  "/account/productReturn/:id",
+  userCheck.isUser,
+  orderController.productReturn
+);
 
 router.post("/cancelProduct", userCheck.isUser, orderController.cancelProduct);
 

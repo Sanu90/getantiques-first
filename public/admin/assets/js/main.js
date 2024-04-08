@@ -57,7 +57,7 @@ setTimeout(() => {
 let eyeIcon = document.getElementById("eyeIcon");
 let pass = document.getElementById("pass");
 
-eyeIcon.onclick = function () {
+eyeIcon.onclick = function (){
   if (pass.type == "password") {
     pass.type = "text";
     eyeIcon.src = "../admin/assets/imgs/theme/eye-open.png";
