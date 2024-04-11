@@ -2,7 +2,22 @@ const categoryModel = require("../model/categoryModel");
 
 const adminCategory = async (req, res) => {
   try {
-    var category = await categoryModel.find({}).sort({ _id: -1 }); //cant use const here as it will render error when a category is searched//
+    const categoryCount = await categoryModel.find({}).count();
+    console.log(categoryCount);
+    const limit = 5;
+    var category = await categoryModel
+      .find({})
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ _id: -1 }); //cant use const here as it will render error when a category is searched//
+
+    var page = 1;
+    if (req.query.page) {
+      page = req.query.page;
+    }
+
+    const totalPages = Math.ceil(categoryCount / limit);
+
     if (req.session.data) {
       category = req.session.data;
       value = req.session.search;
@@ -14,6 +29,8 @@ const adminCategory = async (req, res) => {
       name: req.session.adminName,
       category,
       catAvailable: catAvailable ? catAvailable : a,
+      totalPages,
+      currentPage: page,
     });
     console.log("ADMIN: CATEGORY");
   } catch (err) {

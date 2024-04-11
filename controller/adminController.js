@@ -27,6 +27,37 @@ const adminLoginPage = (req, res) => {
   }
 };
 
+const chartdatamonth = async (req, res) => {
+  try {
+    console.log("/chart-data called");
+    const Aggregation = await orderModel.aggregate([
+      {
+        $match: {
+          date: { $exists: true },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$date" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+        },
+      },
+    ]);
+    res.json(Aggregation);
+  } catch (error) {
+    console.log("Error while chartdatamonth in adminController", error);
+  }
+};
+
+console.log("chartdatamonth", chartdatamonth);
+
 const adminDashboard = async (req, res) => {
   try {
     const Name = req.body.name;
@@ -54,39 +85,71 @@ const admintoDash = async (req, res) => {
     const orderData = await orderModel.find({});
     const productData = await prodModel.find({});
     const categoryData = await catModel.find({});
-    console.log("All order data:", orderData);
-    console.log(orderData.length);
-    console.log(productData.length);
-    let sum_of_revenue = 0;
-    for (let i = 0; i < orderData.length; i++) {
-      sum_of_revenue = sum_of_revenue + orderData[i].totalOrderValue;
-    }
-    console.log("Total revenue from orders made is:", sum_of_revenue);
+    // console.log("All order data:", orderData);
+    // console.log(orderData.length);
+    // console.log(productData.length);
+    // let sum_of_revenue = 0;
+    // for (let i = 0; i < orderData.length; i++) {
+    //   sum_of_revenue = sum_of_revenue + orderData[i].totalOrderValue;
+    // }
+    // console.log("Total revenue from orders made is:", sum_of_revenue);
 
-    const orderPlacedCount = await orderModel
-      .find({ status: "Placed" })
-      .countDocuments();
-    console.log("Order count of Placed is: ", orderPlacedCount);
+    const sum_of_revenue = await orderModel.aggregate([
+      { $unwind: "$products" },
+      {
+        $match: {
+          "products.status": "Delivered",
+        },
+      },
+      {
+        $group: {
+          _id: null,
+          revenue: {
+            $sum: "$totalOrderValue",
+          },
+        },
+      },
+    ]);
 
-    const orderCancelledCount = await orderModel
-      .find({ status: "Cancelled" })
-      .countDocuments();
-    console.log("Order count of Cancelled is: ", orderCancelledCount);
+    console.log("-------------------->>>", sum_of_revenue);
 
-    const orderOFDCount = await orderModel
-      .find({ status: "Out for Delivery" })
-      .countDocuments();
-    console.log("Order count of Out for Delivery is: ", orderOFDCount);
+    const productStatus = await orderModel.aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "$products.status",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
 
-    const orderDeliveredCount = await orderModel
-      .find({ status: "Delivered" })
-      .countDocuments();
-    console.log("Order count of Delivered is: ", orderDeliveredCount);
+    //console.log("Status is: ", productStatus);
 
-    const orderShippedCount = await orderModel
-      .find({ status: "Shipped" })
-      .countDocuments();
-    console.log("Order count of Shipped is: ", orderShippedCount);
+    const transaction = await orderModel.aggregate([
+      {
+        $group: {
+          _id: "$paymentMethod",
+          count: { $sum: 1 },
+        },
+      },
+    ]);
+
+    //console.log("transaction count is: ", transaction);
+
+    const Product = await orderModel.aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "$products.product_name",
+          totalOrders: { $sum: 1 },
+        },
+      },
+    ]);
+    //console.log("Each Product ordered details:", Product);
 
     res.render("admin_dashboard", {
       name: req.session.adminName,
@@ -94,11 +157,9 @@ const admintoDash = async (req, res) => {
       sum_of_revenue,
       productData,
       categoryData,
-      orderPlacedCount,
-      orderCancelledCount,
-      orderOFDCount,
-      orderDeliveredCount,
-      orderShippedCount,
+      productStatus,
+      transaction,
+      Product,
     });
     console.log("Name is:" + req.session.adminName);
     console.log("ADMIN: DASHBOARD");
@@ -110,17 +171,30 @@ const admintoDash = async (req, res) => {
 const adminShowUsers = async (req, res) => {
   try {
     console.log("ADMIN: USERS");
+    var page = 1;
+    if (req.query.page) {
+      page = req.query.page;
+    }
+    const limit = 5;
+    var count = await userModel.find({ isAdmin: 0 }).count();
+    console.log(users);
     var users = await userModel
       .find({ isAdmin: 0 })
-      .sort({ username: -1 }); /*   */
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ username: -1 });
+
     if (req.session.userData) {
       users = req.session.userData;
     }
-    console.log("************");
-    console.log(users[0].hide, users[1].hide);
-    console.log("************");
 
-    res.render("admin_showUsers", { name: req.session.adminName, users });
+    const totalPages = Math.ceil(count / limit);
+    res.render("admin_showUsers", {
+      name: req.session.adminName,
+      users,
+      totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log("Error while Admin showing user data: " + error);
   }
@@ -462,6 +536,7 @@ const approveReturnByAdmin = async (req, res) => {
     console.log(req.body.orderID);
     console.log(req.body.what2do);
     console.log(req.body.productName);
+
     if (req.body.what2do == "approve") {
       await orderModel.updateOne(
         {
@@ -594,4 +669,5 @@ module.exports = {
   salesReport,
   updateOrderStatus,
   approveReturnByAdmin,
+  chartdatamonth,
 };

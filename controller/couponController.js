@@ -4,18 +4,35 @@ const userModel = require("../model/userModel");
 const coupon = async (req, res) => {
   try {
     console.log("COUPON ADMIN PAGE");
+    var page = 1;
+    if (req.query.page) {
+      page = req.query.page;
+    }
+    const limit = 5;
+
     console.log(req.query.msg);
     if (!req.query.msg) {
       couponError = "";
     } else {
       couponError = req.query.msg;
     }
-    const couponData = await couponModel.find({}).sort({ _id: -1 });
+    const couponData = await couponModel
+      .find({})
+      .limit(limit * 1)
+      .skip((page - 1) * limit)
+      .sort({ _id: -1 });
+
     console.log("couponData is: ", couponData);
+
+    const couponLength = await couponModel.find({});
+    const length = couponLength.length;
+    const totalPages = Math.ceil(length / limit);
     res.render("admin_coupons", {
       name: req.session.adminName,
       couponData,
       couponError,
+      totalPages,
+      currentPage: page,
     });
   } catch (error) {
     console.log("Error occurred while coupon in couponController");
@@ -167,8 +184,8 @@ const userApplyCoupon = async (req, res) => {
       });
     } else {
       console.log("USER ENTERED A CORRECT COUPON");
-    
-    //   // ********************** //
+
+      //   // ********************** //
       if (couponFound[0].expiry < date) {
         console.log("Coupon Expired");
         res.json({
@@ -178,7 +195,7 @@ const userApplyCoupon = async (req, res) => {
           buttonChange: 0,
         });
       }
-    //   // ********************** //
+      //   // ********************** //
 
       const couponUsed = await userModel.find({
         username: req.session.name,
@@ -202,7 +219,9 @@ const userApplyCoupon = async (req, res) => {
           couponFound[0].minimum_cart_value
         );
         console.log("Cart total is: ", req.session.ShoppingCartAmount);
-        if (req.session.ShoppingCartAmount < couponFound[0].minimum_cart_value) {
+        if (
+          req.session.ShoppingCartAmount < couponFound[0].minimum_cart_value
+        ) {
           res.json({
             message:
               "Minimum cart value should be " +
@@ -212,11 +231,13 @@ const userApplyCoupon = async (req, res) => {
             discount: "",
             buttonChange: 0,
           });
-        } else if (req.session.ShoppingCartAmount >= couponFound[0].minimum_cart_value) {
-    //       // await userModel.updateOne(
-    //       //   { username: req.session.name },
-    //       //   { $push: { coupon: couponFound[0].name } }
-    //       // );
+        } else if (
+          req.session.ShoppingCartAmount >= couponFound[0].minimum_cart_value
+        ) {
+          //       // await userModel.updateOne(
+          //       //   { username: req.session.name },
+          //       //   { $push: { coupon: couponFound[0].name } }
+          //       // );
           console.log("111&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&&");
           console.log("Coupon when added is:", couponFound[0].name);
           req.session.couponUserUSed = couponFound[0].name;
@@ -234,11 +255,11 @@ const userApplyCoupon = async (req, res) => {
 
           req.session.cart_Value_after_coupon = cart_amount;
 
-    //       // const total_cart_value = cart_amount + shipping_charges;
-    //       // console.log(
-    //       //   "Cart value including shipping charges: ",
-    //       //   total_cart_value
-    //       // );
+          //       // const total_cart_value = cart_amount + shipping_charges;
+          //       // console.log(
+          //       //   "Cart value including shipping charges: ",
+          //       //   total_cart_value
+          //       // );
           res.header("Content-Type", "application/json").json({
             message: "Coupon applied",
             total_cart_value: cart_amount,

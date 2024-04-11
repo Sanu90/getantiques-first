@@ -1,23 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
   <body>
-    <h1 style="color: green">GeeksforGeeks</h1>
-    <input type="checkbox" name="laptop" value="HP" />HP laptop<br />
-    <input type="checkbox" name="laptop" value="DELL" />DELL laptop<br />
-    <input type="checkbox" name="laptop" value="MAC" />MAC laptop<br />
-    <input type="checkbox" name="laptop" value="ASUS" />ASUS laptop<br />
-    <button onclick="getValue()">Get Value</button>
-    <script>
-      function getValue() {
-        let checkboxes = document.getElementsByName("laptop");
-        let result = "";
-        for (var i = 0; i < checkboxes.length; i++) {
-          if (checkboxes[i].checked) {
-            result += checkboxes[i].value + " " + " Laptop, ";
-          }
-        }
-        document.write("<p> You have selected : " + result + "</p>");
-      }
-    </script>
+    <p id="para1">
+      This is a simple            paragraph that<i>hello</i> is meant for nothing apart
+      from just             learning some JavaScript dom              manipulation stuff.
+    </p>
+    <button onclick="first()">First</button>
+    <button onclick="second()">second</button>
+    <button onclick="third()">Third</button>
   </body>
+
+  <script>
+    console.log("Test-------->>");
+    first = () => {
+      console.log("Button first is clicked");
+      var a = document.getElementById("para1").innerHTML;
+      console.log(a);
+    };
+
+    second = () => {
+      console.log("Second Button is clicked");
+      var b = document.getElementById("para1").innerText;
+      console.log(b);
+    };
+
+    third = () => {
+      console.log("Third button is clicked");
+      var c = document.getElementById("para1").textContent;
+      console.log(c);
+    };
+  </script>
 </html>

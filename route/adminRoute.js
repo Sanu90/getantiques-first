@@ -13,6 +13,11 @@ const multer = require("../middleware/multer");
 router.get("/", adminController.adminLoginPage);
 router.post("/dashboard", adminController.adminDashboard);
 router.get("/dashboard", adminMiddleware.isAdmin, adminController.admintoDash);
+router.get(
+  "/chart-data-month",
+  adminMiddleware.isAdmin,
+  adminController.chartdatamonth
+);
 
 // ** ** ** ** ** ** ** ** //
 router.get(
@@ -22,6 +27,7 @@ router.get(
 );
 
 router.get("/order", adminMiddleware.isAdmin, orderController.orderPage);
+router.get("/check-order-returns", orderController.check_order_returns);
 
 router.get("/orderDetails", orderController.adminOrderDetails);
 

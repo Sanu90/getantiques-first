@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Admin</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="/admin/assets/imgs/theme/logo.png"
+    />
+    <!-- Template CSS -->
+    <link
+      href="/admin/assets/css/main.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link rel="stylesheet" href="/admin/assets/css/style.css" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+      <div class="aside-top">
+        <a href="index.html" class="brand-wrap">
+          <img
+            src="/admin/assets/imgs/theme/logo.png"
+            class="logo"
+            alt="getantiques"
+          />
+        </a>
+        <div>
+          <button class="btn btn-icon btn-aside-minimize">
+            <i class="text-muted material-icons md-menu_open"></i>
+          </button>
+        </div>
+      </div>
+
+<nav>
+  <ul class="menu-aside">
+    <li class="menu-item">
+      <a class="menu-link" href="/admin/dashboard">
+        <i class="icon material-icons md-home"></i>
+        <span class="text">Dashboard</span>
+      </a>
+    </li>
+    <li class="menu-item">
+      <a class="menu-link" href="/admin/category">
+        <i class="icon material-icons md-shopping_bag"></i>
+        <span class="text">Categories</span>
+      </a>
+    </li>
+    <li class="menu-item ">
+      <a class="menu-link" href="/admin/user">
+        <i class="icon material-icons md-store"></i>
+        <span class="text">Users</span>
+      </a>
+    </li>
+    <li class="menu-item ">
+      <a class="menu-link" href="/admin/product">
+        <i class="icon material-icons md-add_box"></i>
+        <span class="text">Products</span>
+      </a>
+    </li>
+    <li class="menu-item active">
+      <a class="menu-link" href="/admin/order">
+        <i class="icon material-icons md-store"></i>
+        <span class="text">Orders</span>
+      </a>
+    </li>
+     <!-- WILL ADD IT IN COMING WEEK  -->
+    
+    <li class="menu-item">
+          <a class="menu-link" href="/admin/coupon">
+            <i class="icon material-icons md-article"></i>
+            <span class="text">Coupons</span>
+          </a>
+        </li>
+  <br />
+  <br />
+</nav>
+</aside>
+    <main class="main-wrap">
+      <header class="main-header navbar">
+        <div class="col-search">
+          <!-- <form class="searchform">
+            <div class="input-group">
+              <input
+                list="search_terms"
+                type="text"
+                class="form-control"
+                placeholder="Search term"
+              />
+              <button class="btn btn-light bg" type="button">
+
+                <i class="material-icons md-search"></i>
+              </button>
+            
+            </div>
+            <datalist id="search_terms">
+              
+            </datalist>
+          </form> -->
+        </div>
+        <div class="col-nav" onload="timeCount();">
+          <p id="p1">
+            
+          </p>
+      
+  </div>
+        <div class="col-nav">
+          
+          <p>
+            
+            Welcome back, <%=name %> </p>
+      
+  </div>
+
+
+        <div class="col-nav">
+              <li class="dropdown nav-item">
+                <button class="btn btn-link" type="submit"> <a href="/admin/signout" ><i class="material-icons md-exit_to_app"></i>Logout</a></button>
+            
+              </li>
+          </ul>
+      </div>
+
+      </header>
+      <section class="content-main">
+        <div class="content-header">
+          <div>
+            <h2 class="content-title card-title">Order Return Details</h2>
+            <p>Take actions for the orders that are initiated for return.</p>
+          </div>
+        </div>
+        
+        <!-- card-header end// -->
+        <% if (returnData.length==0){ %>
+        <div class="card">
+        <div class="card-body">
+          <div class="row">
+        <h3 style="text-align: center; color:cadetblue;">No new returns initiated by users. </h3>
+        </div>
+        </div>
+        </div>
+        <% }else{ %>
+        <div class="card">
+        <div class="card-body">
+          <div class="row">
+            
+            <div class="container mt-6">
+              <div class="row">
+              
+                <table class="table">
+                <thead>
+                  <tr>
+                  <th style="color:rgb(154, 87, 144);font-size:medium; text-align: center; ">#</th>
+                  <th style="color:rgb(154, 87, 144);font-size:medium; text-align: center; ">Order #</th>
+                  <th style="color:rgb(154, 87, 144);font-size:medium; text-align: center; ">Return Date</th>
+                  <th style="color:rgb(154, 87, 144);font-size:medium; text-align: center; ">User</th>
+                  <th style="color:rgb(154, 87, 144);font-size:medium; text-align: center; ">Product Name</th>
+              
+                  <th style="color:rgb(154, 87, 144);font-size:medium; text-align: center; ">Status</th> 
+                  <th style="color:rgb(154, 87, 144);font-size:medium; text-align: center; ">Reason</th> 
+                  <th style="color:rgb(154, 87, 144);font-size:medium; text-align: center; ">Action</th> 
+                    
+                  </tr>
+                  </thead>
+                   <% for(let i=0;i<returnData.length;i++) { %>
+                   <tbody>
+                  <tr class="table-secondary">
+                    <td style="text-align: center;"><%=i+1%></td>
+                    <td style="text-align: center;"><%=returnData[i].orderID%></td>
+                    <td style="text-align: center;"><%=returnData[i].products.returnDate.toLocaleString()%></td>
+                    <td style="text-align: center;"><%=returnData[i].user%> </td>
+                     <td style="text-align: center;"><%=returnData[i].products.product_name%></td>
+                    
+                    <td style="text-align: center;"><%=returnData[i].products.status%></td>
+                    <td style="text-align: center;"><span style="background-color: yellow;"><%=returnData[i].products.reason%></span>  </td>
+                    </td>
+                    <td style="text-align: center;"><button data-product-id="approve-<%=returnData[i].orderID%>-<%=returnData[i].products.product_name%>" class="btn btn-warning-light"><i class="fa fa-check"></i></button>&nbsp;
+                    <button data-product-id="reject-<%=returnData[i].orderID%>-<%=returnData[i].products.product_name%>" class="btn btn-warning-light"><i class="fa fa-times"></i></button></td>
+                    </form>
+                    </tr>
+                    </tbody>
+                    <% } %>
+                  
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+
+     
+        <!-- row.// -->
+        <div class="col-12 pb-1">
+              <nav aria-label="Page navigation">
+                <ul class="pagination justify-content-center mb-3">
+                  <% for(let page = 1; page <= totalPages; page++){ %>
+                  <li
+                    class="page-item <%= currentPage === page ? 'active' : '' %>"
+                  >
+                    <a
+                      class="page-item active"
+                      href="?page=<%=page%>"
+                      style="margin-right: 20px"
+                    >
+                      <%=page%>
+                    </a>
+                  </li>
+                  <%}%>
+                </ul>
+              </nav>
+            </div>
+        <% } %>
+      </section>
+      <!-- content-main end// -->
+    <%- include ('partialsAdminFooter') %>
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const actionButtons = document.querySelectorAll(".btn-warning-light");
+        actionButtons.forEach(function(button) {
+          button.addEventListener("click", function() {
+            const action = button.dataset.productId; 
+            let splitValues = action.split("-");
+            console.log(splitValues, "-----------------------------------------------------------jjhjh");
+           let what2do = splitValues[0];
+           let orderID = splitValues[1];
+           let  productName = splitValues[2];
+          fetch(`/admin/approveReturnByAdmin`,{
+            method:'post',
+            headers: {
+                    'Content-Type': 'application/json',
+                },
+                  body: JSON.stringify({
+                    orderID: orderID,
+                    what2do: what2do,
+                    productName, productName
+                    }),
+          }).then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                }).then(data=>{
+                  if(data){
+                    console.log(data.message);
+                    window.alert(data.message);
+                    window.location.reload();
+                  }
+                })
+          })
+        })
+        })
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+  </body>
+</html>

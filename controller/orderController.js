@@ -109,6 +109,54 @@ const orderPage = async (req, res) => {
   }
 };
 
+const check_order_returns = async (req, res) => {
+  try {
+    console.log("Admin in check_order_returns page");
+
+    var page = 1;
+    if (req.query.page) {
+      page = req.query.page;
+    }
+    const limit = 5;
+
+    const returnData = await orderModel.aggregate([
+      { $unwind: "$products" },
+      {
+        $match: {
+          "products.status": "Return Initiated",
+        },
+      },
+      {
+        $limit: limit * 1,
+      },
+      {
+        $skip: (page - 1) * limit,
+      },
+      {
+        $sort: { "products.returnDate": -1 },
+      },
+    ]);
+
+    console.log("******************************");
+    console.log("Return Data is: ", returnData);
+    console.log(returnData.length);
+    const totalPages = Math.ceil(returnData.length / limit);
+    console.log("******************************");
+
+    res.render("admin_orders_Returns", {
+      name: req.session.adminName,
+      returnData,
+      totalPages,
+      currentPage: page,
+    });
+  } catch (error) {
+    console.log(
+      "Error happened between check_order_returns in orderController ",
+      error
+    );
+  }
+};
+
 const userOrder = async (req, res) => {
   try {
     if (!req.query) {
@@ -574,7 +622,7 @@ const userEachOrderData = async (req, res) => {
     res.render("userOrderDetailsPage", { orderData, eachOrderDetails });
   } catch (error) {
     console.log(
-      "Error happened in userEachOrderData in ordercontroller",
+      "Error happened in userEachOrderData in orderController",
       error
     );
   }
@@ -819,9 +867,7 @@ const productReturn = async (req, res) => {
     console.log(req.params.id);
     console.log(req.query.product);
 
-    //-------------------------------------------------------------//
-
-    //-------------------------------------------------------------//
+    returnDate = new Date();
 
     let productUpdate = await orderModel.updateOne(
       {
@@ -832,6 +878,7 @@ const productReturn = async (req, res) => {
         $set: {
           "products.$.status": "Return Initiated",
           "products.$.reason": req.body.reason,
+          "products.$.returnDate": returnDate,
         },
       },
       { upsert: true }
@@ -959,8 +1006,6 @@ const cancelProduct = async (req, res) => {
       );
     });
     //----------------------------------------------------------------
- 
-
 
     res.json({ message: "This product is cancelled." });
   } catch (error) {
@@ -1054,4 +1099,5 @@ module.exports = {
   productReturn,
   addressCheckInCheckout,
   payby_Wallet,
+  check_order_returns,
 };

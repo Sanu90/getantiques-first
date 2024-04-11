@@ -171,7 +171,7 @@
                                                         </div>
                                                         <div class="modal-body">
                                                             <label class="form-control-label">Let us know what went wrong</label>
-                                                            <input type="text" class="form-control" name="reason" pattern="[A-Za-z0-9]+" minlength="6" placeholder="Please enter your reason here." required onkeydown="if (this.selectionStart === 0 && event.code === 'Space') { event.preventDefault(); }"
+                                                            <input type="text" class="form-control" name="reason" id="reason" minlength="6" placeholder="Please enter your reason here." required onkeydown="if(arguments[0].code === 'Space' && document.getElementById('reason').value.length === 0) { return false; }"
 >
                                                             
                                                         </div>

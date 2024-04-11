@@ -164,7 +164,6 @@ const authOTP = async (req, res) => {
         console.log("REFERRAL CODE IS:", referral_Code);
         // IIFE ends //
 
-
         console.log("USER DETAILS STORED IN SESSION --->");
         console.log(req.session.userDetails);
         console.log(" ---> ");
@@ -195,7 +194,7 @@ const authOTP = async (req, res) => {
         await walletModel.create({
           userId: registered_User_ID._id,
         });
-          console.log("wallet created for the new user");
+        console.log("wallet created for the new user");
         // end of creating wallet for registered user //
 
         // For referral purpose //
@@ -521,15 +520,65 @@ const productView = async (req, res) => {
 
 const wallet = async (req, res) => {
   try {
+    console.log("user entered wallet");
+    var page = 1;
+    if (req.query.page) {
+      page = req.query.page;
+    }
+    const limit = 5;
+
     const userName = req.session.name;
     const userData = await userModel.findOne({ username: userName });
-    console.log("User Data is:", userData);
-    console.log("User ID is:-----------> ", userData._id);
+    //console.log("userData is::", userData);
+    // const walletData = await walletModel.findOne(
+    //   { userId: userData._id },
+    //   { walletTransactions: 1, _id: 0, wallet: 1 }
+    // );
 
-    const walletData = await walletModel.findOne({ userId: userData._id });
-    console.log("Wallet details of the user is: ", walletData);
-    console.log("user entered wallet");
-    res.render("wallet", { user: userName, userData, walletData });
+    const walletData = await walletModel.aggregate([
+      {
+        $match: {
+          userId: userData._id,
+        },
+      },
+      {
+        $unwind: "$walletTransactions",
+      },
+
+      {
+        $sort: {
+          "walletTransactions.date": -1,
+        },
+      },
+      {
+        $project: {
+          wallet: 1,
+          walletTransactions: 1,
+          _id: 0,
+        },
+      },
+    ]);
+
+    console.log("walletData is::", walletData);
+    // console.log("1st walletData is::", walletData[0].walletTransactions[0]);
+    const length = walletData.length;
+    console.log("length is :", length);
+    console.log("------------------------------->>>>");
+    // let shareData;
+    // for (let i = 0; i < length; i++) {
+    //   shareData = walletData[i].walletTransactions;
+    // }
+
+    // console.log(shareData, "--------->>>>");
+
+    const totalPages = Math.ceil(length / limit);
+    res.render("wallet", {
+      user: userName,
+      userData,
+      walletData,
+      totalPages,
+      currentPage: page,
+    });
   } catch (error) {
     console.log("Error while displaying wallet ", error);
   }

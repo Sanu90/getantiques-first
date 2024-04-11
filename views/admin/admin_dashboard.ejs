@@ -112,7 +112,7 @@
                 ></span>
                 <div class="text">
                   <h6 class="mb-1 card-title">Revenue</h6>
-                  <span>₹<%=sum_of_revenue %></span>
+                  <span>₹<%=sum_of_revenue[0].revenue %></span>
                   <span class="text-sm"> Including Shipping fees</span>
                 </div>
               </article>
@@ -178,23 +178,69 @@
           </div>
         </div>
         <div class="row">
-          <div class="col-xl-4 col-lg-12">
-            <div class="card mb-4">
-              <article class="card-body">
-                <h5 class="card-title">Sale statistics</h5>
-                <canvas id="myChart2" height="120px"></canvas>
-              </article>
-            </div>  
-          </div>
-          <div class="col-xl-4 col-lg-12">
-            <div class="card mb-4">
-              <article class="card-body">
-                <h5 class="card-title">Revenue Base on Area</h5>
-                <canvas id="myChart" height="217"></canvas>
+        <div class="col-lg-3">
+            <div class="card card-body mb-4">
+              <article class="icontext">
+                <span class="icon icon-sm rounded-circle bg-success-light"
+                  ><i class="text-success material-icons md-local_shipping"></i
+                ></span>
+                <div class="text">
+                  <h6 class="mb-1 card-title"><u>PRODUCT STATUS</u></h6>
+                  <% for(value of productStatus){ %>
+                  <h5><%=value._id %> : <%=value.count %> </h5>
+                  <% } %>
+                  
+                </div>
               </article>
             </div>
+          </div>
+          <div class="col-lg-3">
+            <div class="card card-body mb-4">
+              <article class="icontext">
+                <span class="icon icon-sm rounded-circle bg-primary-light"
+                  ><i class="text-primary material-icons md-monetization_on"></i
+                ></span>
+                <div class="text">
+                  <h6 class="mb-1 card-title"><u>TRANSACTIONS</u></h6>
+                  <% for(value of transaction){ %>
+                  <h5><%=value._id %> : <%=value.count %> </h5>
+                  <% } %>
+                   </div>
+              </article>
+            </div>
+          </div>
+          <div class="col-lg-3">
+            <div class="card card-body mb-4">
+              <article class="icontext">
+                <!-- <span class="icon icon-sm rounded-circle bg-primary-light"
+                  ><i class="text-primary material-icons md-monetization_on"></i
+                ></span> -->
+                <div class="text">
+                  <h6 class="mb-1 card-title"><u>ORDER STATS</u></h6>
+                  <% for(value of Product){ %>
+                  <h5><%=value._id %> : <%=value.totalOrders %> </h5>
+                  <% } %>
+                  </div>
+              </article>
+            </div>
+          </div>
+          <!-- <div class="col-xl-4 col-lg-8">
+            <div class="card mb-4">
+              <article class="card-body">
+
+                 <canvas id="myChart2" height="120px"></canvas> 
+              </article>
+            </div>  
+          </div>  -->
+          <!-- <div class="col-xl-4 col-lg-12">
+            <div class="card mb-4">
+              <article class="card-body">
+                <h5 class="card-title">Monthly</h5>
+                <canvas id="month" height="217"></canvas>
+              </article>
+            </div>
+           </div>  -->
            
-           </div>
             
         <!-- <div class="pagination-area mt-30 mb-50">
           <nav aria-label="Page navigation example">
@@ -220,5 +266,43 @@
       <!-- content-main end// -->
       <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
       <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js" integrity="sha512-L0Shl7nXXzIlBSUUPpxrokqq4ojqgZFQczTYlGjzONGTDAcLremjwaWv5A+EDLnxhQzY5xUZPWLOLqYRkY0Cbw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+     
+     <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    console.log('function called ');
+
+    fetch('/admin/chart-data-month')
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        const monthlyData = data.filter(entry => entry._id.month !== undefined);
+        createChart('monthlyChart', monthlyData, 'Monthly Orders', 'rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)');
+      })
+      .catch(error => console.error('Error fetching chart data:', error));
+
+    function createChart(canvasId, chartData, label, backgroundColor, borderColor) {
+      const labels = chartData.map(entry => {
+        // return ${entry._id.year}-${entry._id.month};
+      });
+
+      const counts = chartData.map(entry => entry.count);
+
+      const graph = document.getElementById('month').getContext('2d');
+      new Chart(graph, {
+        type: 'bar',
+        data: {
+          labels: labels,
+          datasets: [{
+            label: label,
+            data: counts,
+            backgroundColor: backgroundColor,
+            borderColor: borderColor,
+            borderWidth: 1
+          }]
+        }
+      });
+    }
+  });
+</script>
       <%- include ('partialsAdminFooter') %>
     

@@ -221,10 +221,7 @@
                     <% } %>
                     </td>
                     </form>
-                    <% if(orderData[i].productStatus == 'Return Initiated'){%>
-                    <td style="text-align: center;"><button data-product-id="approve-<%=orderData[i].productName %>" class="btn btn-warning-light"><i class="fa fa-check"></i></button>&nbsp;
-                    <button data-product-id="reject-<%=orderData[i].productName %>" class="btn btn-warning-light"><i class="fa fa-times"></i></button></td>
-                    <% } %>
+                    
                   </tr>
                   <% } %>
                   
@@ -261,90 +258,7 @@
     <%- include ('partialsAdminFooter') %>
 
 
-    <script>
-      // Get the buttons
-        document.addEventListener("DOMContentLoaded", function() {
-        const actionButtons = document.querySelectorAll(".btn-warning-light");
-        actionButtons.forEach(function(button) {
-          button.addEventListener("click", function() {
-            const action = button.dataset.productId;
-            //console.log("action button is: ", action);
-            const orderID = document.getElementById("orderID").innerHTML;
-            console.log(orderID); 
-            let splitValues = action.split("-");
-          let what2do = splitValues[0];
-          let  productName = splitValues[1];
-          console.log(what2do);
-          console.log(productName);
-          fetch(`/admin/approveReturnByAdmin`,{
-            method:'post',
-            headers: {
-                    'Content-Type': 'application/json',
-                },
-                  body: JSON.stringify({
-                    orderID: orderID,
-                    what2do: what2do,
-                    productName, productName
-                    }),
-          }).then(response => {
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-                    return response.json();
-                }).then(data=>{
-                  if(data){
-                    console.log(data.message);
-                    window.alert(data.message);
-                    window.location.reload();
-                  }
-                })
-          })
-        })
-        })
-          
-       
-
-
-
-
-      const approve = document.getElementById('approve');
-      const reject = document.getElementById('reject');
-      const orderID = document.getElementById('orderID').innerHTML;
-      const productName = document.getElementById('productName').innerHTML;
-
-      function handleClick(event) {
-      const buttonId = this.id;
-      console.log('Clicked button ID:', buttonId);
-      console.log(orderID);
-      console.log(productName);
-      fetch(`/admin/approveReturnByAdmin`,{
-        method:'post',
-        headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    buttonId: buttonId,
-                    orderID: orderID,
-                    }),
-      }).then(response=>{
-        if(!response.ok){
-          throw new Error('Network response was not ok');
-        }
-        return response.json();
-      }).then((data)=>{
-        console.log(data);
-      }).catch(error=>{
-        console.log('Fetch error:', error);
-      })
-      }
-      approve.addEventListener('click', handleClick);
-      reject.addEventListener('click', handleClick);
-      
-     
-      
-
-      
-    </script>
+    
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 
     

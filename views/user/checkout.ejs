@@ -358,6 +358,19 @@
                     <div class="card-body">
                       <div class="form-group">
                         <div class="custom-control custom-radio">
+                        <% if(totalCheckoutCharge > 5000){ %>
+                          <input
+                            type="radio"
+                            class="custom-control-input"
+                            id="cod"
+                            name="payment"
+                            value="Cash on Delivery"
+                            disabled
+                          />
+                          <label class="custom-control-label" for="cod">Pay on Delivery</label><br>
+                          <span style="font-size: small; color: red;" >POD cannot be used for this order.</span>
+                          
+                          <%  } else if(totalCheckoutCharge <= 5000){%>
                           <input
                             type="radio"
                             class="custom-control-input"
@@ -367,6 +380,8 @@
                             checked
                           />
                           <label class="custom-control-label" for="cod">Pay on Delivery</label>
+                          <% } %>
+                          
                         </div>
                       </div>
                           <div class="form-group">
@@ -377,6 +392,7 @@
                             id="razorpay"
                             name="payment"
                             value="Online"
+                            <% if(totalCheckoutCharge > 5000){ %> checked <% } %>
                           />
                           <label class="custom-control-label" for="razorpay">Razorpay</label>
                         </div>

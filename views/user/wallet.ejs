@@ -101,7 +101,9 @@
     <div class="container">
       <p style="font-size: large; color: black">
         Total Amount in Wallet:
-        <span style="background-color: yellow">₹<%=walletData.wallet %></span>
+        <span style="background-color: yellow"
+          >₹<%=walletData[0].wallet %></span
+        >
       </p>
 
       <p style="font-size: large; color: black">
@@ -130,17 +132,35 @@
             </tr>
           </thead>
           <tbody>
-            <% let value=walletData.walletTransactions.map((element,index)=>{ %>
+            <% for(let [index,wallet] of walletData.entries()){ %>
             <tr>
               <td><%=index+1%></td>
-              <td><%=element.date.toLocaleDateString()%></td>
-              <td><%=element.type%></td>
-              <td>₹<%=element.amount%></td>
+              <td><%=wallet.walletTransactions.date.toLocaleDateString()%></td>
+              <td><%=wallet.walletTransactions.type%></td>
+              <td>₹<%=wallet.walletTransactions.amount%></td>
             </tr>
-            <% }) %>
+            <% } %>
           </tbody>
         </table>
       </div>
+    </div>
+
+    <div class="col-12 pb-1">
+      <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center mb-3">
+          <% for(let page = 1; page <= totalPages; page++){ %>
+          <li class="page-item <%= currentPage === page ? 'active' : '' %>">
+            <a
+              class="page-item active"
+              href="?page=<%=page%>"
+              style="margin-right: 20px"
+            >
+              <%=page%>
+            </a>
+          </li>
+          <%}%>
+        </ul>
+      </nav>
     </div>
 
     <div class="container-fluid"><br /><br /><br /><br /><br /><br /></div>
