@@ -6,15 +6,8 @@ const isUser = async (req, res, next) => {
       res.redirect("/");
     } else {
       console.log("req.session.isUser ====" + req.session.isUser);
-      // const email = req.session.userDetails.email;
-      // console.log("EMAIL IS : ----------------=====++++ " + email);
       const name = req.session.sessionName;
       console.log("NAME IS : " + name);
-      // isBlock = await userModel.findOne({ username: name });
-      // console.log("isBlock value in userAuth middleware is: " + isBlock);
-      // console.log(isBlock.hide);
-     // if (req.session.isUser && isBlock.hide == 0) {
-        //const userName = req.session.name;
         if (req.session.isUser) {
         next();
       } else {

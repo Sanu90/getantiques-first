@@ -117,18 +117,19 @@
   </div>
     <% } %>
     <div class="container">
-      <div class="card" style="cursor: default;" >
+      <div class="card" style="cursor: default; width: 1300px;" >
         <table class="table">
           <thead>
             <tr>
               <!-- <th scope="col">#</th> -->
-              <th scope="col">Order ID</th>
-              <th scope="col" style="width: 150px;" >Date, Time</th>
-              <th scope="col">Product count</th>
-              <th scope="col">Total</th>
-              <th scope="col">Payment Mode</th>
-              <th scope="col">Payment Status</th>
-              <th scope="col">Details</th>
+              <th scope="col" style="text-align: center;">Order ID</th>
+              <th scope="col" style="width: 150px; text-align: center;" >Date, Time</th>
+              <th scope="col" style="text-align: center;">Product count</th>
+              <th scope="col" style="text-align: center;">Total</th>
+              <th scope="col" style="text-align: center;">Payment Mode</th>
+              <th scope="col" style="text-align: center;">Payment Status</th>
+              <th scope="col" style="text-align: center;">Invoice</th>
+              <th scope="col" style="text-align: center;">Details</th>
             </tr>
           </thead>
           <tbody>
@@ -138,24 +139,30 @@
               <% if(orders[i].status === "Cancelled"){ %>
               <td><del style="color: red;"><%=orders[i].orderID %></del></td>
               <% } else { %>
-              <td><%=orders[i].orderID %></td>
+              <td style="text-align: center;"><%=orders[i].orderID %></td>
               <% } %>
-              <td><%=orders[i].date.toLocaleString() %></td>
+              <td style="text-align: center;"><%=orders[i].date.toLocaleString() %></td>
               <td style="text-align: center;"><%=orders[i].products.length %></td>
-              <td>₹<%=orders[i].totalOrderValue %></td>
-              <td><%=orders[i].paymentMethod %></td>
-              <td><%=orders[i].paymentStatus %></td>
-              <td style="text-align: left;">
+              <td style="text-align: center;">₹<%=orders[i].totalOrderValue %></td>
+              <td style="text-align: center;"><%=orders[i].paymentMethod %></td>
+              <td style="text-align: center;"><%=orders[i].paymentStatus %></td>
+              <!-- <td style="text-align: center;"><button class="btn btn-outline-success btn-mobile" type="submit">Download</button></td> -->
+              <% if(orders[i].paymentStatus == "Failed"){ %>
+              <td style="text-align: center;"><a href="/invoice?orderId=<%=orders[i].orderID %>" class="btn btn-danger btn-mobile">Retry Pay</a>
+              &nbsp; <a href="/invoice?orderId=<%=orders[i].orderID %>" class="btn btn-danger btn-mobile">Discard</a>
+              </td>
+              <% } else{ %>
+              <td style="text-align: center;"><a href="/invoice?orderId=<%=orders[i].orderID %>" class="btn btn-outline-success btn-mobile">Download</a></td>
+              <% } %>
+              <td style="text-align: center;">
                       <form action="/account/order/<%=orders[i].orderID %>" method="post">
-                        <!-- <input type="hidden" value="<%#=p.name%>" name="oldName">  -->
                         <button class="btn btn-success" type="submit">More..</button>
                       </form>
             </tr>
             <%} %>
           </tbody>
         </table>
-        
-      </div>
+        </div>
     </div>
     <% } %>
     <div class="container-fluid"><br /><br /></div>

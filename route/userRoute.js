@@ -89,7 +89,9 @@ router
   .get("/account/order", userCheck.isUser, orderController.userOrder)
   .post("/account/order/:id", orderController.userEachOrderData);
 
-router.get("/account/order/:id");
+router.get("/invoice", userCheck.isUser, orderController.invoice);
+
+// router.get("/account/order/:id");
 
 router.post("/home", userController.validateUser);
 router.get("/product/:id", userController.productView);
