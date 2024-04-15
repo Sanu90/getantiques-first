@@ -173,16 +173,7 @@
                     >
                       Retry Payment
                     </button>
-                    <!-- {{#if discard}} -->
-                    <!-- <button
-                      onclick="location.href='/discardRetryPayment?id={{ id }}'"
-                      data-order-id="{{ id }}"
-                      class="m-2 mb-0 mt-4 btn btn-danger"
-                      disabled
-                    >
-                      Discard
-                    </button> -->
-                    <!-- {{else}} -->
+
                     <button
                       onclick="discard(`<%=orderID %>`)"
                       class="m-2 mb-0 mt-4 btn btn-danger"

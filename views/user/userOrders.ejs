@@ -31,6 +31,7 @@
 
     <!-- Customized Bootstrap Stylesheet -->
     <link href="../user/css/style.css" rel="stylesheet" />
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
 
     <style>
       .container {
@@ -128,8 +129,9 @@
               <th scope="col" style="text-align: center;">Total</th>
               <th scope="col" style="text-align: center;">Payment Mode</th>
               <th scope="col" style="text-align: center;">Payment Status</th>
-              <th scope="col" style="text-align: center;">Invoice</th>
+              
               <th scope="col" style="text-align: center;">Details</th>
+              <th scope="col" style="text-align: center;"></th>
             </tr>
           </thead>
           <tbody>
@@ -146,18 +148,21 @@
               <td style="text-align: center;">₹<%=orders[i].totalOrderValue %></td>
               <td style="text-align: center;"><%=orders[i].paymentMethod %></td>
               <td style="text-align: center;"><%=orders[i].paymentStatus %></td>
-              <!-- <td style="text-align: center;"><button class="btn btn-outline-success btn-mobile" type="submit">Download</button></td> -->
-              <% if(orders[i].paymentStatus == "Failed"){ %>
-              <td style="text-align: center;"><a href="/invoice?orderId=<%=orders[i].orderID %>" class="btn btn-danger btn-mobile">Retry Pay</a>
-              &nbsp; <a href="/invoice?orderId=<%=orders[i].orderID %>" class="btn btn-danger btn-mobile">Discard</a>
-              </td>
-              <% } else{ %>
-              <td style="text-align: center;"><a href="/invoice?orderId=<%=orders[i].orderID %>" class="btn btn-outline-success btn-mobile">Download</a></td>
-              <% } %>
               <td style="text-align: center;">
                       <form action="/account/order/<%=orders[i].orderID %>" method="post">
                         <button class="btn btn-success" type="submit">More..</button>
                       </form>
+                      </td>
+              <!-- <td style="text-align: center;"><button class="btn btn-outline-success btn-mobile" type="submit">Download</button></td> -->
+              <% if(orders[i].paymentStatus == "Failed"){ %>
+              <td><button id="repayment-button" onclick="pay_From_Order_Page(`<%=orders[i].orderID %>`)" class="ml-5 mb-0 mt btn btn-danger">Retry Pay</button>
+              <!-- &nbsp; <a href="/invoice?orderId=<%#=orders[i].orderID %>" class="btn btn-danger btn-mobile">Discard</a> -->
+              </td>
+              <% } %>
+               <% if(orders[i].status == "Delivered"){ %>
+              <td style="text-align: center;"><a href="/invoice?orderId=<%=orders[i].orderID %>" class="btn btn-outline-success btn-mobile">Download</a></td>
+              <% } %>
+              
             </tr>
             <%} %>
           </tbody>
@@ -229,6 +234,61 @@
         let a = document.getElementById("messagePara");
         a.style.display="none";
     },2500)
+
+    
+      function pay_From_Order_Page(orderID) {
+        console.log("RAZORPAY PAYMENT INVOKED FOR PAYMENT FAILURE CASE FROM ORDERS PAGE");
+        console.log("Order ID is ", orderID);
+        $.ajax({
+          url: "/payRazorpay_Order_Page",
+          type: "POST",
+          data: { orderID: orderID },
+          success: function (res) {
+            if (res.success) {
+              var options = {
+                key: "" + res.key_id + "",
+                amount: "" + res.amount + "",
+                currency: "INR",
+                name: "getantiques",
+                // "description": ""+res.description+"",
+                // "image": "https://dummyimage.com/600x400/000/fff",
+                order_id: "" + res.order_id + "",
+                handler: function (response) {
+                  console.log("order id is: ", orderID);
+                  //alert("Payment Succeeded");
+                  window.open(`/orderPlaced?payment=success`, "_self");
+                  // window.open(
+                  //   `/cash-on-delivery?addressID=${selectedAddress}&payment=${selectedPayment}`,
+                  //   "_self"
+                  // );
+                },
+                theme: {
+                  color: "#2300a3",
+                },
+              };
+              var razorpayObject = new Razorpay(options);
+              razorpayObject.on("payment.failed", function (response) {
+                alert("TEST");
+                alert("Payment Failed");
+                console.log("Is this hitting?????--------------->failed");
+
+                // window.open(
+                //   `/razorpay-PaymentFailed?addressID=${selectedAddress}&payment=${selectedPayment}&status=failed`,
+                //   "_self"
+                // );
+                // window.open(`/razorpay-PaymentFailed`,"_self")
+              });
+              razorpayObject.open();
+            } else {
+              alert(res.msg);
+              console.log("Razorpay Payment is success");
+
+              // window.location.href=`/cash-on-delivery?addressID =${selectedAddress}&payment=${selectedPayment}`
+            }
+          },
+        });
+      }
+
     
     
     </script>

@@ -189,6 +189,8 @@ const userOrder = async (req, res) => {
       .countDocuments({});
     const totalPages = Math.ceil(orderCount / limit);
 
+    
+
     res.render("userOrders", {
       orders,
       orderCount,
@@ -197,7 +199,9 @@ const userOrder = async (req, res) => {
       currentPage: page,
     });
   } catch (error) {
-    console.log("Error while accessing userOrder (ordercontroller) : " + error);
+    console.log(
+      "Error while accessing userOrder in ordercontrollerx : " + error
+    );
   }
 };
 
@@ -542,16 +546,28 @@ const orderPlaced = async (req, res) => {
         "Order Id kept in session from repay is: ",
         req.session.orderid_in_repay
       );
+
       req.session.initial_status = "Placed";
 
       await orderModel.updateOne(
         { orderID: req.session.orderid_in_repay },
         { $set: { status: "Placed", paymentStatus: "Success" } }
       );
-
-      await cartModel.updateOne({ user: userID }, { $set: { item: [] } });
-      // console.log("Testing for order getting or not after repayment  ", test);
+    } else if (req.query.payment) {
+      console.log("payment success passed as query: ", req.query.payment);
+      console.log(
+        "Order Id kept in session from repay is: ",
+        req.session.orderID_OrderPage
+      );
+      req.session.initial_status = "Placed";
+      await orderModel.updateOne(
+        { orderID: req.session.orderID_OrderPage },
+        { $set: { status: "Placed", paymentStatus: "Success" } }
+      );
     }
+
+    await cartModel.updateOne({ user: userID }, { $set: { item: [] } });
+    // console.log("Testing for order getting or not after repayment  ", test);
 
     res.render("userOrderPlaced", {
       user: req.session.user_name,
@@ -764,7 +780,7 @@ const razorpayPaymentFailed = async (req, res) => {
       products: cart[0].item,
       address: address,
       discount: discount,
-      totalOrderValue: amount - 1000,
+      totalOrderValue: amount,
       status: initialStatus,
       paymentMethod: payment,
       paymentStatus: "Failed",
@@ -846,6 +862,57 @@ const reRazorpay = async (req, res) => {
     });
   } catch (error) {
     console.log("error happened between reRazorpay in orderController.", error);
+  }
+};
+
+const payRazorpay_Order_Page = async (req, res) => {
+  try {
+    console.log("Razorpay initiated from order page for failed order");
+    console.log("Order id is: ", req.body.orderID);
+
+    req.session.orderID_OrderPage = req.body.orderID;
+
+    const data = await orderModel.findOne(
+      { orderID: req.body.orderID },
+      { _id: 0, totalOrderValue: 1 }
+    );
+
+    amount = data.totalOrderValue * 100;
+
+    console.log("Amount is:", amount);
+    // req.session.orderid_in_repay = orderID;
+
+    const options = {
+      amount: amount,
+      currency: "INR",
+      receipt: "razorUser@gmail.com",
+    };
+
+    razorpayInstance.orders.create(options, (err, order) => {
+      console.log(err);
+      console.log("---mmmmm-----nnnnn", order);
+      if (!err) {
+        res.status(200).send({
+          success: true,
+          msg: "Order Created",
+          order_id: order.id,
+          amount: amount,
+          key_id: process.env.RAZORPAY_ID_KEY,
+          product_name: req.body.name,
+          description: req.body.description,
+          contact: "8567345632",
+          name: "getantiques",
+          email: "getantiques@gmail.com",
+        });
+      } else {
+        res.status(400).send({ success: false, msg: "Something went wrong!" });
+      }
+    });
+  } catch (error) {
+    console.log(
+      "Error happened between payRazorpay_order in orderController",
+      error
+    );
   }
 };
 
@@ -1395,6 +1462,7 @@ module.exports = {
   payByRazorpay,
   razorpayPaymentFailed,
   reRazorpay,
+  payRazorpay_Order_Page,
   discard_Online_Payment,
   adminOrderDetails,
   orderPlaced,

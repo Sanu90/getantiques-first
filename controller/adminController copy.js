@@ -85,50 +85,33 @@ const admintoDash = async (req, res) => {
     const orderData = await orderModel.find({});
     const productData = await prodModel.find({});
     const categoryData = await catModel.find({});
+    // console.log("All order data:", orderData);
+    // console.log(orderData.length);
+    // console.log(productData.length);
+    // let sum_of_revenue = 0;
+    // for (let i = 0; i < orderData.length; i++) {
+    //   sum_of_revenue = sum_of_revenue + orderData[i].totalOrderValue;
+    // }
+    // console.log("Total revenue from orders made is:", sum_of_revenue);
 
-    // const sum_of_revenue = await orderModel.aggregate([
-    //   { $unwind: "$products" },
-    //   {
-    //     $match: {
-    //       "products.status": "Delivered",
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: null,
-    //       revenue: {
-    //         $sum: "$totalOrderValue",
-    //       },
-    //     },
-    //   },
-    // ]);
-
-    const totalRevenue = await orderModel.aggregate([
-      {
-        $unwind: "$products",
-      },
+    const sum_of_revenue = await orderModel.aggregate([
+      { $unwind: "$products" },
       {
         $match: {
           "products.status": "Delivered",
         },
       },
-
-      {
-        $project: {
-          amount: {
-            $multiply: ["$products.product_quantity", "$products.product_rate"],
-          },
-        },
-      },
       {
         $group: {
-          _id: "",
-          total_revenue: { $sum: "$amount" },
+          _id: null,
+          revenue: {
+            $sum: "$totalOrderValue",
+          },
         },
       },
     ]);
 
-    console.log("Total Revenue for dashboard is: ", totalRevenue);
+    console.log("-------------------->>>", sum_of_revenue);
 
     const productStatus = await orderModel.aggregate([
       {
@@ -171,7 +154,7 @@ const admintoDash = async (req, res) => {
     res.render("admin_dashboard", {
       name: req.session.adminName,
       orderData,
-      totalRevenue,
+      sum_of_revenue,
       productData,
       categoryData,
       productStatus,
@@ -328,8 +311,7 @@ const salesReport = async (req, res) => {
         },
       },
     ]);
-
-    //console.log("Product details:", Product);
+    // console.log("Product details:", Product);
 
     const status = await orderModel.aggregate([
       {
@@ -360,15 +342,14 @@ const salesReport = async (req, res) => {
             $gte: new Date(startDate),
             $lte: new Date(endDate),
           },
+          "products.status": {
+            $nin: ["Return Rejected", "Return Accepted", "Cancelled"],
+          },
         },
       },
       {
         $unwind: "$products",
       },
-      {
-        $match: { "products.status": "Delivered" },
-      },
-
       {
         $group: {
           _id: "",
@@ -386,33 +367,23 @@ const salesReport = async (req, res) => {
             $gte: new Date(startDate),
             $lte: new Date(endDate),
           },
+          "products.status": {
+            $nin: ["Failed", "Return Accepted", "Cancelled"],
+          },
         },
       },
       {
         $unwind: "$products",
       },
       {
-        $match: {
-          "products.status": "Delivered",
-        },
-      },
-
-      {
-        $project: {
-          amount: {
-            $multiply: ["$products.product_quantity", "$products.product_rate"],
-          },
-        },
-      },
-      {
         $group: {
           _id: "",
-          total_revenue: { $sum: "$amount" },
+          revenue: { $sum: "$totalOrderValue" },
         },
       },
     ]);
 
-    console.log("Total revenue is: ", revenue);
+    //console.log("Total revenue is: ", revenue);
 
     const total_offer_reductions = await orderModel.aggregate([
       {
@@ -421,15 +392,13 @@ const salesReport = async (req, res) => {
             $gte: new Date(startDate),
             $lte: new Date(endDate),
           },
+          "products.status": {
+            $nin: ["Failed", "Return Accepted", "Cancelled"],
+          },
         },
       },
       {
         $unwind: "$products",
-      },
-      {
-        $match: {
-          "products.status": "Delivered",
-        },
       },
       {
         $group: {
@@ -442,27 +411,28 @@ const salesReport = async (req, res) => {
 
     let offer_discount =
       total_offer_reductions[0].prbd - total_offer_reductions[0].prad;
-    // console.log("total_offer_reductions is:-->", total_offer_reductions);
-    // console.log("total_offer_reductions is ", offer_discount);
+
+    //console.log("total_offer_reductions is ", offer_discount);
+
 
     const orderData = await orderModel.aggregate([
-      {
-        $match: {
+      {$match: {
           date: {
             $gte: new Date(startDate),
             $lte: new Date(endDate),
-          },
-        },
+          }, 
+      }
       },
       {
-        $unwind: "$products",
+        $unwind:"$products"
       },
       {
-        $match: { "products.status": "Delivered" },
-      },
-    ]);
+        $match:{ "products.status" : "Delivered" 
+        }
+      }
+    ])
 
-    console.log("Order Data within the date range is: ", orderData);
+    console.log("Order Data within the date range is: ", orderData)
 
     const htmlContent = `
                 <!DOCTYPE html>
@@ -482,61 +452,28 @@ const salesReport = async (req, res) => {
                     From: ${startDate}<br>
                     To: ${endDate}<br>
                     <center>
-                    <h3>Orders  </h3>
+                    <h3>Total Products Ordered</h3>
                         <table style="border-collapse: collapse;">
                             <thead>
                                 <tr>
                                     <th style="border: 1px solid #000; padding: 8px;">#</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">User</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">DoO</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Order ID</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Shipped to</th>
                                     <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Rate</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Qty</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Offer any</th>
-                                    <th style="border: 1px solid #000; padding: 8px;">Paid By</th>
-
-                                    <th style="border: 1px solid #000; padding: 8px;">DoD</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Product Name</th>
+                                    <th style="border: 1px solid #000; padding: 8px;">Orders</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${orderData.map(
+                                ${Product.map(
                                   (item, index) => `
                                     <tr>
                                         <td style="border: 1px solid #000; padding-left: 8px;">${
                                           index + 1
                                         }</td>
                                         <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.user
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${item.date.toLocaleDateString()}</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.orderID
+                                          item._id
                                         }</td>
                                         <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.address.customerName
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.products.product_name
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.products.product_rate
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.products.product_quantity
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.products
-                                            .product_rate_before_discount -
-                                          item.products.product_rate
-                                        }</td>
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.paymentMethod
-                                        }</td>
-
-                                        <td style="border: 1px solid #000; padding: 8px;">${
-                                          item.products.date
+                                          item.totalOrders
                                         }</td>
                                     </tr>`
                                 )}
@@ -582,14 +519,15 @@ const salesReport = async (req, res) => {
                     <br>
                      <h3>Total Offer discounts: <span>₹ ${offer_discount}</span></h3>
                     <h3>Total Revenue generated: <span>₹ ${
-                      revenue[0].total_revenue
+                      revenue[0].revenue
                     }</span></h3>
                     </center>
                 </body>
                 </html>
-            `;
+            `; 
 
-    const browser = await puppeteer.launch({
+
+const browser = await puppeteer.launch({
       // executablePath: "/usr/bin/chromium-browser",
     });
     const page = await browser.newPage();
@@ -603,9 +541,13 @@ const salesReport = async (req, res) => {
     res.setHeader("Content-Type", "application/pdf");
     res.setHeader(
       "Content-Disposition",
-      "attachment; filename=getantiques-Sales.pdf"
+      "attachment; filename=getantiques.pdf"
     );
-    res.status(200).end(pdfBuffer);
+    res.status(200).end(pdfBuffer); 
+
+
+
+    
   } catch (error) {
     console.log(
       "Error happened between salesReport in adminController ",
@@ -716,7 +658,7 @@ const updateOrderStatus = async (req, res) => {
     console.log(orderID);
     console.log(productID);
     console.log("status is:", status);
-
+    
     await orderModel.updateOne(
       {
         orderID: orderID,
@@ -727,40 +669,16 @@ const updateOrderStatus = async (req, res) => {
       }
     );
 
-    if (status == "Delivered") {
-      await orderModel.updateOne(
-        {
-          orderID: orderID,
-          "products.product": new ObjectId(productID),
-        },
-        {
-          $set: {
-            "products.$.date": new Date(),
-          },
+    if(status=="Delivered"){
+      await orderModel.updateOne({
+        orderID: orderID,
+        "products.product": new ObjectId(productID),
+      },
+      {
+        $set:{
+          "products.$.date": new Date()
         }
-      );
-
-      const test = await orderModel.aggregate([
-        { $match: { orderID: orderID } },
-        { $project: { products: 1, _id: 0 } },
-      ]);
-
-      console.log("Test is: ", test);
-      let lengthh = test[0].products.length;
-      console.log("Length is :", lengthh);
-      let count = 0;
-      for (let i = 0; i < lengthh; i++) {
-        console.log("-----------------", test[0].products[i].status);
-        if (test[0].products[i].status == "Delivered") count += 1;
-      }
-      console.log("Count is: ", count);
-
-      if (count == lengthh) {
-        await orderModel.updateOne(
-          { orderID: orderID },
-          { $set: { status: "Delivered" } }
-        );
-      }
+      })
     }
 
     res.redirect(`/admin/orderDetails?id=${orderID}`);

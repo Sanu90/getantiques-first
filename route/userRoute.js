@@ -176,6 +176,8 @@ router.get(
 
 router.post("/reRazorpay", userCheck.isUser, orderController.reRazorpay);
 
+router.post("/payRazorpay_Order_Page", userCheck.isUser, orderController.payRazorpay_Order_Page);
+
 router.post(
   "/discard_Online_Payment",
   userCheck.isUser,
