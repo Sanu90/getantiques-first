@@ -27,9 +27,42 @@ const adminLoginPage = (req, res) => {
   }
 };
 
-const chartdatamonth = async (req, res) => {
+const chartData = async (req, res) => {
   try {
-    console.log("/chart-data called");
+    console.log("Daily chart rendered");
+    const Aggregation = await orderModel.aggregate([
+      {
+        $match: {
+          date: { $exists: true },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$date" },
+            month: { $month: "$date" },
+            day: { $dayOfMonth: "$date" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+          "_id.day": 1,
+        },
+      },
+    ]);
+    res.json(Aggregation);
+  } catch (error) {
+    console.log("Error while chartdata in adminController", error);
+  }
+};
+
+const chartDataYear = async (req, res) => {
+  try {
+    console.log("Yearly Chart rendered");
     const Aggregation = await orderModel.aggregate([
       {
         $match: {
@@ -52,11 +85,40 @@ const chartdatamonth = async (req, res) => {
     ]);
     res.json(Aggregation);
   } catch (error) {
-    console.log("Error while chartdatamonth in adminController", error);
+    console.log("Error while chartDataYear in adminController", error);
   }
 };
 
-console.log("chartdatamonth", chartdatamonth);
+const chartDataMonth = async (req, res) => {
+  try {
+    console.log("Monthly chart rendered");
+    const Aggregation = await orderModel.aggregate([
+      {
+        $match: {
+          date: { $exists: true },
+        },
+      },
+      {
+        $group: {
+          _id: {
+            year: { $year: "$date" },
+            month: { $month: "$date" },
+          },
+          count: { $sum: 1 },
+        },
+      },
+      {
+        $sort: {
+          "_id.year": 1,
+          "_id.month": 1,
+        },
+      },
+    ]);
+    res.json(Aggregation);
+  } catch (error) {
+    console.log("Error while chartDataMonth in adminController", error);
+  }
+};
 
 const adminDashboard = async (req, res) => {
   try {
@@ -128,11 +190,18 @@ const admintoDash = async (req, res) => {
       },
     ]);
 
-    console.log("Total Revenue for dashboard is: ", totalRevenue);
+    //console.log("Total Revenue for dashboard is: ", totalRevenue);
 
     const productStatus = await orderModel.aggregate([
       {
         $unwind: "$products",
+      },
+      {
+        $match: {
+          "products.status": {
+            $in: ["Delivered", "Placed", "Out for Delivery"],
+          },
+        },
       },
       {
         $group: {
@@ -142,7 +211,7 @@ const admintoDash = async (req, res) => {
       },
     ]);
 
-    //console.log("Status is: ", productStatus);
+    //console.log(productStatus, "Status is:");
 
     const transaction = await orderModel.aggregate([
       {
@@ -165,8 +234,35 @@ const admintoDash = async (req, res) => {
           totalOrders: { $sum: 1 },
         },
       },
+      {
+        $sort: { totalOrders: -1 },
+      },
+      {
+        $limit: 4,
+      },
     ]);
-    //console.log("Each Product ordered details:", Product);
+    console.log("Each Product ordered details:", Product);
+
+    const dataForCategory = await orderModel.aggregate([
+      {
+        $unwind: "$products",
+      },
+      {
+        $group: {
+          _id: "$products.product_name",
+          totalOrders: { $sum: 1 },
+        },
+      },
+      {
+        $sort: { totalOrders: -1 },
+      },
+    ]);
+
+    console.log("dataForCategory", dataForCategory);
+    console.log("****$$$$$******");
+    dataForCategory.forEach((value) => {
+      return prodModel.find({ name: value._id });
+    });
 
     res.render("admin_dashboard", {
       name: req.session.adminName,
@@ -322,14 +418,23 @@ const salesReport = async (req, res) => {
         $unwind: "$products",
       },
       {
+        $match: { "products.status": "Delivered" },
+      },
+      {
         $group: {
           _id: "$products.product_name",
           totalOrders: { $sum: 1 },
         },
       },
+      {
+        $sort: { totalOrders: -1 },
+      },
+      {
+        $limit: 3,
+      },
     ]);
 
-    //console.log("Product details:", Product);
+    console.log("Product details:", Product);
 
     const status = await orderModel.aggregate([
       {
@@ -351,7 +456,7 @@ const salesReport = async (req, res) => {
       },
     ]);
 
-    // console.log("Status is: ", status);
+    //console.log("Status is:--------?><<><<<<M ", status);
 
     const couponDiscounts = await orderModel.aggregate([
       {
@@ -412,7 +517,7 @@ const salesReport = async (req, res) => {
       },
     ]);
 
-    console.log("Total revenue is: ", revenue);
+    //console.log("Total revenue is: ", revenue);
 
     const total_offer_reductions = await orderModel.aggregate([
       {
@@ -460,9 +565,13 @@ const salesReport = async (req, res) => {
       {
         $match: { "products.status": "Delivered" },
       },
+      {
+        $sort: { date: 1 },
+      },
     ]);
 
-    console.log("Order Data within the date range is: ", orderData);
+    //console.log("Order Data within the date range is: ", orderData);
+    //console.log(orderData.length);
 
     const htmlContent = `
                 <!DOCTYPE html>
@@ -585,6 +694,13 @@ const salesReport = async (req, res) => {
                       revenue[0].total_revenue
                     }</span></h3>
                     </center>
+                    <p style="padding-left:20px;">Summary:<br>A total  of ${
+                      orderData.length
+                    } products has been delivered. Total revenue generated is worth ₹ ${
+      revenue[0].total_revenue
+    }. An amount of ₹ ${
+      couponDiscounts[0].couponDiscount
+    } was provided as coupon discount and offer price in the terms of product/category offer was sum up to ${offer_discount}. </p>
                 </body>
                 </html>
             `;
@@ -785,5 +901,7 @@ module.exports = {
   salesReport,
   updateOrderStatus,
   approveReturnByAdmin,
-  chartdatamonth,
+  chartData,
+  chartDataYear,
+  chartDataMonth,
 };

@@ -11,9 +11,9 @@ const newAddress = (req, res) => {
 };
 
 const address = async (req, res) => {
-  let address = await addressModel.find({ user: req.session.userID });
-  //   .populate("user");
-  // console.log(address);
+  // let address = await addressModel.find({ user: req.session.userID });
+  // //   .populate("user");
+  // // console.log(address);
   try {
     let address = await addressModel.find({ user: req.session.userID });
     console.log("USER ADDRESS IS: ", address);

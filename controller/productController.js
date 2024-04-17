@@ -1,6 +1,9 @@
 const productModel = require("../model/productModel");
 const categoryModel = require("../model/categoryModel");
 const cartModel = require("../model/cartModel");
+const fs = require("fs");
+
+const sharp = require("sharp");
 const multer = require("multer");
 //const { name } = require("ejs");
 //const multer = require("../middleware/multer");
@@ -61,6 +64,7 @@ const addProduct = async (req, res) => {
       imagePath[i] = imageData[i].path
         .replace(/\\/g, "/")
         .replace("public", "");
+      //  const inputImageBuffer = fs.readFileSync(inputPath[i]);
     }
     //   //console.log("IMAGEPATH is: ", imagePath);
     req.imagePath = imagePath;

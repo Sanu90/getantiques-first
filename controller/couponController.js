@@ -111,7 +111,13 @@ const saveEditCoupon = async (req, res) => {
   try {
     console.log("Saving Edited Coupon");
     console.log(req.session.couponID);
-    await couponModel.updateOne(
+    console.log("New coupon details: ", req.body);
+    if(Number(req.body.newDiscount) > Number(req.body.newMinCartValue) ){
+      //res.redirect("/admin/coupon?msg= Discount should be smaller value");
+      console.log("This should validate by throwing an error.");
+    }else if(Number(req.body.newDiscount) < Number(req.body.newMinCartValue)){
+      console.log("Update coupon here then.");
+      await couponModel.updateOne(
       { _id: req.session.couponID },
       {
         $set: {
@@ -124,6 +130,14 @@ const saveEditCoupon = async (req, res) => {
     );
     console.log("COUPON UPDATED");
     res.redirect("/admin/coupon?msg= Coupon updated");
+
+    }
+    // let a = 
+    // console.log(typeof a)
+    // console.log(typeof req.body.newMinCartValue)
+
+    
+    
   } catch (error) {
     console.log(
       "Error happened between saveEditCoupon in couponcontroller",

@@ -132,7 +132,7 @@
             <!-- <h1 class="card-title text-center mb-4">Edit User</h1> -->
             <form action="/admin/edit-coupon-save" method="POST">
               <div class="form-group">
-              <input type="hidden" name="oldDesc" value="<%#=oldDesc %>">
+              
                 <label style="color:brown">Update Coupon Name<sup style="color: red;">*</sup></label>
                    <input
                       class="form-control"
@@ -185,8 +185,8 @@
                 </div>
                   
               <br>
-              <button type="submit" class="btn btn-primary btn-block">
-                Update
+              <button type="submit" class="btn btn-primary btn-block" onclick="return validateForm()">
+                Update 
               </button>
               <a style="margin:20%; color: red;" href="/admin/coupon">Go Back</a>
             </form>
@@ -195,27 +195,6 @@
       </div>
     </div>
   </div>
-  
-  <!-- <div class="pagination-area mt-15 mb-50">
-    <nav aria-label="Page navigation example">
-      <ul class="pagination justify-content-start">
-        <li class="page-item active">
-          <a class="page-link" href="#">01</a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">02</a></li>
-        <li class="page-item"><a class="page-link" href="#">03</a></li>
-        <li class="page-item">
-          <a class="page-link dot" href="#">...</a>
-        </li>
-        <li class="page-item"><a class="page-link" href="#">16</a></li>
-        <li class="page-item">
-          <a class="page-link" href="#"
-            ><i class="material-icons md-chevron_right"></i
-          ></a>
-        </li>
-      </ul>
-    </nav>
-  </div> -->
 </section>
 <footer class="main-footer font-xs">
   <div class="row pb-30 pt-15">
@@ -252,11 +231,6 @@
         }
 
         setTimeout("timeCount()", 1000);
-      
-
-        //document.write(new Date().getTime())//
-        // var date = new Date().toLocaleString();
-        // document.getElementById("p1").innerHTML = date;
       </script>
       ©, getantiques.
     </div>
@@ -279,6 +253,9 @@
 <script src="/admin/assets/js/custom-chart.js" type="text/javascript"></script>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.min.js"></script>
+<script src="
+https://cdn.jsdelivr.net/npm/sweetalert2@11.10.6/dist/sweetalert2.all.min.js
+"></script>
 </body>
 <script>
 // Jquery for disabling previous dates in form //
@@ -295,6 +272,26 @@
     var maxDate = year + '-' + month + '-' + day;
     $('#inputdate').attr('min', maxDate);
 });
+
+function validateForm(){
+  console.log("Coupon validation");
+  const value1= document.getElementById("discount").value;
+  console.log(value1);
+  console.log(typeof value1);
+  const value2= document.getElementById("minCartValue").value;
+  console.log(value2);
+  console.log(typeof value2);
+  if(Number(value1) >= Number(value2)){
+    Swal.fire({
+        text: "Discount value should be less than Minimum cart value.",
+
+    })
+    return false;
+    
+  }
+  return true;
+}
+
 
 </script>
 

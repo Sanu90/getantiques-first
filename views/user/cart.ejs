@@ -251,29 +251,18 @@
                     style="width: 100px"
                   >
                     <div class="input-group-btn">
-                      <%# if(cartProducts[i].productQuantity = 1){ %>
-                      <!-- <button class="btn btn-sm btn-primary btn-minus" disabled> -->
-                      <%# } else {%>
-                      <!-- <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%#= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "add(`<#%= cartProducts[i].productId %>`,-1)"> -->
-                      
-                      <button class="btn btn-sm btn-primary btn-minus" id="minusButton" <%#= cartProducts[i].productQuantity <= 1 ? 'disabled' : '' %> onclick = "update(`<%= cartProducts[i].productId %>`,-1)">
-                      
-                      <%# } %>
-                     
-                        <i class="fa fa-minus"></i>
+                      <button class="btn btn-sm btn-primary btn-minus" id="minusButton" onclick = "update(`<%= cartProducts[i].productId %>`,-1)">
+                      <i class="fa fa-minus"></i>
                       </button>
-                      <!-- <input type="button" name="" min="1" placeholder="1" oninput="validity.valid||(value='');"> -->
-                    </div>
+                      </div>
                     <input
-                      type="text" id="quantity"
+                      type="text" id="<%= cartProducts[i].productId %>+hello"
                       class="form-control form-control-sm bg-secondary text-center"
                       value="<%=cartProducts[i].productQuantity%>"
                     />
                     
                     <div class="input-group-btn">
-                      <!-- <button class="btn btn-sm btn-primary btn-plus" id="addButton"  <%#= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = "add(`<%= cartProducts[i].productId %>`,1)"> -->
-                        <button class="btn btn-sm btn-primary btn-plus" id="addButton"  <%#= cartProducts[i].productQuantity == 5 ? 'disabled': '' %> onclick = "update(`<%= cartProducts[i].productId %>`,1)">
-                      
+                        <button class="btn btn-sm btn-primary btn-plus" id="addButton" onclick = "update(`<%= cartProducts[i].productId %>`,1)">
                         <i class="fa fa-plus"></i>
                       </button>
                     </div>
@@ -297,15 +286,7 @@
             <div class="card-header bg-secondary border-0">
               <h4 class="font-weight-semi-bold m-0">Cart Summary</h4>
             </div>
-            <!-- <div class="card-body">
-              <div class="d-flex justify-content-between mb-3 pt-1">
-                <h6 class="font-weight-medium">Subtotal</h6>
-                <h6 class="font-weight-medium">₹<%#=total %></h6>
-              </div> -->
-              <!-- <div class="d-flex justify-content-between">
-                <h6 class="font-weight-medium">Shipping</h6>
-                <h6 class="font-weight-medium">$10</h6>
-              </div> -->
+            
             </div>
             <div class="card-footer border-secondary bg-transparent">
               <div class="d-flex justify-content-between mt-2">
@@ -484,7 +465,6 @@ document.addEventListener("DOMContentLoaded", function() {
     button.addEventListener("click", function() {
       const productId = button.dataset.productId;
       console.log(productId); //consoles the product ID in browser //
-
       Swal.fire({
         title: 'Are you sure?',
         text: "You are about to remove this product from cart.",
@@ -565,18 +545,19 @@ document.addEventListener("DOMContentLoaded", function() {
 
 function update(id,val){
     console.log("Product id is:", id);
+    console.log("Value is: ", val)
     console.log("***********************************************");
-    const inputs = document.querySelectorAll('input'); 
-    inputs.forEach(input=>{
-      input.addEventListener('change', (event)=>{
-        console.log(`New value: ${event.target.value}`);
+    // const inputs = document.querySelectorAll('input'); 
+    // inputs.forEach(input=>{
+    //   input.addEventListener('change', (event)=>{
+    //     console.log(`New value: ${event.target.value}`);
         
-      })
-    }) 
-    console.log("***********************************************");
+    //   })
+    // }) 
+    // console.log("***********************************************");
 
-    let quantity = Number(document.getElementById('quantity').value);
-     console.log("add ------------------ " ,quantity);
+    // let quantity = Number(document.getElementById('quantity').value);
+    //  console.log("quantity is: ", quantity);
       fetch(`/addCartvalue`,{
             method:'post',
             headers: {
@@ -585,7 +566,7 @@ function update(id,val){
                   body: JSON.stringify({
                     productId: id,
                     value :val,
-                    quantity:quantity
+                    // quantity:quantity
                     }),
                     
           }).then(response => {
@@ -596,8 +577,10 @@ function update(id,val){
                 }).then(data=>{
                   if(data.value==1){
                             console.log(data.message);
-                            let a = document.getElementById("quantity")
-                            a.value = data.proStock;
+                            // `${pro}+hai`
+                            // let a = document.getElementById("quantity")
+                            // a.value = data.proStock;
+                            document.getElementById(`${id}+hello`).value = data.proStock;
                             Swal.fire({
                                       icon: "error",
                                       title: "Oops...",
@@ -610,15 +593,9 @@ function update(id,val){
                   }
                   else if(data.value==0)
                   {
-                  let quantity = document.getElementById('quantity').value
-                  console.log(quantity,'quantityquantityquantityquantity')
-                    // if(quantity){
-                    //   document.getElementById('minusButton').style
-                    // }
-                    // if(data.productCount==2 || 5){
-                    //   window.location.reload();
-                    // }
-                    // window.location.reload();
+                  // let quantity = document.getElementById('quantity').value
+                  // console.log(quantity,'quantityquantityquantityquantity')
+                
                     console.log(data.productPrice,'----------------------')
                     console.log(data,'********************')
                     let b=document.getElementById('total')

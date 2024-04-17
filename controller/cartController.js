@@ -282,30 +282,55 @@ const addCartvalue = async (req, res) => {
     const cartData = await cartModel.find({ user: userID });
     console.log("cartData is : ", cartData);
 
-    console.log("cart length is:" , cartData[0].item.length);
-
+    console.log("cart length is:", cartData[0].item.length);
     const product_id = req.body.productId;
     const quantity = req.body.quantity;
     const value = req.body.value;
-    const totalCartValue = quantity + value;
+
+    console.log(userID);
+    const cartValue = await cartModel.aggregate([
+      { $match: { user: new ObjectId(userID) } },
+      { $unwind: "$item" },
+      { $match: { "item.product": new ObjectId(product_id) } },
+    ]);
+
+    console.log(quantity, "1111111111111111111111111111");
+    console.log(cartValue, "/=/=/=/=/=/=");
+    let totalCartValue;
+    if (value == 1) {
+      totalCartValue = cartValue[0].item.product_quantity + 1;
+    } else {
+      totalCartValue = cartValue[0].item.product_quantity - 1;
+    }
+
+    console.log(
+      totalCartValue,
+      "-=-=-=-=-=--=-=-=-=-=-=--=-=-=-=-=-=-=-=-=-=--=-=-=-=-==--=-="
+    );
+
+    // const totalCartValue = cartValue[0].item.product_quantity;
+
+    //------------------------------------------------------------------------------------
+
     console.log("User increased the count of the product id: ", product_id);
     console.log("The product quantity in cart is: ", totalCartValue);
 
-    for(let i=0; i<cartData[0].item.length;i++){}
-    if ((totalCartValue >= 1) & (totalCartValue <= 8)) {
-      console.log(totalCartValue);
-      console.log("-----------------********--------------------------");
-      await cartModel.updateOne(
-        { user: userID, "item.product": product_id },
-        { $inc: { "item.$.product_quantity": req.body.value } }
-      );
-    }
+    for (let i = 0; i < cartData[0].item.length; i++) {}
 
     const productCount = await productModel.findOne({ _id: product_id });
     console.log("Product stock available is:", productCount.stock);
     let proStock = productCount.stock;
 
     if (totalCartValue <= productCount.stock) {
+      if ((totalCartValue >= 1) & (totalCartValue <= 8)) {
+        console.log(totalCartValue);
+        console.log("-----------------********--------------------------");
+        await cartModel.updateOne(
+          { user: userID, "item.product": product_id },
+          { $set: { "item.$.product_quantity": totalCartValue } }
+          // { $inc: { "item.$.product_quantity": req.body.value } }
+        );
+      }
       console.log("perform rest of the things");
       let aggregation_totalPrice = await cartModel.aggregate([
         {
@@ -363,21 +388,16 @@ const addCartvalue = async (req, res) => {
         "aggregation result for getting total price: ",
         aggregation_totalPrice
       );
-      // total_product_count_in_cart = aggregation_totalPrice[0].products.length;
-      // productTotalValue = aggregation_totalPrice[0].products[0];
-      // productCount = aggregation_totalPrice[0].productCount;
-      // console.log("total price of the product is: ", productTotalValue);
+
       productPrice =
         aggregation_totalPrice[0].item.product_quantity *
         aggregation_totalPrice[0].item.product_rate;
       res.header("Content-Type", "application/json").json({
         value: 0,
-        // productTotalValue: productTotalValue,
-        // productCount: productCount,
         productPrice: productPrice,
         totalPriceSum: totalPriceSum,
       });
-    } else if (totalCartValue > productCount.stock) {
+    } else if (totalCartValue >= productCount.stock) {
       console.log("No stocks available");
       res.json({
         value: 1,
@@ -385,6 +405,8 @@ const addCartvalue = async (req, res) => {
         proStock: proStock,
       });
     }
+
+    //------------------------------------------------------------------------------------
 
     // if ((quantity >= 1) & (quantity <= 5)) {
     //   console.log(quantity);
@@ -664,6 +686,7 @@ const checkout = async (req, res) => {
       totalCheckoutCharge,
       shippingCharges,
       wallet,
+      total,
     });
   } catch (error) {
     console.log("Error occurred while checkout", error);

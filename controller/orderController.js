@@ -189,8 +189,6 @@ const userOrder = async (req, res) => {
       .countDocuments({});
     const totalPages = Math.ceil(orderCount / limit);
 
-    
-
     res.render("userOrders", {
       orders,
       orderCount,
@@ -1301,7 +1299,7 @@ const invoice = async (req, res) => {
             <div class="flex items-start justify-center">
                 <div class="flex-1">
                     <div class="w-60 pb-6">
-                        <img class="w-40" src="https://img.freepik.com/premium-vector/invoice-icon-vector-image-can-be-used-business-office_120816-96403.jpg" alt="getantiques">
+                        <img class="w-40" src="https://scontent.fblr11-1.fna.fbcdn.net/v/t39.30808-6/435702532_7578278512231936_4307073485603164308_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=5f2048&_nc_ohc=LWkvtYjYiiYAb4s5ps1&_nc_ht=scontent.fblr11-1.fna&oh=00_AfDVkbC2zxBwanVI5al599uR_MDprwXMQVQzaSRAZN7H4g&oe=662314B2" alt="getantiques">
                     </div>
                     
                     <div class="w-60 pl-4 pb-6">
