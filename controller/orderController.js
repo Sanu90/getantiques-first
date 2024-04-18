@@ -1135,7 +1135,7 @@ const addressCheckInCheckout = async (req, res) => {
 
     console.log("checkAddress is: ", checkAddress);
     if (checkAddress.length == 0) {
-      res.json({ message: "Please add an address to proceed." });
+      res.json({ message: "Please add shipping details." });
       console.log("No address added");
     }
     //  else {

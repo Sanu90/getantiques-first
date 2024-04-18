@@ -7,6 +7,8 @@ const session = require("express-session");
 const paginate = require("express-paginate");
 const fs = require("fs");
 
+const PORT = process.env.PORT;
+
 //CONFIG INSTANCE FOR EXPRESS//
 const app = express();
 
@@ -57,6 +59,6 @@ app.use("*", (req, res) => {
 });
 
 //SETUP SERVER PORT//
-app.listen(7000, () => {
-  console.log("Server running @7000");
+app.listen(PORT, () => {
+  console.log(`Server running @ ${PORT}`);
 });

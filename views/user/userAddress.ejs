@@ -105,10 +105,10 @@
       <div class="container">
         <h1 style="margin: 5%">No address available</h1>
       </div>
-      <% } else if(userAddress.length>=1) {%> <% for(let i of userAddress){ %>
+      <% } else if(userAddress.length>=1) {%> <% for(let [index,i] of userAddress.entries()){ %>
       <div class="card">
         <div class="card-body">
-          <h5 class="card-title alert-danger">Shipping Address</h5>
+          <h5 class="card-title alert-danger">Shipping Address <%=index+1%> </h5>
           <p class="card-header"><%=i.customerName %></p>
           <p class="card-text"><%=i.houseName %>, <%=i.street %></p>
           <p class="card-text"><%=i.city %></p>
