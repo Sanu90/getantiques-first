@@ -96,12 +96,7 @@
             <h2 class="content-title card-title">Dashboard</h2>
             <p>Whole data about your business here</p>
           </div>
-          <!-- <div>
-            <a href="#" class="btn btn-primary"
-              ><i class="text-muted material-icons md-post_add"></i>Create
-              report</a
-            >
-          </div> -->
+          
         </div>
         <div class="row">
           <div class="col-lg-3">
@@ -245,7 +240,25 @@
               
             </div>
           </div>
-          <div class="col-xl-4 col-lg-8">
+          <div class="container-fluid">
+            <div>
+              <label class="me-3" for="filter">Filter:</label>
+              <select id="filter" class="p-1" style="color: #8a8d93; background-color: transparent;">
+                  <option value="daily" selected>Daily</option>
+                  <option value="monthly">Monthly</option>
+                  <option value="yearly" >Yearly</option>
+                </select>
+              </div>
+               <canvas id="salesChart" ></canvas>
+               
+             </div>
+            </div>
+          
+          
+          
+          
+          <!--  -->
+          <!-- <div class="col-xl-4 col-lg-8">
             <div class="card mb-4">
               <article class="card-body">
                 <h5 class="card-title">Daily</h5>
@@ -270,166 +283,86 @@
                 <canvas id="year"></canvas>
               </article>
             </div>
-           </div>
+           </div> -->
            
             
-        <!-- <div class="pagination-area mt-30 mb-50">
-          <nav aria-label="Page navigation example">
-            <ul class="pagination justify-content-start">
-              <li class="page-item active">
-                <a class="page-link" href="#">01</a>
-              </li>
-              <li class="page-item"><a class="page-link" href="#">02</a></li>
-              <li class="page-item"><a class="page-link" href="#">03</a></li>
-              <li class="page-item">
-                <a class="page-link dot" href="#">...</a>
-              </li>
-              <li class="page-item"><a class="page-link" href="#">16</a></li>
-              <li class="page-item">
-                <a class="page-link" href="#"
-                  ><i class="material-icons md-chevron_right"></i
-                ></a>
-              </li>
-            </ul>
-          </nav>
-        </div> -->
+        
       </section>
       <!-- content-main end// -->
       <!-- <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script> -->
       <!-- <script src="vendor/chart.js/Chart.min.js"></script>
       <script src="js/charts-home.js"></script>
-      <script src="js/front.js"></script>
-      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
+      <script src="js/front.js"></script>-->
+      <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> 
      
      <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    console.log('function called');
+    document.addEventListener('DOMContentLoaded', function() {
 
-    fetch('/admin/chart-data')
-      .then(response => response.json())
-      .then(data => {
-        console.log(data);
-        const dailyData = data.filter(entry => entry._id.day !== undefined);
-          const monthlyData = data.filter(entry => entry._id.month !== undefined);
-          const yearlyData = data.filter(entry => entry._id.year !== undefined);
+        function fetchSalesData(filter) {
+          console.log("Is fetch working for bar graph--------------???");
+            fetch(`/admin/sales_data?filter=${filter}`)
+                .then(response => response.json())
+                .then(data => {
+                  console.log("Is this data response working??");
+                  console.log(data);
+                  console.log("Is this data response working??jhhafafjkskjfaskjhfasjhj ");
+                    updateChart(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching sales data:', error);
+                });
+        }
 
-        createChart('dailyChart', dailyData, 'Daily Orders', 'rgba(255, 99, 132, 0.2)', 'rgba(255, 99, 132, 1)');
-        createChart('monthlyChart', monthlyData, 'Monthly Orders', 'rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)');
-        createChart('yearlyChart', yearlyData, 'Yearly Orders', 'rgba(153, 102, 255, 0.2)', 'rgba(153, 102, 255, 1)');
+        // Function to update chart with sales data
+        function updateChart(data) {
+    const labels = data.saleDate;
+    const salesData = data.count;
 
-      })
-      .catch(error => console.error('Error fetching chart data:', error));
+    // Get the canvas element
+    const ctx = document.getElementById('salesChart').getContext('2d');
 
-    function createChart(canvasId, chartData, label, backgroundColor, borderColor) {
-        const labels = chartData.map(entry => {
-          if (entry._id.day !== undefined) {
-            return `${entry._id.year}-${entry._id.month}-${entry._id.day}`;
-          } else if (entry._id.month !== undefined) {
-            return `${entry._id.year}-${entry._id.month}`;
-          } else if (entry._id.year !== undefined) {
-            return entry._id.year.toString();
-          }
-        });
+    // If a chart already exists, destroy it before creating a new one
+    if (window.salesChart instanceof Chart) {
+        window.salesChart.destroy();
+    }
+    
 
-      const counts = chartData.map(entry => entry.count);
-
-        const graph = document.getElementById('canvasId').getContext('2d');
-        new Chart(graph, {
-          type: 'bar',
-          data: {
+    // Initialize Chart.js with the updated data
+    window.salesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
             labels: labels,
             datasets: [{
-              label: label,
-              data: counts,
-              backgroundColor: backgroundColor,
-              borderColor: borderColor,
-              borderWidth: 1
+                label: 'Orders',
+                data: salesData,
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
             }]
-          }
-        });
-      }
+        },
+        options: {
+            scales: {
+                yAxes: [{
+                    ticks: {
+                        beginAtZero: true
+                    }
+                }]
+            }
+        }
     });
-  </script>
+}
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      console.log('function called ');
-
-      fetch('/admin/chart-data-year')
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-          const yearlyData = data.filter(entry => entry._id.year !== undefined);
-
-          createChart('yearlyChart', yearlyData, 'Yearly Orders', 'rgba(153, 102, 255, 0.2)', 'rgba(153, 102, 255, 1)');
-        })
-        .catch(error => console.error('Error fetching chart data:', error));
-
-      function createChart(canvasId, chartData, label, backgroundColor, borderColor) {
-        const labels = chartData.map(entry => {
-          return entry._id.year.toString();
+        // Event listener for filter change
+        document.getElementById('filter').addEventListener('change', function() {
+            const filter = this.value;
+            console.log("Filter value is:", filter);
+            fetchSalesData(filter);
         });
 
-        const counts = chartData.map(entry => entry.count);
-
-        const graph = document.getElementById('year').getContext('2d');
-        new Chart(graph, {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: label,
-              data: counts,
-              backgroundColor: backgroundColor,
-              borderColor: borderColor,
-              borderWidth: 1
-            }]
-          }
-        });
-      }
+        // Fetch initial data on page load
+        fetchSalesData('daily');
     });
-  </script>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      console.log('function called ');
-
-      fetch('/admin/chart-data-month')
-        .then(response => response.json())
-        .then(data => {
-          console.log(data);
-
-          
-          const monthlyData = data.filter(entry => entry._id.month !== undefined);
-          
-          createChart('monthlyChart', monthlyData, 'Monthly Orders', 'rgba(75, 192, 192, 0.2)', 'rgba(75, 192, 192, 1)');
-        })
-        .catch(error => console.error('Error fetching chart data:', error));
-
-      function createChart(canvasId, chartData, label, backgroundColor, borderColor) {
-        const labels = chartData.map(entry => {
-          return `${entry._id.year}-${entry._id.month}`;
-        });
-
-        const counts = chartData.map(entry => entry.count);
-
-        const graph = document.getElementById('month').getContext('2d');
-        new Chart(graph, {
-          type: 'bar',
-          data: {
-            labels: labels,
-            datasets: [{
-              label: label,
-              data: counts,
-              backgroundColor: backgroundColor,
-              borderColor: borderColor,
-              borderWidth: 1
-            }]
-          }
-        });
-      }
-    });
-  </script> 
+</script>
 
 
       <%- include ('partialsAdminFooter') %>

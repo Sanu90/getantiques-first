@@ -27,98 +27,205 @@ const adminLoginPage = (req, res) => {
   }
 };
 
-const chartData = async (req, res) => {
+const getSalesData = async (req, res) => {
   try {
-    console.log("Daily chart rendered");
-    const Aggregation = await orderModel.aggregate([
-      {
-        $match: {
-          date: { $exists: true },
-        },
-      },
-      {
-        $group: {
-          _id: {
-            year: { $year: "$date" },
-            month: { $month: "$date" },
-            day: { $dayOfMonth: "$date" },
-          },
-          count: { $sum: 1 },
-        },
-      },
-      {
-        $sort: {
-          "_id.year": 1,
-          "_id.month": 1,
-          "_id.day": 1,
-        },
-      },
-    ]);
-    res.json(Aggregation);
+    console.log("getSalesData");
+    const { filter } = req.query;
+    console.log("filter--------->>>", filter);
+    let salesData = {};
+    if (filter === "yearly") {
+      salesData = await getYearlySalesData();
+    } else if (filter === "monthly") {
+      salesData = await getMonthlySalesData();
+    } else if (filter === "daily") {
+      salesData = await getDailySalesData();
+    } else {
+      throw new Error("Invalid filter parameter");
+    }
+
+    res.json(salesData);
   } catch (error) {
-    console.log("Error while chartdata in adminController", error);
+    console.log("Error while getSalesData in adminController", error);
   }
 };
 
-const chartDataYear = async (req, res) => {
-  try {
-    console.log("Yearly Chart rendered");
-    const Aggregation = await orderModel.aggregate([
-      {
-        $match: {
-          date: { $exists: true },
-        },
+async function getDailySalesData() {
+  const Aggregation = await orderModel.aggregate([
+    {
+      $match: {
+        date: { $exists: true },
       },
-      {
-        $group: {
-          _id: {
-            year: { $year: "$date" },
-          },
-          count: { $sum: 1 },
-        },
+    },
+    {
+      $group: {
+        _id: { $dateToString: { format: "%Y-%m-%d", date: "$date" } },
+        count: { $sum: 1 },
       },
-      {
-        $sort: {
-          "_id.year": 1,
-        },
-      },
-    ]);
-    res.json(Aggregation);
-  } catch (error) {
-    console.log("Error while chartDataYear in adminController", error);
-  }
-};
+    },
+    {
+      $sort: { _id: 1 },
+    },
+  ]);
+  console.log("Aggregation value for daily graph is: ", Aggregation);
 
-const chartDataMonth = async (req, res) => {
-  try {
-    console.log("Monthly chart rendered");
-    const Aggregation = await orderModel.aggregate([
-      {
-        $match: {
-          date: { $exists: true },
-        },
+  const saleDate = Aggregation.map((item) => item._id);
+  const count = Aggregation.map((item) => item.count);
+  return { saleDate, count };
+}
+
+async function getMonthlySalesData() {
+  const Aggregation = await orderModel.aggregate([
+    {
+      $match: {
+        date: { $exists: true },
       },
-      {
-        $group: {
-          _id: {
-            year: { $year: "$date" },
-            month: { $month: "$date" },
-          },
-          count: { $sum: 1 },
+    },
+    {
+      $group: {
+        _id: {
+          year: { $year: "$date" },
+          month: { $month: "$date" },
         },
+        count: { $sum: 1 },
       },
-      {
-        $sort: {
-          "_id.year": 1,
-          "_id.month": 1,
+    },
+    {
+      $sort: {
+        "_id.year": 1,
+        "_id.month": 1,
+      },
+    },
+  ]);
+
+  console.log("Aggregation value for monthly graph is: ", Aggregation);
+  const saleDate = Aggregation.map((item) => item._id.month);
+  const count = Aggregation.map((item) => item.count);
+  return { saleDate, count };
+}
+
+async function getYearlySalesData() {
+  const getYearlySalesData = await orderModel.aggregate([
+    {
+      $match: {
+        date: { $exists: true },
+      },
+    },
+    {
+      $group: {
+        _id: {
+          year: { $year: "$date" },
         },
+        count: { $sum: 1 },
       },
-    ]);
-    res.json(Aggregation);
-  } catch (error) {
-    console.log("Error while chartDataMonth in adminController", error);
-  }
-};
+    },
+    // {
+    //   $sort: {
+    //     "_id.year": 1,
+    //   },
+    // },
+  ]);
+
+  console.log("Aggregation value for yearly graph is: ", getYearlySalesData);
+  const saleDate = getYearlySalesData.map((item) => item._id.year);
+  const count = getYearlySalesData.map((item) => item.count);
+  return { saleDate, count };
+}
+
+//------------------------------------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> //
+// const chartData = async (req, res) => {
+//   try {
+//     console.log("Daily chart rendered");
+//     const Aggregation = await orderModel.aggregate([
+//       {
+//         $match: {
+//           date: { $exists: true },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             year: { $year: "$date" },
+//             month: { $month: "$date" },
+//             day: { $dayOfMonth: "$date" },
+//           },
+//           count: { $sum: 1 },
+//         },
+//       },
+//       {
+//         $sort: {
+//           "_id.year": 1,
+//           "_id.month": 1,
+//           "_id.day": 1,
+//         },
+//       },
+//     ]);
+//     res.json(Aggregation);
+//   } catch (error) {
+//     console.log("Error while chartdata in adminController", error);
+//   }
+// };
+
+// const chartDataYear = async (req, res) => {
+//   try {
+//     console.log("Yearly Chart rendered");
+//     const Aggregation = await orderModel.aggregate([
+//       {
+//         $match: {
+//           date: { $exists: true },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             year: { $year: "$date" },
+//           },
+//           count: { $sum: 1 },
+//         },
+//       },
+//       {
+//         $sort: {
+//           "_id.year": 1,
+//         },
+//       },
+//     ]);
+//     res.json(Aggregation);
+//   } catch (error) {
+//     console.log("Error while chartDataYear in adminController", error);
+//   }
+// };
+
+// const chartDataMonth = async (req, res) => {
+//   try {
+//     console.log("Monthly chart rendered");
+//     const Aggregation = await orderModel.aggregate([
+//       {
+//         $match: {
+//           date: { $exists: true },
+//         },
+//       },
+//       {
+//         $group: {
+//           _id: {
+//             year: { $year: "$date" },
+//             month: { $month: "$date" },
+//           },
+//           count: { $sum: 1 },
+//         },
+//       },
+//       {
+//         $sort: {
+//           "_id.year": 1,
+//           "_id.month": 1,
+//         },
+//       },
+//     ]);
+//     res.json(Aggregation);
+//   } catch (error) {
+//     console.log("Error while chartDataMonth in adminController", error);
+//   }
+// };
+
+//------------------------------------------------------------->>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> //
 
 const adminDashboard = async (req, res) => {
   try {
@@ -890,6 +997,7 @@ const updateOrderStatus = async (req, res) => {
 
 module.exports = {
   adminLoginPage,
+  getSalesData,
   adminDashboard,
   adminSignout,
   admintoDash,
@@ -901,7 +1009,7 @@ module.exports = {
   salesReport,
   updateOrderStatus,
   approveReturnByAdmin,
-  chartData,
-  chartDataYear,
-  chartDataMonth,
+  // chartData,
+  // chartDataYear,
+  // chartDataMonth,
 };

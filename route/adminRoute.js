@@ -13,17 +13,18 @@ const multer = require("../middleware/multer");
 router.get("/", adminController.adminLoginPage);
 router.post("/dashboard", adminController.adminDashboard);
 router.get("/dashboard", adminMiddleware.isAdmin, adminController.admintoDash);
-router.get("/chart-data", adminMiddleware.isAdmin, adminController.chartData);
-router.get(
-  "/chart-data-month",
-  adminMiddleware.isAdmin,
-  adminController.chartDataMonth
-);
-router.get(
-  "/chart-data-year",
-  adminMiddleware.isAdmin,
-  adminController.chartDataYear
-);
+router.get('/sales_data', adminMiddleware.isAdmin, adminController.getSalesData);
+// router.get("/chart-data", adminMiddleware.isAdmin, adminController.chartData);
+// router.get(
+//   "/chart-data-month",
+//   adminMiddleware.isAdmin,
+//   adminController.chartDataMonth
+// );
+// router.get(
+//   "/chart-data-year",
+//   adminMiddleware.isAdmin,
+//   adminController.chartDataYear
+// );
 
 // ** ** ** ** ** ** ** ** //
 router.get(
