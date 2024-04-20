@@ -793,13 +793,12 @@ const razorpayPaymentFailed = async (req, res) => {
     let value = await orderModel.find({ orderID: orderID });
     console.log(value);
     console.log(value[0].products);
-    console.log("98977uhvhhggjkbiuihuiucvhkbvg");
     value[0].products.forEach((update) => {
       update.status = "Failed";
     });
 
     console.log(value[0].products);
-    console.log("PPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPPP");
+    
     //cart[0].item.forEach((value) => {
     // //   value.test = "Placed";
     // //   console.log(value);

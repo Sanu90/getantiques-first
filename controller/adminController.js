@@ -9,6 +9,7 @@ const puppeteer = require("puppeteer");
 const fs = require("fs");
 const mongoose = require("mongoose");
 const { ObjectId } = mongoose.Types;
+const path = require("path");
 
 const adminLoginPage = (req, res) => {
   try {
@@ -813,7 +814,7 @@ const salesReport = async (req, res) => {
             `;
 
     const browser = await puppeteer.launch({
-      // executablePath: "/usr/bin/chromium-browser",
+      executablePath: "/usr/bin/chromium-browser",
     });
     const page = await browser.newPage();
     await page.setContent(htmlContent);
