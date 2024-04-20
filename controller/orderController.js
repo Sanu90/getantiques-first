@@ -11,6 +11,7 @@ const walletModel = require("../model/walletModel");
 const couponModel = require("../model/couponModel");
 const puppeteer = require("puppeteer");
 const fs = require("fs");
+const path = require("path");
 
 const razorpayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_ID_KEY,
@@ -1424,7 +1425,7 @@ const invoice = async (req, res) => {
     }
 
     const browser = await puppeteer.launch({
-      executablePath:'/usr/bin/chromium-browser'
+      executablePath: "/usr/bin/chromium-browser",
     });
 
     const page = await browser.newPage();
