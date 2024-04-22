@@ -256,23 +256,6 @@ const admintoDash = async (req, res) => {
     const productData = await prodModel.find({});
     const categoryData = await catModel.find({});
 
-    // const sum_of_revenue = await orderModel.aggregate([
-    //   { $unwind: "$products" },
-    //   {
-    //     $match: {
-    //       "products.status": "Delivered",
-    //     },
-    //   },
-    //   {
-    //     $group: {
-    //       _id: null,
-    //       revenue: {
-    //         $sum: "$totalOrderValue",
-    //       },
-    //     },
-    //   },
-    // ]);
-
     const totalRevenue = await orderModel.aggregate([
       {
         $unwind: "$products",
@@ -349,7 +332,7 @@ const admintoDash = async (req, res) => {
         $limit: 4,
       },
     ]);
-    console.log("Each Product ordered details:", Product);
+    //console.log("Each Product ordered details:", Product);
 
     const dataForCategory = await orderModel.aggregate([
       {
@@ -1010,7 +993,4 @@ module.exports = {
   salesReport,
   updateOrderStatus,
   approveReturnByAdmin,
-  // chartData,
-  // chartDataYear,
-  // chartDataMonth,
 };
