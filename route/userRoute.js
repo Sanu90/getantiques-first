@@ -126,9 +126,7 @@ router.get(
 router.get("/Ucategory/filter/:num", productController.categoryProductFilter);
 router.get("/cart", userCheck.isUser, cartController.cartPage);
 router.post("/removeCart", userCheck.isUser, cartController.removeCart);
-// router.post("/minusCartvalue", userCheck.isUser, cartController.minusCartvalue);
 router.post("/addCartvalue", userCheck.isUser, cartController.addCartvalue);
-
 router.get("/wishlist", userCheck.isUser, wishlistController.wishlist);
 router.get(
   "/addtoWishlist/:id",
@@ -176,7 +174,11 @@ router.get(
 
 router.post("/reRazorpay", userCheck.isUser, orderController.reRazorpay);
 
-router.post("/payRazorpay_Order_Page", userCheck.isUser, orderController.payRazorpay_Order_Page);
+router.post(
+  "/payRazorpay_Order_Page",
+  userCheck.isUser,
+  orderController.payRazorpay_Order_Page
+);
 
 router.post(
   "/discard_Online_Payment",
@@ -201,11 +203,8 @@ router.post(
 );
 
 router.post("/cancelProduct", userCheck.isUser, orderController.cancelProduct);
-
 router.get("/cancel/:id", userCheck.isUser, orderController.cancelOrder);
-
 router.post("/filterProducts", userCheck.isUser, userController.filterProducts);
-
 router.get(
   "/showAddressInCheckout",
   userCheck.isUser,
@@ -217,6 +216,5 @@ router.get("/resendOTP", userController.resendOTP);
 router.post("/search", userController.search);
 
 router.get("/logout", userController.logout);
-
 
 module.exports = router;
