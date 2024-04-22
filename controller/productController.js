@@ -61,12 +61,15 @@ const addProduct = async (req, res) => {
     const imageData = req.files;
     console.log(imageData.length + " images uploaded by admin.");
     for (let i = 0; i < imageData.length; i++) {
+      console.log("Hello test");
       imagePath[i] = imageData[i].path
         .replace(/\\/g, "/")
         .replace("public", "");
       //  const inputImageBuffer = fs.readFileSync(inputPath[i]);
+      console.log("imagePath[i]", imagePath[i]);
     }
     //   //console.log("IMAGEPATH is: ", imagePath);
+    console.log("Test2");
     req.imagePath = imagePath;
     const newProd = new productModel({
       name: req.body.prodName,

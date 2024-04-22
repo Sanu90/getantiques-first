@@ -979,8 +979,6 @@ const updateOrderStatus = async (req, res) => {
   }
 };
 
-// kshjaskjdhas
-// sldnkasjda
 module.exports = {
   adminLoginPage,
   getSalesData,
