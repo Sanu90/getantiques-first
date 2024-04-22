@@ -206,8 +206,6 @@ router.get("/cancel/:id", userCheck.isUser, orderController.cancelOrder);
 
 router.post("/filterProducts", userCheck.isUser, userController.filterProducts);
 
-// router.post("/test", orderController.test);
-
 router.get(
   "/showAddressInCheckout",
   userCheck.isUser,
@@ -220,6 +218,5 @@ router.post("/search", userController.search);
 
 router.get("/logout", userController.logout);
 
-// router.get("/test", userController.test);
 
 module.exports = router;
