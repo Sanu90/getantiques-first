@@ -170,10 +170,6 @@ const userOrder = async (req, res) => {
     console.log("User order page");
     console.log("****************");
     const userName = req.session.name;
-    // const orderHistory = await orderModel
-    //   .find({ user: userName })
-    //   .sort({ date: -1 });
-    // console.log("orderHistory is: ", orderHistory);
 
     var page = 1;
     if (req.query.page) {
@@ -328,13 +324,6 @@ const cashOnDelivery = async (req, res) => {
     console.log("USER details is:" + user);
     console.log("______________________");
 
-    // //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-    // // let ab;
-    // console.log(
-    //   "Cart value after using coupon is: ",
-    //   req.session.cart_Value_after_coupon
-    // );
-
     // console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
     console.log("address is:", address);
 
@@ -372,7 +361,6 @@ const cashOnDelivery = async (req, res) => {
       res.json({ message: "product ordered successfully" });
     }
 
-    //----------------------------------------------
     // Decrease the respective product stock when an order is made.
     let dataForReducingStock = await orderModel.aggregate([
       { $match: { orderID: orderID } },
@@ -412,7 +400,6 @@ const cashOnDelivery = async (req, res) => {
         }
       );
     });
-    //----------------------------------------------------------------
   } catch (error) {
     console.log(
       "Error while accessing orderProduct (ordercontroller) : " + error
@@ -798,7 +785,7 @@ const razorpayPaymentFailed = async (req, res) => {
     });
 
     console.log(value[0].products);
-    
+
     //cart[0].item.forEach((value) => {
     // //   value.test = "Placed";
     // //   console.log(value);
