@@ -215,6 +215,6 @@ router.get("/resendOTP", userController.resendOTP);
 
 router.post("/search", userController.search);
 
-router.get("/logout", userController.logout);
+router.get("/logout", userCheck.isUser, userController.logout);
 
 module.exports = router;
